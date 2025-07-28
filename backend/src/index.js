@@ -1,13 +1,30 @@
 const express = require('express');
 const env = require('dotenv');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+const route = require('./routes/index');
+const connectDB = require('./config/db/index.js');
 
 env.config();
 
 const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+app.use(cookieParser());
+
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    })
+);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+connectDB();
+
+route(app);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(

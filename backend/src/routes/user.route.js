@@ -22,4 +22,14 @@ router.get('/profile', verifyAccessToken, userController.getProfile);
 
 router.get('/search', verifyAccessToken, userController.searchUserByEmail);
 
+router.get('/list-friends', verifyAccessToken, userController.getListFriends);
+
+router.post('/add-friend', verifyAccessToken, userController.addFriend);
+
+router.post(
+    '/accept-friend-request',
+    verifyAccessToken,
+    userController.acceptFriendRequest
+);
+
 module.exports = router;

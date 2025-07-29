@@ -58,6 +58,18 @@ class UserController {
                 dateOfBirth,
             } = req.body;
 
+            if (
+                !firstName &&
+                !lastName &&
+                !username &&
+                !email &&
+                !bio &&
+                !phone &&
+                !dateOfBirth
+            ) {
+                return res.status(400).json({ message: 'No fields to update' });
+            }
+
             const updated = {};
 
             if (firstName) updated.firstName = firstName.trim();
@@ -235,6 +247,55 @@ class UserController {
 
             return res.status(200).json({
                 message: 'Friend request accepted successfully',
+            });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ message: 'Server error', error: error.message });
+        }
+    }
+
+    async getFriendRequests(req, res) {
+        try {
+            const user = req.user;
+
+            res.status(200).json({
+                message: 'Friend requests retrieved successfully',
+                friendRequests: user.friendRequests.received,
+            });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ message: 'Server error', error: error.message });
+        }
+    }
+
+    async unFriend(req, res) {
+        try {
+            const user = req.user; // middleware should set req.user
+            const friendId = req.body.friendId;
+
+            if (!friendId) {
+                return res
+                    .status(400)
+                    .json({ message: 'Friend ID is required' });
+            }
+
+            if (!user.friends.toString().includes(friendId)) {
+                return res.status(400).json({ message: 'Not friends' });
+            }
+
+            user.friends.pull(friendId);
+            await user.save();
+
+            const friend = await User.findById(friendId);
+            if (friend) {
+                friend.friends.pull(user._id);
+                await friend.save();
+            }
+
+            return res.status(200).json({
+                message: 'Unfriended successfully',
             });
         } catch (error) {
             return res

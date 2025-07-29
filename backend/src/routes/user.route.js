@@ -32,4 +32,12 @@ router.post(
     userController.acceptFriendRequest
 );
 
+router.get(
+    '/friend-requests',
+    verifyAccessToken,
+    userController.getFriendRequests
+);
+
+router.delete('/unfriend', verifyAccessToken, userController.unFriend);
+
 module.exports = router;

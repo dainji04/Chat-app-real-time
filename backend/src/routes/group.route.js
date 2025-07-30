@@ -27,5 +27,10 @@ router.put(
     verifyAccessToken,
     groupController.promoteToModerator
 ); // Promote user to moderator
+router.put(
+    '/:groupId/demote/:userId',
+    verifyAccessToken,
+    groupController.demoteToUser
+); // Demote moderator to user
 
 module.exports = router;

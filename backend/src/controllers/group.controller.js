@@ -392,49 +392,110 @@ class GroupController {
 
     // /api/groups/:groupId/promote/:userId [PUT] : user to moderator
     async promoteToModerator(req, res) {
-        const user = req.user;
-        const { groupId, userId } = req.params;
-        const group = await Conversation.findById(groupId);
-        console.log(group);
-        if (!group) {
-            return res.status(404).json({ message: 'Group not found.' });
-        }
-        const isAdmin = user._id.toString() === group.admin.toString();
-        if (!isAdmin) {
-            return res.status(403).json({
-                message: 'Only the group admin can promote users to moderator.',
-            });
-        }
+        try {
+            const user = req.user;
+            const { groupId, userId } = req.params;
+            const group = await Conversation.findById(groupId);
 
-        const userToPromote = group.participants.find(
-            (p) => p._id.toString() === userId
-        );
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
 
-        if (!userToPromote) {
-            return res
-                .status(404)
-                .json({ message: 'User not found in group.' });
-        }
+            const isAdmin = user._id.toString() === group.admin.toString();
+            if (!isAdmin) {
+                return res.status(403).json({
+                    message:
+                        'Only the group admin can promote users to moderator.',
+                });
+            }
 
-        if (group.moderators.includes(userId)) {
-            return res.status(400).json({
-                message: 'User is already a moderator.',
-            });
-        }
+            const userToPromote = group.participants.find(
+                (p) => p._id.toString() === userId
+            );
 
-        group.moderators.push(userId);
-        await group.save();
+            if (!userToPromote) {
+                return res
+                    .status(404)
+                    .json({ message: 'User not found in group.' });
+            }
 
-        return res.status(200).json({
-            message: 'User promoted to moderator successfully.',
-            data: {
-                group: {
-                    _id: group._id,
-                    name: group.name,
-                    moderators: group.moderators,
+            if (group.moderators.includes(userId)) {
+                return res.status(400).json({
+                    message: 'User is already a moderator.',
+                });
+            }
+
+            group.moderators.push(userId);
+            await group.save();
+
+            return res.status(200).json({
+                message: 'User promoted to moderator successfully.',
+                data: {
+                    group: {
+                        _id: group._id,
+                        name: group.name,
+                        moderators: group.moderators,
+                    },
                 },
-            },
-        });
+            });
+        } catch (error) {
+            console.error('Error promoting user to moderator:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    // /api/groups/:groupId/demote/:userId [PUT] : moderator to user
+    async demoteToUser(req, res) {
+        try {
+            const user = req.user;
+            const { groupId, userId } = req.params;
+
+            const group = await Conversation.findById(groupId);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            const isAdmin = user._id.toString() === group.admin.toString();
+            if (!isAdmin) {
+                return res.status(403).json({
+                    message:
+                        'Only the group admin can demote users to moderator.',
+                });
+            }
+
+            const userToDemote = group.participants.find(
+                (p) => p._id.toString() === userId
+            );
+
+            if (!userToDemote) {
+                return res
+                    .status(404)
+                    .json({ message: 'User not found in group.' });
+            }
+
+            if (!group.moderators.includes(userId)) {
+                return res.status(400).json({
+                    message: 'User is not a moderator.',
+                });
+            }
+
+            group.moderators.pull(userId);
+            await group.save();
+
+            return res.status(200).json({
+                message: 'User demoted to regular member successfully.',
+                data: {
+                    group: {
+                        _id: group._id,
+                        name: group.name,
+                        moderators: group.moderators,
+                    },
+                },
+            });
+        } catch (error) {
+            console.error('Error demoting user to regular member:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }
 }
 

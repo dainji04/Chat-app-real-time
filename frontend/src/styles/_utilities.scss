@@ -1,0 +1,184 @@
+// Utility classes for theming
+
+// Text colors
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+// Background colors
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+// Border colors
+.border-color {
+  border-color: var(--border-color);
+}
+
+// Theme-specific CSS custom properties
+.light-theme {
+  --text-primary: #{$light-text-primary};
+  --text-secondary: #{$light-text-secondary};
+  --text-muted: #{$light-text-muted};
+  --bg-primary: #{$light-bg-primary};
+  --bg-secondary: #{$light-bg-secondary};
+  --bg-tertiary: #{$light-bg-tertiary};
+  --border-color: #{$light-border};
+  --accent-color: #{$light-accent};
+  --success-color: #{$light-success};
+  --warning-color: #{$light-warning};
+  --error-color: #{$light-error};
+}
+
+.dark-theme {
+  --text-primary: #{$dark-text-primary};
+  --text-secondary: #{$dark-text-secondary};
+  --text-muted: #{$dark-text-muted};
+  --bg-primary: #{$dark-bg-primary};
+  --bg-secondary: #{$dark-bg-secondary};
+  --bg-tertiary: #{$dark-bg-tertiary};
+  --border-color: #{$dark-border};
+  --accent-color: #{$dark-accent};
+  --success-color: #{$dark-success};
+  --warning-color: #{$dark-warning};
+  --error-color: #{$dark-error};
+}
+
+// Alert/Message components
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  margin-bottom: 16px;
+
+  &.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-color: var(--success-color);
+    color: var(--success-color);
+  }
+
+  &.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+  }
+
+  &.alert-error {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: var(--error-color);
+    color: var(--error-color);
+  }
+
+  &.alert-info {
+    background-color: rgba(0, 122, 204, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+  }
+}
+
+// Form controls
+.form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+// Card component
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  color: var(--text-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .card-body {
+    color: var(--text-secondary);
+  }
+}
+
+// Modal/Dialog
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+// Dropdown
+.dropdown-menu {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .dropdown-item {
+    color: var(--text-primary);
+
+    &:hover {
+      background-color: var(--bg-tertiary);
+    }
+  }
+}
+
+// Loading spinner
+.spinner {
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--accent-color);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

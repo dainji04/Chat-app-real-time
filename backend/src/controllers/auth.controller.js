@@ -88,7 +88,9 @@ class AuthController {
                 });
             }
 
-            const user = await User.findOne({ username });
+            const user = await User.findOne({
+                $or: [{ username }, { email: username }],
+            });
             if (!user) {
                 return res
                     .status(400)

@@ -356,6 +356,39 @@ class GroupController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    // /api/groups/delete [DELETE] : delete a group
+    async deleteGroup(req, res) {
+        try {
+            const user = req.user;
+            const { groupId } = req.body;
+
+            const group = await Conversation.findById(groupId);
+
+            if (!group) {
+                return res.status(404).json({
+                    message: 'Group not found.',
+                });
+            }
+
+            const isAdmin = group.admin.toString() === user._id.toString();
+            if (!isAdmin) {
+                return res.status(403).json({
+                    message: 'Only the group admin can delete the group.',
+                });
+            }
+
+            await group.deleteOne();
+            return res.status(200).json({
+                message: 'Group deleted successfully.',
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: 'internal server',
+                error: error.message,
+            });
+        }
+    }
 }
 
 module.exports = new GroupController();

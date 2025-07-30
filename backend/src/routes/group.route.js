@@ -21,5 +21,6 @@ router.put(
     groupController.uploadAvatar
 ); // Upload group avatar
 router.put('/update-info', verifyAccessToken, groupController.updateInfo); // Update group info
+router.delete('/delete', verifyAccessToken, groupController.deleteGroup); // Delete a group
 
 module.exports = router;

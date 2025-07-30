@@ -69,6 +69,82 @@ class GroupController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    // /api/groups/add-members [PUT] : add arrays of user
+    async addMembers(req, res) {
+        try {
+            const user = req.user;
+
+            const { groupId, participantIds = [] } = req.body;
+
+            if (!groupId || !participantIds) {
+                return res.status(400).json({
+                    message: 'Group ID and participant IDs are required.',
+                });
+            }
+
+            // check if the group exists
+            const group = await Conversation.findById(groupId);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            // check if the user is the admin of the group
+            if (
+                group.admin.toString() !== user._id.toString() ||
+                !group.moderators.includes(user._id)
+            ) {
+                return res.status(403).json({
+                    message:
+                        'Only the group admin or moderators can add members.',
+                });
+            }
+
+            if (!Array.isArray(participantIds) || participantIds.length === 0) {
+                return res.status(400).json({
+                    message: 'Participant IDs must be a non-empty array.',
+                });
+            }
+
+            // check if the participants exist
+            const participants = await userModel.find({
+                _id: { $in: participantIds },
+            });
+
+            if (participants.length !== participantIds.length) {
+                return res.status(404).json({
+                    message: 'Some participants not found.',
+                });
+            }
+
+            // check if the participants are already in the group
+            const existingParticipants = group.participants.map((p) =>
+                p._id.toString()
+            );
+            const newParticipants = participants.filter(
+                (p) => !existingParticipants.includes(p._id.toString())
+            );
+
+            if (newParticipants.length === 0) {
+                return res.status(400).json({
+                    message: 'All participants are already in the group.',
+                });
+            }
+
+            group.participants.push(...newParticipants);
+            await group.save();
+
+            return res.status(200).json({
+                message: 'Members added successfully.',
+                data: {
+                    group: group,
+                },
+            });
+        } catch (error) {
+            console.error('Error adding members to group:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 module.exports = new GroupController();

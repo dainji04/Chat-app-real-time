@@ -12,7 +12,7 @@ const router = express.Router();
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     UserProfile:
  *       type: object
  *       properties:
  *         _id:
@@ -23,37 +23,34 @@ const router = express.Router();
  *           type: string
  *         avatar:
  *           type: string
- *     RegisterRequest:
+ *         bio:
+ *           type: string
+ *         status:
+ *           type: string
+ *           enum: [online, offline, away]
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *     UpdateProfileRequest:
  *       type: object
- *       required:
- *         - username
- *         - email
- *         - password
  *       properties:
  *         username:
  *           type: string
- *         email:
+ *         bio:
  *           type: string
- *         password:
+ *         status:
  *           type: string
- *     LoginRequest:
- *       type: object
- *       required:
- *         - email
- *         - password
- *       properties:
- *         email:
- *           type: string
- *         password:
- *           type: string
+ *           enum: [online, offline, away]
  */
 
 /**
  * @swagger
- * /api/user/upload-avatar:
+ * /api/users/upload-avatar:
  *   post:
- *     summary: Upload avatar for user
- *     tags: [User]
+ *     summary: Upload avatar cho user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -66,24 +63,23 @@ const router = express.Router();
  *                 format: binary
  *     responses:
  *       200:
- *         description: Avatar uploaded successfully
+ *         description: Upload avatar thành công
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
  *                 message:
  *                   type: string
  *                 avatarUrl:
  *                   type: string
  *       400:
- *         description: Bad request
+ *         description: Lỗi upload file
  *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal server error
+ *         description: Chưa xác thực
  */
-
 router.post(
     '/upload-avatar',
     verifyAccessToken,
@@ -92,10 +88,97 @@ router.post(
     userController.uploadAvatar
 );
 
+/**
+ * @swagger
+ * /api/users/update-profile:
+ *   put:
+ *     summary: Cập nhật thông tin profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateProfileRequest'
+ *     responses:
+ *       200:
+ *         description: Cập nhật profile thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   $ref: '#/components/schemas/UserProfile'
+ *       400:
+ *         description: Lỗi validation
+ */
 router.put('/update-profile', verifyAccessToken, userController.updateProfile);
 
+/**
+ * @swagger
+ * /api/users/profile:
+ *   get:
+ *     summary: Lấy thông tin profile của user hiện tại
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Thông tin profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserProfile'
+ *       401:
+ *         description: Chưa xác thực
+ */
 router.get('/profile', verifyAccessToken, userController.getProfile);
 
+/**
+ * @swagger
+ * /api/users/search:
+ *   get:
+ *     summary: Tìm kiếm user theo email
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email cần tìm kiếm
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Số lượng kết quả tối đa
+ *     responses:
+ *       200:
+ *         description: Danh sách user tìm được
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UserProfile'
+ *       400:
+ *         description: Thiếu email parameter
+ */
 router.get('/search', verifyAccessToken, userController.searchUserByEmail);
 
 module.exports = router;

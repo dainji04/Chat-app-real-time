@@ -32,5 +32,6 @@ router.put(
     verifyAccessToken,
     groupController.demoteToUser
 ); // Demote moderator to user
+router.put('/:groupId/leave', verifyAccessToken, groupController.leaveGroup); // Leave a group
 
 module.exports = router;

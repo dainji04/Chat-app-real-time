@@ -497,6 +497,50 @@ class GroupController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    // /api/groups/:groupId/leave [PUT] : leave a group
+    async leaveGroup(req, res) {
+        try {
+            const user = req.user;
+            const { groupId } = req.params;
+
+            const group = await Conversation.findById(groupId);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            const isMember = group.participants.includes(user._id);
+            if (!isMember) {
+                return res.status(403).json({
+                    message: 'You are not a member of this group.',
+                });
+            }
+            const isAdmin = group.admin.toString() === user._id.toString();
+            if (isAdmin) {
+                return res.status(403).json({
+                    message:
+                        'Group admin cannot leave the group. Please transfer admin rights first.',
+                });
+            }
+
+            group.participants.pull(user._id);
+            await group.save();
+
+            return res.status(200).json({
+                message: 'You have left the group successfully.',
+                data: {
+                    group: {
+                        _id: group._id,
+                        name: group.name,
+                        participants: group.participants,
+                    },
+                },
+            });
+        } catch (error) {
+            console.error('Error leaving group:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 module.exports = new GroupController();

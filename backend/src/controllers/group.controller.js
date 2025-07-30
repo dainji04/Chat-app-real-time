@@ -145,6 +145,92 @@ class GroupController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    // /api/groups/remove-members [PUT] : remove arrays of users
+    async removeMembers(req, res) {
+        try {
+            const user = req.user;
+
+            const { groupId, removeMemberIds = [] } = req.body;
+
+            if (!groupId || !removeMemberIds) {
+                return res.status(400).json({
+                    message: 'Group ID and participant IDs are required.',
+                });
+            }
+
+            // check if the group exists
+            const group = await Conversation.findById(groupId);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            // check if the user is the admin of the group
+            console.log(group.admin.toString(), user._id.toString());
+            if (
+                group.admin.toString() !== user._id.toString() &&
+                !group.moderators.includes(user._id)
+            ) {
+                return res.status(403).json({
+                    message:
+                        'Only the group admin or moderators can remove members.',
+                });
+            }
+
+            if (
+                !Array.isArray(removeMemberIds) ||
+                removeMemberIds.length === 0
+            ) {
+                return res.status(400).json({
+                    message: 'Participant IDs must be a non-empty array.',
+                });
+            }
+
+            // check if the removeMembers exist
+            const removeMembers = await userModel.find({
+                _id: { $in: removeMemberIds },
+            });
+
+            if (removeMembers.length !== removeMemberIds.length) {
+                return res.status(404).json({
+                    message: 'Some removeMembers not found.',
+                });
+            }
+
+            // check if the removeMembers are not in the group
+            const existingRemoveMembers = group.participants.map((p) =>
+                p._id.toString()
+            );
+            const oldRemoveMembers = removeMembers.filter((p) =>
+                existingRemoveMembers.includes(p._id.toString())
+            );
+
+            if (oldRemoveMembers.length === 0) {
+                return res.status(400).json({
+                    message: 'All removeMembers are not in the group.',
+                });
+            }
+
+            group.participants.pull(...oldRemoveMembers);
+            if (group.participants.length === 0) {
+                await group.deleteOne();
+                return res.status(200).json({
+                    message: 'Group deleted as it has no members.',
+                });
+            }
+            await group.save();
+
+            return res.status(200).json({
+                message: 'Members removed successfully.',
+                data: {
+                    group: group,
+                },
+            });
+        } catch (error) {
+            console.error('Error removing members from group:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 module.exports = new GroupController();

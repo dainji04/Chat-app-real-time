@@ -231,6 +231,73 @@ class GroupController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    // /api/groups/upload [PUT] : upload avatar of group
+    async uploadAvatar(req, res) {
+        try {
+            const { groupId } = req.body;
+            const file = req.file;
+
+            if (!groupId) {
+                return res.status(400).json({
+                    message: 'Group ID is required.',
+                });
+            }
+
+            if (!file) {
+                return res.status(400).json({
+                    message: 'File is required.',
+                });
+            }
+
+            const group = await Conversation.findById(groupId);
+            if (
+                group.avatar &&
+                group.avatar !== '' &&
+                group.avatar.includes('cloudinary')
+            ) {
+                const publicId =
+                    'chat-app/group_avatars' +
+                    group.avatar.split('/').pop().split('.')[0];
+                await deleteFromCloudinary(publicId);
+            }
+
+            const upload = await uploadToCloudinary(
+                file,
+                'chat-app/group_avatars'
+            );
+
+            if (!upload) {
+                return res.status(500).json({
+                    message: 'Failed to upload avatar to cloud storage.',
+                });
+            }
+
+            group.avatar = upload.secure_url;
+            await group.save();
+
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            return res.status(200).json({
+                message: 'Group avatar uploaded successfully.',
+                data: {
+                    user: {
+                        username: req.user.username,
+                    },
+                    group: {
+                        _id: group._id,
+                        name: group.name,
+                        avatar: group.avatar,
+                    },
+                },
+            });
+        } catch (error) {
+            console.error('Error uploading group avatar:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 module.exports = new GroupController();

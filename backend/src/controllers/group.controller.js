@@ -389,6 +389,53 @@ class GroupController {
             });
         }
     }
+
+    // /api/groups/:groupId/promote/:userId [PUT] : user to moderator
+    async promoteToModerator(req, res) {
+        const user = req.user;
+        const { groupId, userId } = req.params;
+        const group = await Conversation.findById(groupId);
+        console.log(group);
+        if (!group) {
+            return res.status(404).json({ message: 'Group not found.' });
+        }
+        const isAdmin = user._id.toString() === group.admin.toString();
+        if (!isAdmin) {
+            return res.status(403).json({
+                message: 'Only the group admin can promote users to moderator.',
+            });
+        }
+
+        const userToPromote = group.participants.find(
+            (p) => p._id.toString() === userId
+        );
+
+        if (!userToPromote) {
+            return res
+                .status(404)
+                .json({ message: 'User not found in group.' });
+        }
+
+        if (group.moderators.includes(userId)) {
+            return res.status(400).json({
+                message: 'User is already a moderator.',
+            });
+        }
+
+        group.moderators.push(userId);
+        await group.save();
+
+        return res.status(200).json({
+            message: 'User promoted to moderator successfully.',
+            data: {
+                group: {
+                    _id: group._id,
+                    name: group.name,
+                    moderators: group.moderators,
+                },
+            },
+        });
+    }
 }
 
 module.exports = new GroupController();

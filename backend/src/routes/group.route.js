@@ -22,5 +22,10 @@ router.put(
 ); // Upload group avatar
 router.put('/update-info', verifyAccessToken, groupController.updateInfo); // Update group info
 router.delete('/delete', verifyAccessToken, groupController.deleteGroup); // Delete a group
+router.put(
+    '/:groupId/promote/:userId',
+    verifyAccessToken,
+    groupController.promoteToModerator
+); // Promote user to moderator
 
 module.exports = router;

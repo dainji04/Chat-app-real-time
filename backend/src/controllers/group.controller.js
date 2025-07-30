@@ -298,6 +298,64 @@ class GroupController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    // /api/groups/update-info [PUT] : edit name or description of group
+    async updateInfo(req, res) {
+        try {
+            const user = req.user;
+            const { groupId, name, description } = req.body;
+
+            if (!groupId) {
+                return res.status(400).json({
+                    message: 'Group IDis required.',
+                });
+            }
+
+            if (!name && !description) {
+                return res.status(400).json({
+                    message: 'At least one of name or description is required.',
+                });
+            }
+
+            const group = await Conversation.findById(groupId);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            const isAdmin = group.admin.toString() === user._id.toString();
+            const isModerator = group.moderators.includes(user._id);
+            if (!isAdmin && !isModerator) {
+                return res.status(403).json({
+                    message:
+                        'Only the group admin or moderators can update group info.',
+                });
+            }
+
+            const updateData = {};
+            if (name) updateData.name = name.trim();
+            if (description) updateData.description = description.trim();
+
+            const updatedGroup = await Conversation.findByIdAndUpdate(
+                groupId,
+                { $set: updateData },
+                { new: true, runValidators: true }
+            );
+
+            if (!updatedGroup) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            return res.status(200).json({
+                message: 'Group info updated successfully',
+                data: {
+                    group: updatedGroup,
+                },
+            });
+        } catch (error) {
+            console.error('Error updating group info:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 module.exports = new GroupController();

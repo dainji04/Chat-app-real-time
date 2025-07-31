@@ -1,29 +1,41 @@
 import { Routes } from '@angular/router';
-import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import { HomeComponent } from './home/home.component';
+import { Home } from './home/home';
+import { AuthLayout } from './layouts/auth-layout/auth-layout';
+import { MainLayout } from './layouts/main-layout/main-layout';
+import { authGuard } from './guards/auth-guard';
+import { guestGuard } from './guards/guest-guard';
 
 const appRoutes: Routes = [
   {
     path: '',
-    component: MainLayoutComponent,
+    component: MainLayout,
     children: [
       {
         path: '',
-        component: HomeComponent,
+        component: Home,
       },
     ],
+    canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
   },
   {
-    path: '',
-    component: AuthLayoutComponent,
+    path: 'auth',
+    component: AuthLayout,
     children: [
       {
+        path: 'login',
+        loadComponent: () => import('./login/login').then((c) => c.Login),
+      },
+      {
         path: 'sign-up',
-        loadComponent: () =>
-          import('./signup/signup.component').then((m) => m.SignupComponent),
+        loadComponent: () => import('./signup/signup').then((c) => c.Signup),
       },
     ],
+    canActivate: [guestGuard],
+  },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full',
   },
 ];
 

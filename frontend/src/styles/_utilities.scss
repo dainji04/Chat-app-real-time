@@ -65,7 +65,6 @@
   padding: 12px 16px;
   border-radius: 6px;
   border: 1px solid transparent;
-  margin-bottom: 16px;
 
   &.alert-success {
     background-color: rgba(40, 167, 69, 0.1);
@@ -74,8 +73,6 @@
   }
 
   &.alert-warning {
-    background-color: rgba(255, 193, 7, 0.1);
-    border-color: var(--warning-color);
     color: var(--warning-color);
   }
 
@@ -83,6 +80,7 @@
     background-color: rgba(220, 53, 69, 0.1);
     border-color: var(--error-color);
     color: var(--error-color);
+    margin-bottom: 10px;
   }
 
   &.alert-info {

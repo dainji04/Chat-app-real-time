@@ -1,8 +1,8 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller.js');
 const {
-    verifyAccessToken,
-    verifyRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
 } = require('../middlewares/auth.middleware.js');
 
 const router = express.Router();
@@ -49,7 +49,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /api/auth/signup:
  *   post:
  *     summary: Đăng ký tài khoản mới
  *     tags: [Auth]
@@ -76,7 +76,7 @@ const router = express.Router();
  *       400:
  *         description: Lỗi validation hoặc email đã tồn tại
  */
-router.post('/register', authController.register);
+router.post('/signup', authController.signup);
 
 /**
  * @swagger
@@ -173,9 +173,9 @@ router.post('/refresh-token', verifyRefreshToken, authController.refreshToken);
  *         description: Thay đổi mật khẩu thành công
  */
 router.post(
-    '/change-password',
-    verifyAccessToken,
-    authController.changePassword
+  '/change-password',
+  verifyAccessToken,
+  authController.changePassword
 );
 
 /**

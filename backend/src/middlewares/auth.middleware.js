@@ -37,7 +37,7 @@ const verifyAccessToken = (req, res, next) => {
 
 const verifyRefreshToken = async (req, res, next) => {
     try {
-        const refreshToken = req.cookies.refresh;
+        const refreshToken = req.cookies['refresh-token'];
 
         if (!refreshToken) {
             return res.status(401).json({ message: 'Refresh token missing' });

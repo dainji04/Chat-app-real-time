@@ -4,7 +4,6 @@ import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
-import { Messages } from './messages/messages';
 
 const appRoutes: Routes = [
   {
@@ -18,7 +17,13 @@ const appRoutes: Routes = [
       },
       {
         path: 'messages',
-        component: Messages,
+        loadComponent: () =>
+          import('./messages/messages').then((c) => c.Messages),
+        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./profile/profile').then((c) => c.Profile),
         canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
       },
     ],

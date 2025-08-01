@@ -1,0 +1,31 @@
+<div class="settings">
+    <div class="change-info">
+        <div class="change-info__head">
+            <h2 class="change-info__title">Change User Information</h2>
+            <p class="change-info__description">Manage your account settings and preferences.</p>
+        </div>
+
+        <div class="change-info__basic">
+            <h1 class="change-info__title">Basic Information</h1>
+            <p>Manage your basic information: username, first name, last name, and bio.</p>
+            <div class="change-info__form">
+                <label for="username">Username:</label>
+                <input [disabled]="!isUpdating" [(ngModel)]="username" type="text" id="username" name="username">
+
+                <label for="firstName">First Name:</label>
+                <input [disabled]="!isUpdating" [(ngModel)]="firstName" type="text" id="firstName" name="firstName">
+
+                <label for="lastName">Last Name:</label>
+                <input [disabled]="!isUpdating" [(ngModel)]="lastName" type="text" id="lastName" name="lastName">
+
+                <label for="bio">Bio:</label>
+                <textarea [disabled]="!isUpdating" [(ngModel)]="bio" id="bio" name="bio" rows="4"></textarea>
+
+                <div class="button">
+                    <button (click)="update()">{{ isUpdating ? 'Update' : 'Edit' }}</button>
+                    <button (click)="isUpdating=false" class="cancel-btn" *ngIf="isUpdating">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -26,6 +26,12 @@ const appRoutes: Routes = [
         loadComponent: () => import('./profile/profile').then((c) => c.Profile),
         canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
       },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./settings/settings').then((c) => c.Settings),
+        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+      },
     ],
   },
   {

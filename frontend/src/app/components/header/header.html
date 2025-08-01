@@ -2,9 +2,36 @@
 <header class="header__mobile">
     <nav class="header__nav">
         <ul class="header__nav-list">
-            <li class="header__nav-item"><i class="fa-solid fa-magnifying-glass"></i></li>
             <li class="header__nav-item">
-                <img src="teddy_boy.jpg" alt="user-avatar" class="header__avatar">
+                <h1 class="header__nav-logo">
+                    <a routerLink="/">
+                        Dainji
+                    </a>
+                </h1>
+            </li>
+            <div class="header__search">
+                <i (click)="toggleSearch()" class="fa-solid fa-magnifying-glass"></i>
+                <div class="header__search-box" [class]="{'isSearching': isSearching}">
+                    <input class="header__search-input" type="text" [(ngModel)]="search">
+                </div>
+            </div>
+            <li class="header__nav-item profile">
+                <img (click)="toggleProfile()" [src]="user.avatar" [alt]="user.username + ' avatar'" class="avatar">
+                <!-- Profile Menu -->
+                <div *ngIf="isProfile" class="profile__menu">
+                    <div class="profile__user-info">
+                        <img [src]="user.avatar" class="avatar" alt="avatar_user">
+                        <div>
+                            <h3 class="profile__user-fullname">{{ user.firstName + ' ' + user.lastName }}</h3>
+                            <p class="profile__username">&#64;{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <ul>
+                        <li><a (click)="toggleProfile()" routerLink="/profile">Profile</a></li>
+                        <li><a (click)="toggleProfile()" routerLink="/settings">Settings</a></li>
+                        <li><a (click)="logout()">Logout</a></li>
+                    </ul>
+                </div>
             </li>
         </ul>
     </nav>

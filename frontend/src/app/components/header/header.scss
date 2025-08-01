@@ -1,3 +1,15 @@
+@use "../../../styles/variables" as *;
+
+.avatar {
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+
 .header {
   &__mobile {
     width: 100%;
@@ -9,31 +21,151 @@
 
   &__nav {
     padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     &-list {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 15px;
     }
 
     &-item {
-      width: 45px;
-      height: 45px;
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 1px solid #ccc;
-      border-radius: 50%;
-      overflow: hidden;
 
-      & i {
-        font-size: 18px;
+      .profile {
+        position: relative;
+        &__menu {
+          position: absolute;
+          top: 100%;
+          right: 20px;
+          background-color: #fff;
+          box-shadow: 0 -4px 32px #0003;
+          border-radius: 8px;
+          z-index: 1000;
+          border: 1px solid #f5f5f5;
+          padding: 10px 50px;
+          animation: fadeIn 0.3s ease forwards;
+
+          &-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+              background-color: #f0f0f0;
+            }
+          }
+
+          & ul {
+            list-style: none;
+            margin-top: 20px;
+
+            li {
+              padding: 10px 0;
+              cursor: pointer;
+              transition: background-color 0.3s ease;
+
+              &:hover > a {
+                color: $primary-color;
+              }
+
+              a {
+                color: #000;
+                text-decoration: none;
+                opacity: 0.7;
+                font-weight: 500;
+              }
+            }
+          }
+        }
+        &__user-info {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+
+          div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+          }
+        }
+        &__user-fullname {
+          font-size: 16px;
+          font-weight: 700;
+          color: $primary-color;
+          margin-right: 10px;
+        }
+
+        &__username {
+          font-size: 16px;
+          font-weight: 500;
+          opacity: 0.6;
+        }
+      }
+    }
+
+    &-logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      & a {
+        color: $primary-color;
+        font-family: $secondary-font;
+        text-decoration: none;
       }
     }
   }
-  &__avatar {
+
+  &__search {
+    position: relative;
     width: 100%;
-    height: 100%;
-    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+
+    &-box {
+      width: 100%;
+    }
+
+    & i {
+      position: absolute;
+      left: 12px;
+      color: #999;
+      font-size: 20px;
+      transition: color 0.3s ease;
+    }
+
+    &-input {
+      width: 100%;
+      padding: 5px 18px 5px 40px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 18px;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: $primary-color;
+        outline: none;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

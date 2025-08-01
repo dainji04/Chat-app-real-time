@@ -13,6 +13,9 @@ export class Auth {
   signup(data: signUp): Observable<any> {
     return this.apiService.post('auth/signup', data).pipe(
       tap((response: any) => {
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
         // Lưu token sau khi signup thành công
         if (response.accessToken) {
           this.tokenService.setAccessToken(response.accessToken);
@@ -25,6 +28,9 @@ export class Auth {
     return this.apiService.post('auth/login', { username, password }).pipe(
       tap((response: any) => {
         // Lưu token sau khi login thành công
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
         if (response.accessToken) {
           this.tokenService.setAccessToken(response.accessToken);
         }
@@ -32,11 +38,13 @@ export class Auth {
     );
   }
 
-  logout(): void {
-    // Xóa tokens khỏi localStorage
-    this.tokenService.clearTokens();
-    // Có thể thêm logic gọi API logout nếu cần
-    // return this.apiService.post('auth/logout', {});
+  logout(): Observable<any> {
+    return this.apiService.post('auth/logout', {}).pipe(
+      tap(() => {
+        this.tokenService.clearTokens();
+        console.log('User logged out successfully');
+      })
+    );
   }
 
   refreshToken(): Observable<any> {

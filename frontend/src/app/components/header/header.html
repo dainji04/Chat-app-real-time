@@ -18,7 +18,7 @@
             <li class="header__nav-item profile">
                 <img (click)="toggleProfile()" [src]="user.avatar" [alt]="user.username + ' avatar'" class="avatar">
                 <!-- Profile Menu -->
-                <div *ngIf="isProfile" class="profile__menu">
+                <div *ngIf="isProfile" class="profile__menu" appClickOutside (appClickOutside)="isProfile = false">
                     <div class="profile__user-info">
                         <img [src]="user.avatar" class="avatar" alt="avatar_user">
                         <div>

@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Router, RouterModule } from '@angular/router';
+import { ClickOutside } from '../../click-outside';
 
 @Component({
   selector: 'app-header',
-  imports: [FormsModule, CommonModule, RouterModule],
+  imports: [FormsModule, CommonModule, RouterModule, ClickOutside],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -20,7 +21,6 @@ export class Header implements OnInit {
 
   toggleSearch() {
     this.isSearching = !this.isSearching;
-    console.log(`Search toggled: ${this.isSearching}`);
   }
 
   toggleProfile() {

@@ -1,5 +1,5 @@
-@import "variables";
-@import "theme";
+@use "variables" as *;
+@use "theme" as *;
 
 * {
   box-sizing: border-box;

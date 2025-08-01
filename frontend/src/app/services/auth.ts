@@ -21,8 +21,8 @@ export class Auth {
     );
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this.apiService.post('auth/login', { email, password }).pipe(
+  login(username: string, password: string): Observable<any> {
+    return this.apiService.post('auth/login', { username, password }).pipe(
       tap((response: any) => {
         // Lưu token sau khi login thành công
         if (response.accessToken) {

@@ -1,4 +1,6 @@
 // Utility classes for theming
+@use "variables" as *;
+@use "theme" as *;
 
 // Text colors
 .text-primary {

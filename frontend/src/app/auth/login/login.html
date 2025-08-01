@@ -1,0 +1,61 @@
+<div class="container">
+    <div class="auth">
+        <app-auth-intro [title]="title" [description]="description"></app-auth-intro>
+
+        <div *ngIf="errorMessage" class="alert alert-error">
+            {{ errorMessage }}
+        </div>
+
+        <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()">
+            <!-- username -->
+            <div class="form__group">
+                <label for="username" class="form__label">Username</label>
+                <input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
+                    maxlength="10">
+                <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
+                    <div *ngIf="formData.get('username')?.errors?.['minlength']">
+                        Username must be at least 5 characters long.
+                    </div>
+                    <div *ngIf="formData.get('username')?.errors?.['maxlength']">
+                        Username must be at most 10 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <!-- password -->
+            <div class="form__group">
+                <label for="password" class="form__label">Password</label>
+                <input type="password" id="password" class="form__input" formControlName="password" required
+                    minlength="6">
+                <div *ngIf="formData.get('password')?.invalid && (formData.get('password')?.dirty ||
+        formData.get('password')?.touched)" class="alert alert-warning">
+                    <div *ngIf="formData.get('password')?.errors?.['required']">Password is required.</div>
+                    <div *ngIf="formData.get('password')?.errors?.['minlength']">
+                        Password must be at least 6 characters long.
+                    </div>
+                </div>
+            </div>
+            <div class="form__submit">
+                <app-primary-button [text]="'Login'" class="form__submit" type="submit"></app-primary-button>
+            </div>
+        </form>
+
+        <div class="auth__footer">
+            <p class="auth__footer-text">You don't have an account?</p>
+            <a class="auth__footer-link" routerLink="/auth/sign-up">sign up</a>
+        </div>
+
+        <div class="or">
+            <div class="or__line"></div>
+            <span class="or__text">or</span>
+            <div class="or__line"></div>
+        </div>
+
+        <div class="social-auth">
+            <app-primary-button [text]="'Login with Google'"></app-primary-button>
+        </div>
+    </div>
+
+</div>

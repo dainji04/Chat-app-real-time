@@ -6,37 +6,41 @@ import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
 const appRoutes: Routes = [
-  {
-    path: '',
-    component: MainLayout,
-    children: [
-      {
+    {
         path: '',
-        component: Home,
-      },
-    ],
-    canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
-  },
-  {
-    path: 'auth',
-    component: AuthLayout,
-    children: [
-      {
-        path: 'login',
-        loadComponent: () => import('./login/login').then((c) => c.Login),
-      },
-      {
-        path: 'sign-up',
-        loadComponent: () => import('./signup/signup').then((c) => c.Signup),
-      },
-    ],
-    canActivate: [guestGuard],
-  },
-  {
-    path: '**',
-    redirectTo: '',
-    pathMatch: 'full',
-  },
+        component: MainLayout,
+        children: [
+            {
+                path: '',
+                component: Home,
+                canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+            },
+        ],
+    },
+    {
+        path: 'auth',
+        component: AuthLayout,
+
+        children: [
+            {
+                path: 'login',
+                loadComponent: () =>
+                    import('./auth/login/login').then((c) => c.Login),
+                canActivate: [guestGuard],
+            },
+            {
+                path: 'sign-up',
+                loadComponent: () =>
+                    import('./auth/signup/signup').then((c) => c.Signup),
+                canActivate: [guestGuard],
+            },
+        ],
+    },
+    {
+        path: '**',
+        redirectTo: '',
+        pathMatch: 'full',
+    },
 ];
 
 export const routes: Routes = appRoutes;

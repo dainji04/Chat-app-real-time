@@ -12,7 +12,7 @@
       <div class="form__group">
         <label for="firstName" class="form__label">firstName</label>
         <input type="text" id="firstName" class="form__input" formControlName="firstName" required minlength="2"
-          maxlength="20">
+          maxlength="20" autocomplete="off">
 
         <!-- show errors -->
         <div
@@ -29,7 +29,7 @@
       <div class="form__group">
         <label for="lastName" class="form__label">lastName</label>
         <input type="text" id="lastName" class="form__input" formControlName="lastName" required minlength="2"
-          maxlength="20">
+          maxlength="20" autocomplete="off">
 
         <!-- show errors -->
         <div
@@ -46,7 +46,7 @@
       <div class="form__group">
         <label for="username" class="form__label">Username</label>
         <input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
-          maxlength="10">
+          maxlength="10" autocomplete="off">
         <div
           *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
           class="alert alert-warning">
@@ -63,7 +63,7 @@
       <!-- email -->
       <div class="form__group">
         <label for="email" class="form__label">Email</label>
-        <input type="email" id="email" class="form__input" formControlName="email" required email>
+        <input type="email" id="email" class="form__input" formControlName="email" required email autocomplete="off">
         <div *ngIf="formData.get('email')?.invalid && (formData.get('email')?.dirty || formData.get('email')?.touched)"
           class="alert alert-warning">
           <div *ngIf="formData.get('email')?.errors?.['required']">Email is required.</div>
@@ -76,7 +76,8 @@
       <!-- password -->
       <div class="form__group">
         <label for="password" class="form__label">Password</label>
-        <input type="password" id="password" class="form__input" formControlName="password" required minlength="6">
+        <input type="password" id="password" class="form__input" formControlName="password" required minlength="6"
+          autocomplete="off">
         <div *ngIf="formData.get('password')?.invalid && (formData.get('password')?.dirty ||
           formData.get('password')?.touched)" class="alert alert-warning">
           <div *ngIf="formData.get('password')?.errors?.['required']">Password is required.</div>
@@ -86,7 +87,8 @@
         </div>
       </div>
       <div class="form__submit">
-        <app-primary-button [text]="'Sign Up'" class="form__submit" type="submit"></app-primary-button>
+        <app-primary-button [disabled]="loading" [text]="loading ? 'Signing Up...' : 'Sign Up'" class="form__submit"
+          type="submit"></app-primary-button>
       </div>
     </form>
 

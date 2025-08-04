@@ -11,7 +11,7 @@
             <div class="form__group">
                 <label for="username" class="form__label">Username</label>
                 <input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
-                    maxlength="10">
+                    maxlength="10" autocomplete="off">
                 <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
                     class="alert alert-warning">
                     <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
@@ -28,7 +28,7 @@
             <div class="form__group">
                 <label for="password" class="form__label">Password</label>
                 <input type="password" id="password" class="form__input" formControlName="password" required
-                    minlength="6">
+                    minlength="6" autocomplete="off">
                 <div *ngIf="formData.get('password')?.invalid && (formData.get('password')?.dirty ||
         formData.get('password')?.touched)" class="alert alert-warning">
                     <div *ngIf="formData.get('password')?.errors?.['required']">Password is required.</div>
@@ -38,7 +38,8 @@
                 </div>
             </div>
             <div class="form__submit">
-                <app-primary-button [text]="'Login'" class="form__submit" type="submit"></app-primary-button>
+                <app-primary-button [disabled]="loading" [text]="loading ? 'Loading...' : 'Login'" class="form__submit"
+                    type="submit"></app-primary-button>
             </div>
         </form>
 

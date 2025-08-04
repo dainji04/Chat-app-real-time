@@ -18,11 +18,11 @@ export class Settings implements OnInit {
   user: any = {};
   formData!: FormGroup;
 
-  isUpdating: boolean = false;
-
   error!: string;
 
-  formattedDateOfBirth: string = '';
+  selectedFile: boolean = false;
+  uploading: boolean = false;
+  file!: File;
 
   constructor(private userService: User, private fb: FormBuilder) {}
 
@@ -66,10 +66,41 @@ export class Settings implements OnInit {
     });
   }
 
+  onFileSelected($event: any): void {
+    this.selectedFile = true;
+    this.file = $event.target.files[0];
+    if (this.file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.user.avatar = e.target.result;
+      };
+      reader.readAsDataURL(this.file);
+    }
+  }
+
+  onUpload(): void {
+    this.uploading = true;
+    this.userService.uploadAvatar(this.file).subscribe({
+      next: (res) => {
+        alert('Profile updated successfully');
+        this.user.avatar = res.avatarUrl;
+        localStorage.setItem('user', JSON.stringify(this.user));
+        this.selectedFile = false;
+        this.uploading = false;
+      },
+      error: (err) => {
+        console.error('An error occurred while updating profile', err);
+        this.error =
+          err.error.message || 'An error occurred while updating profile';
+        this.selectedFile = false;
+        this.uploading = false;
+      },
+    });
+  }
+
   onSubmit(): void {
     if (this.formData.invalid) {
       alert('Please fill in all required fields correctly');
-      this.isUpdating = false;
       return;
     }
 
@@ -97,7 +128,6 @@ export class Settings implements OnInit {
     console.log('Update User Data:', updateUser);
     if (Object.keys(updateUser).length === 0) {
       alert('No changes made');
-      this.isUpdating = false;
       return;
     }
 
@@ -107,13 +137,11 @@ export class Settings implements OnInit {
         alert('Profile updated successfully');
         this.user = { ...this.user, ...updateUser };
         localStorage.setItem('user', JSON.stringify(this.user));
-        this.isUpdating = false;
       },
       error: (err) => {
         console.error('An error occurred while updating profile', err);
         this.error =
           err.error.message || 'An error occurred while updating profile';
-        this.isUpdating = false;
       },
     });
   }

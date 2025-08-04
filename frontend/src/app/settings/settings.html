@@ -5,6 +5,25 @@
             <p class="change-info__description">Manage your account settings and preferences.</p>
         </div>
 
+        <div class="change-avatar">
+            <h1 class="change-info__title">Change Avatar</h1>
+            <p class="change-info__description">Update your profile picture.</p>
+
+            <div *ngIf="error" class="alert alert-error">
+                {{ error }}
+            </div>
+
+            <div class="avatar">
+                <img [src]="user?.avatar || 'assets/default-avatar.png'" alt="User Avatar" class="avatar__image">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" class="avatar__input">
+            </div>
+            <div class="upload-btn">
+                <button (click)="onUpload()" [disabled]="!selectedFile || uploading" class="avatar__button">
+                    {{uploading ? 'uploading...' : 'Upload Avatar'}}
+                </button>
+            </div>
+        </div>
+
         <div class="change-info__basic">
             <h1 class="change-info__title">Basic Information</h1>
             <p>Manage your basic information: username, first name, last name, and bio.</p>

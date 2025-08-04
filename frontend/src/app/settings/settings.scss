@@ -1,3 +1,59 @@
+@use "../../styles/variables" as *;
+
+.change-avatar {
+  margin-bottom: 50px;
+
+  .avatar {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+
+    & img {
+      object-fit: cover;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      margin-bottom: 30px;
+      background-color: #f0f0f0;
+      border-radius: 50%;
+    }
+    input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+  }
+  .upload-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    button {
+      font-style: 16px;
+      padding: 10px 25px;
+      background-color: $primary-color;
+      border-radius: 12px;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $primary-color;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      
+    }
+  }
+}
+
 .settings {
   max-width: 800px;
   margin: 0 auto;

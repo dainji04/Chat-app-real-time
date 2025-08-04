@@ -74,8 +74,6 @@ export class Signup {
     this.loading = true;
     this.errorMessage = '';
     if (this.formData.valid) {
-      console.log('Form Data:', this.formData.value);
-
       this.authService.signup(this.formData.value).subscribe({
         next: (response: any) => {
           console.log('Signup successful', response);

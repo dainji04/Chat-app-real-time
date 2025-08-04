@@ -1,77 +1,121 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { User } from '../services/user';
 
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings implements OnInit {
-  username!: string;
-  bio!: string;
-  firstName!: string;
-  lastName!: string;
   user: any = {};
+  formData!: FormGroup;
 
   isUpdating: boolean = false;
 
-  constructor(private userService: User) {}
+  error!: string;
+
+  constructor(private userService: User, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.username = this.user.username || '';
-    this.bio = this.user.bio || '';
-    this.firstName = this.user.firstName || '';
-    this.lastName = this.user.lastName || '';
+    this.formData = this.fb.group({
+      username: [
+        this.user.username || '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(10),
+        ],
+      ],
+      firstName: [
+        this.user.firstName || '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(20),
+        ],
+      ],
+      lastName: [
+        this.user.lastName || '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(20),
+        ],
+      ],
+      bio: [this.user.bio || '', [Validators.maxLength(200)]],
+      phone: [
+        this.user.phone || '',
+        [Validators.required, Validators.pattern(/^\d{9,11}$/)],
+      ],
+      dateOfBirth: [
+        this.user.dateOfBirth || '',
+        [Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
+      ],
+    });
   }
 
-  update(): void {
-    if (!this.isUpdating) {
-      this.isUpdating = true;
-    } else {
-      if (!this.username || !this.firstName || !this.lastName) {
-        alert('Please fill in all fields');
-        return;
-      }
-      const updateUser: any = {};
-      if (this.username.trim() != this.user.username) {
-        updateUser['username'] = this.username.trim();
-      }
-      if (this.bio.trim() != this.user.bio) {
-        updateUser['bio'] = this.bio.trim();
-      }
-      if (this.firstName.trim() != this.user.firstName) {
-        updateUser['firstName'] = this.firstName.trim();
-      }
-      if (this.lastName.trim() != this.user.lastName) {
-        updateUser['lastName'] = this.lastName.trim();
-      }
-      if (Object.keys(updateUser).length === 0) {
-        alert('No changes made');
-        this.isUpdating = false;
-        return;
-      }
-
-      // call api update
-      this.userService.updateProfile(updateUser).subscribe({
-        next: (res) => {
-          alert('Profile updated successfully');
-          this.user = { ...this.user, ...updateUser };
-          localStorage.setItem('user', JSON.stringify(this.user));
-          this.isUpdating = false;
-        },
-        error: (err) => {
-          console.error(err);
-          alert('An error occurred while updating profile');
-          this.isUpdating = false;
-        },
-      });
+  onSubmit(): void {
+    if (this.formData.invalid) {
+      alert('Please fill in all required fields correctly');
+      this.isUpdating = false;
+      return;
     }
-  }
 
+    const updateUser: any = {};
+    const formValues = this.formData.value;
+
+    if (formValues.username !== this.user.username) {
+      updateUser['username'] = formValues.username;
+    }
+    if (formValues.firstName !== this.user.firstName) {
+      updateUser['firstName'] = formValues.firstName;
+    }
+    if (formValues.lastName !== this.user.lastName) {
+      updateUser['lastName'] = formValues.lastName;
+    }
+    if (formValues.bio !== this.user.bio) {
+      updateUser['bio'] = formValues.bio;
+    }
+    if (formValues.phone !== this.user.phone) {
+      updateUser['phone'] = formValues.phone;
+    }
+    if (formValues.dateOfBirth !== this.user.dateOfBirth) {
+      updateUser['dateOfBirth'] = formValues.dateOfBirth;
+    }
+    console.log('Update User Data:', updateUser);
+    if (Object.keys(updateUser).length === 0) {
+      alert('No changes made');
+      this.isUpdating = false;
+      return;
+    }
+
+    // call api update
+    this.userService.updateProfile(updateUser).subscribe({
+      next: (res) => {
+        alert('Profile updated successfully');
+        this.user = { ...this.user, ...updateUser };
+        localStorage.setItem('user', JSON.stringify(this.user));
+        this.isUpdating = false;
+      },
+      error: (err) => {
+        console.error('An error occurred while updating profile', err);
+        this.error =
+          err.error.message || 'An error occurred while updating profile';
+        this.isUpdating = false;
+      },
+    });
+  }
   // Add methods to handle settings functionality
   saveSettings(): void {
     // Logic to save user settings

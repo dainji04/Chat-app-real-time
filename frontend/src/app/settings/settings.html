@@ -8,24 +8,114 @@
         <div class="change-info__basic">
             <h1 class="change-info__title">Basic Information</h1>
             <p>Manage your basic information: username, first name, last name, and bio.</p>
-            <div class="change-info__form">
-                <label for="username">Username:</label>
-                <input [disabled]="!isUpdating" [(ngModel)]="username" type="text" id="username" name="username">
 
-                <label for="firstName">First Name:</label>
-                <input [disabled]="!isUpdating" [(ngModel)]="firstName" type="text" id="firstName" name="firstName">
 
-                <label for="lastName">Last Name:</label>
-                <input [disabled]="!isUpdating" [(ngModel)]="lastName" type="text" id="lastName" name="lastName">
-
-                <label for="bio">Bio:</label>
-                <textarea [disabled]="!isUpdating" [(ngModel)]="bio" id="bio" name="bio" rows="4"></textarea>
-
-                <div class="button">
-                    <button (click)="update()">{{ isUpdating ? 'Update' : 'Edit' }}</button>
-                    <button (click)="isUpdating=false" class="cancel-btn" *ngIf="isUpdating">Cancel</button>
-                </div>
+            <div *ngIf="error" class="alert alert-error">
+                {{ error }}
             </div>
+            <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()" class="change-info__form">
+                <div class="change-info__form-group">
+                    <label for="username">Username:</label>
+                    <input formControlName="username" type="text" id="username" name="username"
+                        [value]="user?.username || ''">
+
+                    <!-- show errors -->
+                    <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
+                        class="alert alert-warning">
+                        <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
+                        <div *ngIf="formData.get('username')?.errors?.['minlength']">
+                            Username must be at least 5 characters long.
+                        </div>
+                        <div *ngIf="formData.get('username')?.errors?.['maxlength']">
+                            Username cannot be more than 10 characters long.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="change-info__form-group">
+                    <label for="firstName">First Name:</label>
+                    <input formControlName="firstName" type="text" id="firstName" name="firstName"
+                        [value]="user?.firstName || ''" required minlength="2" maxlength="20">
+
+                    <!-- show errors -->
+                    <div *ngIf="formData.get('firstname')?.invalid && (formData.get('firstname')?.dirty || formData.get('firstname')?.touched)"
+                        class="alert alert-warning">
+                        <div *ngIf="formData.get('firstname')?.errors?.['required']">firstname is required.</div>
+                        <div *ngIf="formData.get('firstname')?.errors?.['minlength']">
+                            firstname must be at least 2 characters long.
+                        </div>
+                        <div *ngIf="formData.get('firstname')?.errors?.['maxlength']">
+                            firstname cannot be more than 10 characters long.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="change-info__form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input formControlName="lastName" type="text" id="lastName" name="lastName"
+                        [value]="user?.lastName || ''" required minlength="2" maxlength="20">
+
+                    <!-- show errors -->
+                    <div *ngIf="formData.get('lastName')?.invalid && (formData.get('lastName')?.dirty || formData.get('lastName')?.touched)"
+                        class="alert alert-warning">
+                        <div *ngIf="formData.get('lastName')?.errors?.['required']">lastName is required.</div>
+                        <div *ngIf="formData.get('lastName')?.errors?.['minlength']">
+                            lastName must be at least 5 characters long.
+                        </div>
+                        <div *ngIf="formData.get('lastName')?.errors?.['maxlength']">
+                            lastName cannot be more than 10 characters long.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="change-info__form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input formControlName="phone" type="text" id="phone" name="phone" [value]="user?.phone || ''"
+                        required minlength="10" maxlength="10" placeholder=" Enter your phone number"
+                        autocomplete="off">
+
+                    <!-- show errors -->
+                    <div *ngIf="formData.get('phone')?.invalid && (formData.get('phone')?.dirty || formData.get('phone')?.touched)"
+                        class="alert alert-warning">
+                        <div *ngIf="formData.get('phone')?.errors?.['required']">phone number is required.</div>
+                        <div *ngIf="formData.get('phone')?.errors?.['pattern']">
+                            phone number must be exactly 10 digits long
+                        </div>
+                    </div>
+                </div>
+
+                <div class="change-info__form-group">
+                    <label for="dateOfBirth">Date of Birth:</label>
+                    <input formControlName="dateOfBirth" type="date" id="dateOfBirth" name="dateOfBirth"
+                        [value]="user?.dateOfBirth || ''">
+
+                    <!-- show errors -->
+                    <div *ngIf="formData.get('dateOfBirth')?.invalid && (formData.get('dateOfBirth')?.dirty || formData.get('dateOfBirth')?.touched)"
+                        class="alert alert-warning">
+                        <div *ngIf="formData.get('dateOfBirth')?.errors?.['pattern']">
+                            date of birth must be a valid date.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="change-info__form-group">
+                    <label for="bio">Bio:</label>
+                    <textarea formControlName="bio" id="bio" name="bio" rows="4" [value]="user?.bio || ''"
+                        maxlength="200"></textarea>
+
+                    <!-- show errors -->
+                    <div *ngIf="formData.get('bio')?.invalid && (formData.get('bio')?.dirty || formData.get('bio')?.touched)"
+                        class="alert alert-warning">
+                        <div *ngIf="formData.get('bio')?.errors?.['maxlength']">
+                            bio cannot be more than 200 characters long.
+                        </div>
+                    </div>
+                </div>
+
+                <div class=" button">
+                    <button type="submit">Update</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

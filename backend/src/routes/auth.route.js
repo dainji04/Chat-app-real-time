@@ -1,8 +1,8 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller.js');
 const {
-  verifyAccessToken,
-  verifyRefreshToken,
+    verifyAccessToken,
+    verifyRefreshToken,
 } = require('../middlewares/auth.middleware.js');
 
 const router = express.Router();
@@ -173,9 +173,9 @@ router.post('/refresh-token', verifyRefreshToken, authController.refreshToken);
  *         description: Thay đổi mật khẩu thành công
  */
 router.post(
-  '/change-password',
-  verifyAccessToken,
-  authController.changePassword
+    '/change-password',
+    verifyAccessToken,
+    authController.changePassword
 );
 
 /**
@@ -200,29 +200,6 @@ router.post(
  *         description: Gửi email reset thành công
  */
 router.post('/forgot-password', authController.forgotPassword);
-
-/**
- * @swagger
- * /api/auth/verify-reset-password:
- *   post:
- *     summary: Xác thực token reset password
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - token
- *             properties:
- *               token:
- *                 type: string
- *     responses:
- *       200:
- *         description: Token hợp lệ
- */
-router.post('/verify-reset-password', authController.verifyResetToken);
 
 /**
  * @swagger

@@ -82,6 +82,7 @@ class UserController {
                         message: 'You must be at least 18 years old',
                     });
                 }
+                updated.dateOfBirth = new Date(dateOfBirth);
             }
 
             const newUser = await User.findByIdAndUpdate(

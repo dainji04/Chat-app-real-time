@@ -39,12 +39,8 @@ export class Auth {
   }
 
   logout(): Observable<any> {
-    return this.apiService.post('auth/logout', {}).pipe(
-      tap(() => {
-        this.tokenService.clearTokens();
-        console.log('User logged out successfully');
-      })
-    );
+    this.tokenService.clearTokens();
+    return this.apiService.post('auth/logout', {});
   }
 
   refreshToken(): Observable<any> {

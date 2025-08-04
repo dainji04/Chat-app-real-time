@@ -17,7 +17,7 @@
                 <div class="change-info__form-group">
                     <label for="username">Username:</label>
                     <input formControlName="username" type="text" id="username" name="username"
-                        [value]="user?.username || ''">
+                        [value]="user?.username">
 
                     <!-- show errors -->
                     <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
@@ -35,7 +35,7 @@
                 <div class="change-info__form-group">
                     <label for="firstName">First Name:</label>
                     <input formControlName="firstName" type="text" id="firstName" name="firstName"
-                        [value]="user?.firstName || ''" required minlength="2" maxlength="20">
+                        [value]="user?.firstName" required minlength="2" maxlength="20">
 
                     <!-- show errors -->
                     <div *ngIf="formData.get('firstname')?.invalid && (formData.get('firstname')?.dirty || formData.get('firstname')?.touched)"
@@ -52,8 +52,8 @@
 
                 <div class="change-info__form-group">
                     <label for="lastName">Last Name:</label>
-                    <input formControlName="lastName" type="text" id="lastName" name="lastName"
-                        [value]="user?.lastName || ''" required minlength="2" maxlength="20">
+                    <input formControlName="lastName" type="text" id="lastName" name="lastName" [value]="user?.lastName"
+                        required minlength="2" maxlength="20">
 
                     <!-- show errors -->
                     <div *ngIf="formData.get('lastName')?.invalid && (formData.get('lastName')?.dirty || formData.get('lastName')?.touched)"
@@ -70,9 +70,8 @@
 
                 <div class="change-info__form-group">
                     <label for="phone">Phone Number:</label>
-                    <input formControlName="phone" type="text" id="phone" name="phone" [value]="user?.phone || ''"
-                        required minlength="10" maxlength="10" placeholder=" Enter your phone number"
-                        autocomplete="off">
+                    <input formControlName="phone" type="text" id="phone" name="phone" [value]="user?.phone" required
+                        minlength="10" maxlength="10" placeholder=" Enter your phone number" autocomplete="off">
 
                     <!-- show errors -->
                     <div *ngIf="formData.get('phone')?.invalid && (formData.get('phone')?.dirty || formData.get('phone')?.touched)"
@@ -87,7 +86,7 @@
                 <div class="change-info__form-group">
                     <label for="dateOfBirth">Date of Birth:</label>
                     <input formControlName="dateOfBirth" type="date" id="dateOfBirth" name="dateOfBirth"
-                        [value]="user?.dateOfBirth || ''">
+                        [value]="user?.dateOfBirth">
 
                     <!-- show errors -->
                     <div *ngIf="formData.get('dateOfBirth')?.invalid && (formData.get('dateOfBirth')?.dirty || formData.get('dateOfBirth')?.touched)"
@@ -100,7 +99,7 @@
 
                 <div class="change-info__form-group">
                     <label for="bio">Bio:</label>
-                    <textarea formControlName="bio" id="bio" name="bio" rows="4" [value]="user?.bio || ''"
+                    <textarea formControlName="bio" id="bio" name="bio" rows="4" [value]="user?.bio"
                         maxlength="200"></textarea>
 
                     <!-- show errors -->

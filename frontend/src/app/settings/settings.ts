@@ -1,10 +1,8 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -12,7 +10,7 @@ import { User } from '../services/user';
 
 @Component({
   selector: 'app-settings',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, DatePipe],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -24,10 +22,13 @@ export class Settings implements OnInit {
 
   error!: string;
 
+  formattedDateOfBirth: string = '';
+
   constructor(private userService: User, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || '{}');
+
     this.formData = this.fb.group({
       username: [
         this.user.username || '',
@@ -59,7 +60,7 @@ export class Settings implements OnInit {
         [Validators.required, Validators.pattern(/^\d{9,11}$/)],
       ],
       dateOfBirth: [
-        this.user.dateOfBirth || '',
+        new Date(this.user.dateOfBirth).toISOString().split('T')[0] || '',
         [Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
       ],
     });

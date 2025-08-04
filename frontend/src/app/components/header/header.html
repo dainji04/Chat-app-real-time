@@ -9,12 +9,6 @@
                     </a>
                 </h1>
             </li>
-            <div class="header__search">
-                <i (click)="toggleSearch()" class="fa-solid fa-magnifying-glass"></i>
-                <div class="header__search-box" [class]="{'isSearching': isSearching}">
-                    <input class="header__search-input" type="text" [(ngModel)]="search">
-                </div>
-            </div>
             <li class="header__nav-item profile">
                 <img (click)="toggleProfile()" [src]="user.avatar" [alt]="user.username + ' avatar'" class="avatar">
                 <!-- Profile Menu -->

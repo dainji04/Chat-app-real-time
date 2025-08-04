@@ -1,8 +1,9 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })

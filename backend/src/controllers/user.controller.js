@@ -48,21 +48,13 @@ class UserController {
     async updateProfile(req, res) {
         try {
             const user = req.user; // middleware should set req.user
-            const {
-                firstName,
-                lastName,
-                username,
-                email,
-                bio,
-                phone,
-                dateOfBirth,
-            } = req.body;
+            const { firstName, lastName, username, bio, phone, dateOfBirth } =
+                req.body;
 
             if (
                 !firstName &&
                 !lastName &&
                 !username &&
-                !email &&
                 !bio &&
                 !phone &&
                 !dateOfBirth
@@ -75,9 +67,8 @@ class UserController {
             if (firstName) updated.firstName = firstName.trim();
             if (lastName) updated.lastName = lastName.trim();
             if (username) updated.username = username.trim();
-            if (email) updated.email = email.trim();
             if (bio) updated.bio = bio.trim();
-            if (phone) updated.phone = phone.trim();
+            if (phone) updated.phone = phone;
             if (dateOfBirth) {
                 const dateDiff = new Date() - new Date(dateOfBirth);
                 if (dateDiff < 0) {

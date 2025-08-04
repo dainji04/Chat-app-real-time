@@ -3,7 +3,7 @@ import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Router, RouterModule } from '@angular/router';
-import { ClickOutside } from '../../click-outside';
+import { ClickOutside } from '../../directives/click-outside';
 
 @Component({
   selector: 'app-header',

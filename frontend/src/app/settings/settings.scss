@@ -1,8 +1,21 @@
 @use "../../styles/variables" as *;
 
-.change-avatar {
-  margin-bottom: 50px;
+.primary-btn {
+  font-style: 16px;
+  padding: 10px 25px;
+  background-color: $primary-color;
+  border-radius: 12px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 
+  &:hover {
+    background-color: $primary-color;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.change-avatar {
   .avatar {
     margin-top: 20px;
     width: 100%;
@@ -34,23 +47,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    button {
-      font-style: 16px;
-      padding: 10px 25px;
-      background-color: $primary-color;
-      border-radius: 12px;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-
-      &:hover {
-        background-color: $primary-color;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-
-      
-    }
   }
 }
 
@@ -61,6 +57,30 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .menu {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+
+    li {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+
+      a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        &:hover {
+          color: #0056b3;
+        }
+      }
+    }
+  }
 }
 
 .change-info {
@@ -147,42 +167,21 @@
     .button {
       display: flex;
       align-items: center;
-      gap: 30px;
+      display: flex;
+      align-items: center;
+    }
 
-      button {
-        padding: 0.75rem 1.5rem;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        align-self: flex-start;
-        margin-top: 1rem;
+    .cancel-btn {
+      background-color: #f8f9fa;
+      color: #333;
+      border: 1px solid #ddd;
 
-        &:hover {
-          background-color: #0056b3;
-        }
-
-        &:active {
-          transform: translateY(1px);
-        }
+      &:hover {
+        background-color: #e2e6ea;
       }
 
-      .cancel-btn {
-        background-color: #f8f9fa;
-        color: #333;
-        border: 1px solid #ddd;
-
-        &:hover {
-          background-color: #e2e6ea;
-        }
-
-        &:active {
-          transform: translateY(1px);
-        }
+      &:active {
+        transform: translateY(1px);
       }
     }
   }

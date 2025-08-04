@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Api } from './api';
 import { Token } from './token';
 import { signUp } from '../types/auth';
-import { Observable, tap } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +43,26 @@ export class Auth {
     return this.apiService.post('auth/logout', {});
   }
 
+  // change password
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.apiService.post('auth/change-password', {
+      oldPassword,
+      newPassword,
+    });
+  }
+
+  //reset password
+  forgotPassword(email: string): Observable<any> {
+    return this.apiService.post('auth/forgot-password', { email });
+  }
+  
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.apiService.post('auth/reset-password', {
+      token,
+      newPassword,
+    });
+  }
+
   refreshToken(): Observable<any> {
     try {
       return this.apiService.post('auth/refresh-token', {}).pipe(
@@ -59,35 +79,48 @@ export class Auth {
     }
   }
 
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
     // Check if user has a valid access token
     if (this.tokenService.hasToken() && !this.tokenService.isTokenExpired()) {
       return true;
-    } else {
-      this.refreshToken().subscribe({
-        next: (response) => {
-          if (response.accessToken) {
-            this.tokenService.setAccessToken(response.accessToken);
-          }
-          console.log('Token refreshed successfully', response);
-          return true;
-        },
-        error: () => {
-          // Nếu refresh token không thành công, xóa token và trả về false
-          this.logout();
-          return false;
-        },
-      });
     }
+    // else {
+    //   await this.refreshToken().subscribe({
+    //     next: (response) => {
+    //       if (response.accessToken) {
+    //         this.tokenService.setAccessToken(response.accessToken);
+    //       }
+    //       console.log('Token refreshed successfully', response);
+    //       return true;
+    //     },
+    //     error: () => {
+    //       // Nếu refresh token không thành công, xóa token và trả về false
+    //       this.logout();
+    //       return false;
+    //     },
+    //   });
+    //   return false;
+    // }
 
-    return false;
+    try {
+      const response = await firstValueFrom(this.refreshToken());
+      if (response.accessToken) {
+        this.tokenService.setAccessToken(response.accessToken);
+        console.log('Token refreshed successfully', response);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.logout();
+      return false;
+    }
   }
 
   getToken(): string | null {
     return this.tokenService.getAccessToken();
   }
 
-  isLoggedIn(): boolean {
-    return this.isAuthenticated();
+  async isLoggedIn(): Promise<boolean> {
+    return await this.isAuthenticated();
   }
 }

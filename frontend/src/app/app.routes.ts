@@ -53,6 +53,16 @@ const appRoutes: Routes = [
     ],
   },
   {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./reset-password/reset-password').then((c) => c.ResetPassword),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./forgot-password/forgot-password').then((c) => c.ForgotPassword),
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full',

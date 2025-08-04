@@ -1,139 +1,219 @@
 <div class="settings">
-    <div class="change-info">
-        <div class="change-info__head">
-            <h2 class="change-info__title">Change User Information</h2>
-            <p class="change-info__description">Manage your account settings and preferences.</p>
+    <div class="change-info__head">
+        <h2 class="change-info__title">Change User Information</h2>
+        <p class="change-info__description">Manage your account settings and preferences.</p>
+        <ul class="menu">
+            <li><a (click)="scrollTo('change-avatar')">1. change avatar</a></li>
+            <li><a (click)="scrollTo('change-info')">2. change basics information</a></li>
+            <li><a (click)="scrollTo('change-password')">3. change password</a></li>
+            <li><a (click)="scrollTo('reset-password')">4. reset password</a></li>
+        </ul>
+    </div>
+
+
+    <div id="change-avatar" class="change-avatar">
+        <h1 class="change-info__title">Change Avatar</h1>
+        <p class="change-info__description">Update your profile picture.</p>
+
+        <div *ngIf="errorAvatar" class="alert alert-error">
+            {{ errorAvatar }}
         </div>
 
-        <div class="change-avatar">
-            <h1 class="change-info__title">Change Avatar</h1>
-            <p class="change-info__description">Update your profile picture.</p>
-
-            <div *ngIf="error" class="alert alert-error">
-                {{ error }}
-            </div>
-
-            <div class="avatar">
-                <img [src]="user?.avatar || 'assets/default-avatar.png'" alt="User Avatar" class="avatar__image">
-                <input type="file" (change)="onFileSelected($event)" accept="image/*" class="avatar__input">
-            </div>
-            <div class="upload-btn">
-                <button (click)="onUpload()" [disabled]="!selectedFile || uploading" class="avatar__button">
-                    {{uploading ? 'uploading...' : 'Upload Avatar'}}
-                </button>
-            </div>
+        <div class="avatar">
+            <img [src]="user?.avatar || 'assets/default-avatar.png'" alt="User Avatar" class="avatar__image">
+            <input type="file" (change)="onFileSelected($event)" accept="image/*" class="avatar__input">
         </div>
-
-        <div class="change-info__basic">
-            <h1 class="change-info__title">Basic Information</h1>
-            <p>Manage your basic information: username, first name, last name, and bio.</p>
-
-
-            <div *ngIf="error" class="alert alert-error">
-                {{ error }}
-            </div>
-            <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()" class="change-info__form">
-                <div class="change-info__form-group">
-                    <label for="username">Username:</label>
-                    <input formControlName="username" type="text" id="username" name="username"
-                        [value]="user?.username">
-
-                    <!-- show errors -->
-                    <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
-                        class="alert alert-warning">
-                        <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
-                        <div *ngIf="formData.get('username')?.errors?.['minlength']">
-                            Username must be at least 5 characters long.
-                        </div>
-                        <div *ngIf="formData.get('username')?.errors?.['maxlength']">
-                            Username cannot be more than 10 characters long.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="change-info__form-group">
-                    <label for="firstName">First Name:</label>
-                    <input formControlName="firstName" type="text" id="firstName" name="firstName"
-                        [value]="user?.firstName" required minlength="2" maxlength="20">
-
-                    <!-- show errors -->
-                    <div *ngIf="formData.get('firstname')?.invalid && (formData.get('firstname')?.dirty || formData.get('firstname')?.touched)"
-                        class="alert alert-warning">
-                        <div *ngIf="formData.get('firstname')?.errors?.['required']">firstname is required.</div>
-                        <div *ngIf="formData.get('firstname')?.errors?.['minlength']">
-                            firstname must be at least 2 characters long.
-                        </div>
-                        <div *ngIf="formData.get('firstname')?.errors?.['maxlength']">
-                            firstname cannot be more than 10 characters long.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="change-info__form-group">
-                    <label for="lastName">Last Name:</label>
-                    <input formControlName="lastName" type="text" id="lastName" name="lastName" [value]="user?.lastName"
-                        required minlength="2" maxlength="20">
-
-                    <!-- show errors -->
-                    <div *ngIf="formData.get('lastName')?.invalid && (formData.get('lastName')?.dirty || formData.get('lastName')?.touched)"
-                        class="alert alert-warning">
-                        <div *ngIf="formData.get('lastName')?.errors?.['required']">lastName is required.</div>
-                        <div *ngIf="formData.get('lastName')?.errors?.['minlength']">
-                            lastName must be at least 5 characters long.
-                        </div>
-                        <div *ngIf="formData.get('lastName')?.errors?.['maxlength']">
-                            lastName cannot be more than 10 characters long.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="change-info__form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input formControlName="phone" type="text" id="phone" name="phone" [value]="user?.phone" required
-                        minlength="10" maxlength="10" placeholder=" Enter your phone number" autocomplete="off">
-
-                    <!-- show errors -->
-                    <div *ngIf="formData.get('phone')?.invalid && (formData.get('phone')?.dirty || formData.get('phone')?.touched)"
-                        class="alert alert-warning">
-                        <div *ngIf="formData.get('phone')?.errors?.['required']">phone number is required.</div>
-                        <div *ngIf="formData.get('phone')?.errors?.['pattern']">
-                            phone number must be exactly 10 digits long
-                        </div>
-                    </div>
-                </div>
-
-                <div class="change-info__form-group">
-                    <label for="dateOfBirth">Date of Birth:</label>
-                    <input formControlName="dateOfBirth" type="date" id="dateOfBirth" name="dateOfBirth"
-                        [value]="user?.dateOfBirth">
-
-                    <!-- show errors -->
-                    <div *ngIf="formData.get('dateOfBirth')?.invalid && (formData.get('dateOfBirth')?.dirty || formData.get('dateOfBirth')?.touched)"
-                        class="alert alert-warning">
-                        <div *ngIf="formData.get('dateOfBirth')?.errors?.['pattern']">
-                            date of birth must be a valid date.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="change-info__form-group">
-                    <label for="bio">Bio:</label>
-                    <textarea formControlName="bio" id="bio" name="bio" rows="4" [value]="user?.bio"
-                        maxlength="200"></textarea>
-
-                    <!-- show errors -->
-                    <div *ngIf="formData.get('bio')?.invalid && (formData.get('bio')?.dirty || formData.get('bio')?.touched)"
-                        class="alert alert-warning">
-                        <div *ngIf="formData.get('bio')?.errors?.['maxlength']">
-                            bio cannot be more than 200 characters long.
-                        </div>
-                    </div>
-                </div>
-
-                <div class=" button">
-                    <button type="submit">Update</button>
-                </div>
-            </form>
+        <div class="upload-btn">
+            <button (click)="onUpload()" [disabled]="!selectedFile || uploading" class="avatar__button primary-btn">
+                {{uploading ? 'uploading...' : 'Upload Avatar'}}
+            </button>
         </div>
     </div>
+
+    <div id="change-info" class=" change-info__basic">
+        <h1 class="change-info__title">Basic Information</h1>
+        <p>Manage your basic information: username, first name, last name, and bio.</p>
+
+
+        <div *ngIf="errorInfo" class="alert alert-error">
+            {{ errorInfo }}
+        </div>
+        <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()" class="change-info__form">
+            <div class="change-info__form-group">
+                <label for="username">Username:</label>
+                <input formControlName="username" type="text" id="username" name="username" [value]="user?.username">
+
+                <!-- show errors -->
+                <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
+                    <div *ngIf="formData.get('username')?.errors?.['minlength']">
+                        Username must be at least 5 characters long.
+                    </div>
+                    <div *ngIf="formData.get('username')?.errors?.['maxlength']">
+                        Username cannot be more than 10 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="firstName">First Name:</label>
+                <input formControlName="firstName" type="text" id="firstName" name="firstName" [value]="user?.firstName"
+                    required minlength="2" maxlength="20">
+
+                <!-- show errors -->
+                <div *ngIf="formData.get('firstname')?.invalid && (formData.get('firstname')?.dirty || formData.get('firstname')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('firstname')?.errors?.['required']">firstname is required.</div>
+                    <div *ngIf="formData.get('firstname')?.errors?.['minlength']">
+                        firstname must be at least 2 characters long.
+                    </div>
+                    <div *ngIf="formData.get('firstname')?.errors?.['maxlength']">
+                        firstname cannot be more than 10 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="lastName">Last Name:</label>
+                <input formControlName="lastName" type="text" id="lastName" name="lastName" [value]="user?.lastName"
+                    required minlength="2" maxlength="20">
+
+                <!-- show errors -->
+                <div *ngIf="formData.get('lastName')?.invalid && (formData.get('lastName')?.dirty || formData.get('lastName')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('lastName')?.errors?.['required']">lastName is required.</div>
+                    <div *ngIf="formData.get('lastName')?.errors?.['minlength']">
+                        lastName must be at least 5 characters long.
+                    </div>
+                    <div *ngIf="formData.get('lastName')?.errors?.['maxlength']">
+                        lastName cannot be more than 10 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="phone">Phone Number:</label>
+                <input formControlName="phone" type="text" id="phone" name="phone" [value]="user?.phone" required
+                    minlength="10" maxlength="10" placeholder=" Enter your phone number" autocomplete="off">
+
+                <!-- show errors -->
+                <div *ngIf="formData.get('phone')?.invalid && (formData.get('phone')?.dirty || formData.get('phone')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('phone')?.errors?.['required']">phone number is required.</div>
+                    <div *ngIf="formData.get('phone')?.errors?.['pattern']">
+                        phone number must be exactly 10 digits long
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="dateOfBirth">Date of Birth:</label>
+                <input formControlName="dateOfBirth" type="date" id="dateOfBirth" name="dateOfBirth"
+                    [value]="user?.dateOfBirth">
+
+                <!-- show errors -->
+                <div *ngIf="formData.get('dateOfBirth')?.invalid && (formData.get('dateOfBirth')?.dirty || formData.get('dateOfBirth')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('dateOfBirth')?.errors?.['pattern']">
+                        date of birth must be a valid date.
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="bio">Bio:</label>
+                <textarea formControlName="bio" id="bio" name="bio" rows="4" [value]="user?.bio"
+                    maxlength="200"></textarea>
+
+                <!-- show errors -->
+                <div *ngIf="formData.get('bio')?.invalid && (formData.get('bio')?.dirty || formData.get('bio')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formData.get('bio')?.errors?.['maxlength']">
+                        bio cannot be more than 200 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <div class="button">
+                <button class="primary-btn" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="change-password" class="change-password">
+        <h1 class="change-info__title">Change Password</h1>
+        <p class="change-info__description">Update your account password for better security.</p>
+
+        <form (submit)="onChangePassword()" [formGroup]="formChangePassword" class="change-info__form">
+            <div class="change-info__form-group">
+                <label for="currentPassword">Current Password:</label>
+                <input type="password" formControlName="oldPassword" id="currentPassword" name="currentPassword"
+                    required>
+                <!-- show errors -->
+                <div *ngIf="formChangePassword.get('oldPassword')?.invalid && (formChangePassword.get('oldPassword')?.dirty || formChangePassword.get('oldPassword')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formChangePassword.get('oldPassword')?.errors?.['required']">oldPassword is required.
+                    </div>
+                    <div *ngIf="formChangePassword.get('oldPassword')?.errors?.['minlength']">
+                        oldPassword must be at least 8 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="newPassword">New Password:</label>
+                <input type="password" formControlName="newPassword" id="newPassword" name="newPassword" required
+                    minlength="8">
+
+                <!-- show errors -->
+                <div *ngIf="formChangePassword.get('newPassword')?.invalid && (formChangePassword.get('newPassword')?.dirty || formChangePassword.get('newPassword')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formChangePassword.get('newPassword')?.errors?.['required']">newPassword is required.
+                    </div>
+                    <div *ngIf="formChangePassword.get('newPassword')?.errors?.['minlength']">
+                        newPassword must be at least 8 characters long.
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-info__form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" formControlName="confirmPassword" id="confirmPassword" name="confirmPassword"
+                    required>
+
+                <!-- show errors -->
+                <div *ngIf="formChangePassword.get('confirmPassword')?.invalid && (formChangePassword.get('confirmPassword')?.dirty || formChangePassword.get('confirmPassword')?.touched)"
+                    class="alert alert-warning">
+                    <div *ngIf="formChangePassword.get('confirmPassword')?.errors?.['required']">confirmPassword is
+                        required.
+                    </div>
+                    <div *ngIf="formChangePassword.get('confirmPassword')?.errors?.['minlength']">
+                        confirmPassword must be at least 8 characters long.
+                    </div>
+                </div>
+                <div *ngIf="errorConfirmPassword" class="alert alert-warning">
+                    Passwords do not match.
+                </div>
+            </div>
+
+            <div class=" button">
+                <button class="primary-btn" type="submit">Change Password</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="reset-password" class="reset-password">
+        <h1 class="change-info__title">Forgot Password</h1>
+        <p class="change-info__description">You forgot the password? click button below.</p>
+
+        <div class="change-info__form">
+            <div class="button">
+                <button class="primary-btn" (click)="forgotPassword()" type="button">{{isSendingEmail ? 'Sending...' :
+                    'Send link to reset password'}}</button>
+            </div>
+        </div>
+    </div>
+
+
 </div>

@@ -7,24 +7,34 @@ import {
   Validators,
 } from '@angular/forms';
 import { User } from '../services/user';
+import { Auth } from '../services/auth';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-settings',
-  imports: [ReactiveFormsModule, CommonModule, DatePipe],
+  imports: [ReactiveFormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings implements OnInit {
   user: any = {};
   formData!: FormGroup;
-
-  error!: string;
+  errorInfo!: string;
+  errorAvatar!: string;
+  errorConfirmPassword!: boolean;
+  isSendingEmail: boolean = false;
 
   selectedFile: boolean = false;
   uploading: boolean = false;
   file!: File;
 
-  constructor(private userService: User, private fb: FormBuilder) {}
+  formChangePassword!: FormGroup;
+
+  constructor(
+    private userService: User,
+    private authService: Auth,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -64,6 +74,19 @@ export class Settings implements OnInit {
         [Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
       ],
     });
+
+    this.formChangePassword = this.fb.group({
+      oldPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+    });
+
+    this.formChangePassword
+      .get('confirmPassword')!
+      .valueChanges.pipe(debounceTime(1000)) // chờ 1s sau khi ngừng gõ
+      .subscribe(() => {
+        this.checkPasswordMatch();
+      });
   }
 
   onFileSelected($event: any): void {
@@ -90,7 +113,7 @@ export class Settings implements OnInit {
       },
       error: (err) => {
         console.error('An error occurred while updating profile', err);
-        this.error =
+        this.errorAvatar =
           err.error.message || 'An error occurred while updating profile';
         this.selectedFile = false;
         this.uploading = false;
@@ -140,17 +163,77 @@ export class Settings implements OnInit {
       },
       error: (err) => {
         console.error('An error occurred while updating profile', err);
-        this.error =
+        this.errorInfo =
           err.error.message || 'An error occurred while updating profile';
       },
     });
   }
-  // Add methods to handle settings functionality
-  saveSettings(): void {
-    // Logic to save user settings
+
+  onChangePassword(): void {
+    if (this.formChangePassword.invalid) {
+      alert('Please fill in all required fields correctly');
+      return;
+    }
+
+    const formValues = this.formChangePassword.value;
+
+    if (formValues.newPassword !== formValues.confirmPassword) {
+      alert('New password and confirm password do not match');
+      return;
+    }
+
+    this.authService
+      .changePassword(formValues.oldPassword, formValues.newPassword)
+      .subscribe({
+        next: (res) => {
+          alert('Password changed successfully');
+        },
+        error: (err) => {
+          console.error('An error occurred while changing password', err);
+          alert(
+            err.error.message || 'An error occurred while changing password'
+          );
+        },
+      });
   }
 
-  resetSettings(): void {
-    // Logic to reset user settings to default
+  checkPasswordMatch(): void {
+    const formValues = this.formChangePassword.value;
+    this.errorConfirmPassword =
+      formValues.newPassword !== formValues.confirmPassword;
+  }
+
+  forgotPassword(): void {
+    const email = this.user.email;
+    if (!email) {
+      alert('Email is required to reset password');
+      return;
+    }
+
+    this.isSendingEmail = true;
+    this.authService.forgotPassword(email).subscribe({
+      next: (res) => {
+        alert('Reset password link sent to your email');
+        this.isSendingEmail = false;
+      },
+      error: (err) => {
+        console.error(
+          'An error occurred while sending reset password link',
+          err
+        );
+        alert(
+          err.error.message ||
+            'An error occurred while sending reset password link'
+        );
+        this.isSendingEmail = false;
+      },
+    });
+  }
+
+  scrollTo(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }

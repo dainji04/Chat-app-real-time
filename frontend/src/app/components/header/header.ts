@@ -63,7 +63,8 @@ export class Header implements OnInit {
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || 'null');
-    console.log('User data:', this.user.avatar);
+
+    this.resultUser = this.user;
 
     this.searchForm
       .get('email')!

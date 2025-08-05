@@ -1,13 +1,18 @@
-<!-- <div class="header__search">
-  <i (click)="toggleSearch()" class="fa-solid fa-magnifying-glass"></i>
-  <div class="header__search-box" [class]="{'isSearching': isSearching}">
-    <input class="header__search-input" type="text" [(ngModel)]="search">
+<div class="messages">
+  <div class="messages__header">
+    <h1 class="messages__header-title">
+      Conversations
+    </h1>
   </div>
-</div> -->
-
-<div class="header__search">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <div class="header__search-box">
-    <input class="header__search-input" type="text">
-  </div>
+  <ul class="messages__list">
+    <li class="messages__item" *ngFor="let message of messages">
+      <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
+      <div class="messages__item-content">
+        <div class="messages__item-sender">{{ message.name }}</div>
+        <div class="messages__item-text">{{ message.lastMessage ?
+          message.lastMessage.content.text : 'No message' }}</div>
+      </div>
+      <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
+    </li>
+  </ul>
 </div>

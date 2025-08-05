@@ -70,7 +70,9 @@ export class Settings implements OnInit {
         [Validators.required, Validators.pattern(/^\d{9,11}$/)],
       ],
       dateOfBirth: [
-        new Date(this.user.dateOfBirth).toISOString().split('T')[0] || '',
+        this.user.dateOfBirth
+          ? new Date(this.user.dateOfBirth).toISOString().split('T')[0]
+          : '',
         [Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
       ],
     });

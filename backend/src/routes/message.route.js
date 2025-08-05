@@ -253,7 +253,11 @@ router.get(
  *       404:
  *         description: Không tìm thấy user
  */
-router.post('/conversations', messageController.getOrCreateConversation);
+router.post(
+    '/conversations',
+    verifyAccessToken,
+    messageController.getOrCreateConversation
+);
 
 /**
  * @swagger

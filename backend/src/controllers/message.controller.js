@@ -14,7 +14,7 @@ class MessageController {
                 participants: req.user._id,
                 isActive: true,
             })
-                .populate('participants', 'name avatar isOnline lastSeen')
+                .populate('participants', 'username avatar isOnline lastSeen')
                 .populate('lastMessage', 'content sender createdAt')
                 .sort({ lastActivity: -1 })
                 .skip(skip)
@@ -37,7 +37,7 @@ class MessageController {
                     return {
                         ...conversation,
                         name: otherParticipant
-                            ? otherParticipant.name
+                            ? otherParticipant.username
                             : 'Unknown',
                         avatar: otherParticipant
                             ? otherParticipant.avatar

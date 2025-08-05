@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../services/message';
+import { SocketService } from '../services/socket-service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-detail-message',
@@ -10,34 +12,62 @@ import { Message } from '../services/message';
   templateUrl: './detail-message.html',
   styleUrl: './detail-message.scss',
 })
-export class DetailMessage implements OnInit {
-  id: string | null = null;
+export class DetailMessage implements OnInit, AfterViewChecked {
+  id: string = '';
   messages: any[] = [];
   newMessageText: string = '';
   currentUserId: string = '';
 
+  private receiveSub!: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private messageService: Message,
-    private router: Router
+    private router: Router,
+    private socketService: SocketService
   ) {
     // Get current user ID from localStorage
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.currentUserId = user._id || '';
+
+    window.addEventListener('beforeunload', () => {
+      this.socketService.leaveConversation(this.id);
+      this.receiveSub?.unsubscribe();
+      console.log('Left conversation and unsubscribed from messages');
+    });
   }
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = this.route.snapshot.paramMap.get('id') || '';
+
+    this.socketService.joinConversation(this.id!);
 
     this.messageService.getConversationById(this.id!).subscribe({
       next: (data) => {
         this.messages = data.data;
-        console.log('Conversation messages:', this.messages);
       },
       error: (error) => {
         console.error('Error fetching conversation:', error);
       },
     });
+
+    // Lắng nghe tin nhắn từ server
+    this.receiveSub = this.socketService
+      .listen<any>('receive_message')
+      .subscribe(async (data) => {
+        this.messages.push(data.message);
+        this.scrollToBottom();
+      });
+  }
+
+  ngAfterViewChecked(): void {
+    console.log('call from ngAfterViewChecked');
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    const bottomMessages = document.querySelector('#bottom');
+    bottomMessages?.scrollIntoView({ behavior: 'smooth' });
   }
 
   goBack(): void {
@@ -70,16 +100,20 @@ export class DetailMessage implements OnInit {
       content: this.newMessageText,
     };
 
-    this.messageService.sendMessage(messageData).subscribe({
-      next: (response: any) => {
-        console.log('Message sent:', response);
-        // Add the new message to the messages array
-        this.messages.push(response.data);
-        this.newMessageText = '';
-      },
-      error: (error: any) => {
-        console.error('Error sending message:', error);
-      },
-    });
+    this.socketService.sendMessage(messageData);
+    this.newMessageText = '';
+    // Scroll to bottom of messages container
+    setTimeout(() => {
+      const messagesContainer = document.body;
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }, 100);
+  }
+
+  ngOnDestroy() {
+    this.socketService.leaveConversation(this.id);
+    this.receiveSub?.unsubscribe();
+    console.log('Left conversation and unsubscribed from messages');
   }
 }

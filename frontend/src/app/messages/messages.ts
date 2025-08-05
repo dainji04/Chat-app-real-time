@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Message } from '../services/message';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SocketService } from '../services/socket-service';
 
 @Component({
   selector: 'app-messages',
@@ -21,7 +22,6 @@ export class Messages implements OnInit {
   fetchMessages() {
     this.messageService.getAllConversations().subscribe((data: any) => {
       this.messages = data.data;
-      console.log(this.messages);
     });
   }
 }

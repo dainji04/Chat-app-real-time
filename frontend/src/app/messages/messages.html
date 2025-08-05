@@ -5,14 +5,16 @@
     </h1>
   </div>
   <ul class="messages__list">
-    <li class="messages__item" *ngFor="let message of messages">
-      <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
-      <div class="messages__item-content">
-        <div class="messages__item-sender">{{ message.name }}</div>
-        <div class="messages__item-text">{{ message.lastMessage ?
-          message.lastMessage.content.text : 'No message' }}</div>
-      </div>
-      <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
+    <li *ngFor="let message of messages">
+      <a class="messages__item" [routerLink]="['/messages', message._id]">
+        <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
+        <div class="messages__item-content">
+          <h3 class="messages__item-sender">{{ message.name }}</h3>
+          <p class="messages__item-text">{{ message.lastMessage ?
+            message.lastMessage.content.text : 'No message' }}</p>
+        </div>
+        <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
+      </a>
     </li>
   </ul>
 </div>

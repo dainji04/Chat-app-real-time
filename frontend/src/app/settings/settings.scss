@@ -1,20 +1,5 @@
 @use "../../styles/variables" as *;
 
-.primary-btn {
-  font-style: 16px;
-  padding: 10px 25px;
-  background-color: $primary-color;
-  border-radius: 12px;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-
-  &:hover {
-    background-color: $primary-color;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-}
-
 .change-avatar {
   .avatar {
     margin-top: 20px;

@@ -1,0 +1,97 @@
+<div class="detail-message-container">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="chat-header__left">
+            <button class="back-btn" (click)="goBack()">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="chat-info">
+                <h3 class="chat-title">Conversation</h3>
+                <p class="chat-subtitle">{{ messages.length }} messages</p>
+            </div>
+        </div>
+        <div class="chat-header__right">
+            <button class="menu-btn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="messages-container">
+        <div class="messages-list">
+            <div *ngFor="let message of messages" class="message-wrapper"
+                [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
+
+                <div class="message">
+                    <!-- Avatar (only for other users) -->
+                    <div class="message__avatar" *ngIf="!isOwnMessage(message)">
+                        <img [src]="message.sender.avatar" [alt]="'User avatar'" />
+                    </div>
+
+                    <!-- Message Content -->
+                    <div class="message__content">
+                        <!-- Text Message -->
+                        <div *ngIf="message.content.type === 'text'" class="message__bubble message__bubble--text">
+                            <p class="message__text">{{ message.content.text }}</p>
+                        </div>
+
+                        <!-- Image Message -->
+                        <div *ngIf="message.content.type === 'image'" class="message__bubble message__bubble--media">
+                            <img [src]="message.content.media.url" alt="Shared image" class="message__image"
+                                (click)="openImageModal(message.content.media.url)" />
+                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                        </div>
+
+                        <!-- Video Message -->
+                        <div *ngIf="message.content.type === 'video'" class="message__bubble message__bubble--media">
+                            <video [src]="message.content.media.url" controls class="message__video">
+                            </video>
+                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                        </div>
+
+                        <!-- File Message -->
+                        <div *ngIf="message.content.type === 'file'" class="message__bubble message__bubble--file">
+                            <div class="file-info">
+                                <i class="fa-solid fa-file"></i>
+                                <span>{{ message.content.fileName || 'File' }}</span>
+                            </div>
+                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                        </div>
+
+                        <!-- Message Status & Time -->
+                        <div class="message__meta">
+                            <span class="message__time">{{ formatTime(message.createdAt) }}</span>
+                            <div class="message__status" *ngIf="isOwnMessage(message)">
+                                <i class="fa-solid fa-check" *ngIf="message.readBy.length === 0"></i>
+                                <i class="fa-solid fa-check-double" *ngIf="message.readBy.length > 0"></i>
+                            </div>
+                            <span class="message__edited" *ngIf="message.edited.isEdited">(edited)</span>
+                        </div>
+
+                        <!-- Reactions -->
+                        <div class="message__reactions" *ngIf="message.reactions.length > 0">
+                            <span *ngFor="let reaction of message.reactions" class="reaction">
+                                {{ reaction.emoji }} {{ reaction.count }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Input -->
+    <div class="message-input-container">
+        <div class="message-input">
+            <button class="attach-btn">
+                <i class="fa-solid fa-paperclip"></i>
+            </button>
+            <input type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
+                (keyup.enter)="sendMessage()" />
+            <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessageText.trim()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>

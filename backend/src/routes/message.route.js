@@ -208,7 +208,7 @@ router.get('/', verifyAccessToken, messageController.getAllConversations);
  *         description: Không có quyền truy cập conversation
  */
 router.get(
-    '/conversations/:conversationId',
+    '/:conversationId',
     verifyAccessToken,
     messageController.getConversationById
 );

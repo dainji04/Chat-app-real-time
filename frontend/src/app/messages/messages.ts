@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Message } from '../services/message';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-messages',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',
 })

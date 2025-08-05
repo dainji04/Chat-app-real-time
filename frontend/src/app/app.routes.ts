@@ -4,6 +4,7 @@ import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
+import { ChatLayout } from './layouts/chat-layout/chat-layout';
 
 const appRoutes: Routes = [
   {
@@ -54,6 +55,20 @@ const appRoutes: Routes = [
         loadComponent: () =>
           import('./auth/signup/signup').then((c) => c.Signup),
         canActivate: [guestGuard],
+      },
+    ],
+  },
+  {
+    path: 'messages/:id',
+    canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+    component: ChatLayout,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./detail-message/detail-message').then(
+            (c) => c.DetailMessage
+          ),
       },
     ],
   },

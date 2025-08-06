@@ -308,6 +308,8 @@ router.post(
     messageController.uploadMedia
 );
 
+router.delete('/delete', verifyAccessToken, messageController.deleteMedia);
+
 /**
  * @swagger
  * /api/messages/send-message:

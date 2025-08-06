@@ -1,8 +1,10 @@
 const Message = require('../models/message.model.js');
 const Conversation = require('../models/conversation.model.js');
 const User = require('../models/user.model.js');
-const { uploadToCloudinary } = require('../utils/cloudinary.js');
-const { text } = require('express');
+const {
+    uploadToCloudinary,
+    deleteFromCloudinary,
+} = require('../utils/cloudinary.js');
 
 class MessageController {
     async getAllConversations(req, res) {
@@ -182,7 +184,7 @@ class MessageController {
 
             const upload = await uploadToCloudinary(
                 req.file,
-                `chat-app/${fileType}`
+                `chat-app/${fileType}s`
             );
 
             if (!upload) {
@@ -226,6 +228,21 @@ class MessageController {
             });
 
             // Save media data to the database if needed
+        } catch (error) {
+            console.error('Error uploading media:', error);
+            return res.status(500).json({ message: error.message });
+        }
+    }
+
+    async deleteMedia(req, res) {
+        try {
+            const { publicId } = req.body;
+            await deleteFromCloudinary(publicId);
+
+            return res.status(200).json({
+                success: true,
+                message: 'delete successfully from cloudinary',
+            });
         } catch (error) {
             console.error('Error uploading media:', error);
             return res.status(500).json({ message: 'Internal server error' });

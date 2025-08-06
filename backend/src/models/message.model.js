@@ -26,7 +26,7 @@ const messageSchema = new mongoose.Schema(
                     'file',
                     'gift',
                     'emoji',
-                    'voice',
+                    'audio',
                 ],
                 default: 'text',
             },

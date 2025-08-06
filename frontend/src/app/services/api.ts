@@ -27,8 +27,15 @@ export class Api {
   }
 
   // DELETE request
-  delete<T>(endpoint: string): Observable<T> {
+  delete<T>(endpoint: string, data: any = null): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
+  }
+
+  // DELETE WITH DATA
+  deleteWithData<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`, {
+      body: data, // ✅ truyền đúng cách
+    });
   }
 
   // Get full URL

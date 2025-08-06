@@ -58,9 +58,19 @@
                             <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
                         </div>
 
+                        <!-- audio Message -->
+                        <div *ngIf="message.content.type === 'audio'" class="message__bubble message__bubble--media">
+                            <audio controls class="message__audio">
+                                <source [src]="message.content.media.url" type="audio/mpeg" />
+                                Trình duyệt của bạn không hỗ trợ audio.
+                            </audio>
+                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                        </div>
+
+
                         <!-- Message Status & Time -->
                         <div class="message__meta">
-                            <span class="message__time">{{ formatTime(message.createdAt) }}</span>
+                            <span class="message__time">{{ message.createdAt | date: 'hh:mm' }}</span>
                             <div class="message__status" *ngIf="isOwnMessage(message)">
                                 <i class="fa-solid fa-check" *ngIf="message.readBy.length === 0"></i>
                                 <i class="fa-solid fa-check-double" *ngIf="message.readBy.length > 0"></i>
@@ -84,12 +94,32 @@
     <!-- Message Input -->
     <div class="message-input-container">
         <div class="message-input">
-            <button class="attach-btn">
-                <i class="fa-solid fa-paperclip"></i>
+            <button class="attach-btn" clickOutSide (appClickOutside)="isShowOptionMedia = false">
+                <i class="fa-solid fa-paperclip" (click)="isShowOptionMedia=!isShowOptionMedia"></i>
+                <ul class="media-options" *ngIf="isShowOptionMedia">
+                    <li>
+                        <label for="image">Image</label>
+                        <input hidden type="file" id="image" name="image" (change)="onFileSelected($event, 'image')"
+                            accept="image/*" class="avatar__input">
+                    </li>
+                    <li><label for="video">video</label>
+                        <input hidden type="file" id="video" name="video" (change)="onFileSelected($event, 'video')"
+                            accept="video/*" class="avatar__input">
+                    </li>
+                    <li><label for="audio">audio</label>
+                        <input hidden type="file" id="audio" name="audio" (change)="onFileSelected($event, 'audio')"
+                            accept="audio/*" class="avatar__input">
+                    </li>
+                </ul>
             </button>
-            <input type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
-                (keyup.enter)="sendMessage()" />
-            <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessageText.trim()">
+            <div class="message-input-box">
+                <div *ngIf="file">
+                    {{file.name}}
+                </div>
+                <input type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
+                    (keyup.enter)="sendMessage()" />
+            </div>
+            <button class="send-btn" (click)="sendMessage()" [disabled]="disableSend()">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
         </div>

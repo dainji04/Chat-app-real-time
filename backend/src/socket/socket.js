@@ -9,12 +9,16 @@ const authenSocket = async (socket, next) => {
             socket.handshake.auth.token ||
             socket.handshake.headers.authorization?.split(' ')[1];
 
+        console.log('🔑 Token received:', token ? 'Found' : 'Not found');
+
         if (!token) {
             return next(new Error('Authentication error'));
         }
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const user = await User.findById(decoded.id).select('-password');
+
+        console.log('👤 User found:', user ? user.username : 'None');
 
         if (!user) {
             return next(new Error('User not found'));
@@ -24,7 +28,7 @@ const authenSocket = async (socket, next) => {
         socket.user = user;
         next();
     } catch (error) {
-        console.log('Socket authentication error:', error);
+        console.log('❌ Socket authentication error:', error.message);
         next(new Error('Authentication error'));
     }
 };
@@ -55,18 +59,18 @@ const socketHandler = (io) => {
 
         // Handle joining a conversation
         socket.on('join_conversation', (conversationId) => {
-            socket.join(conversationId);
             console.log(
                 `User ${socket.user.username} joined conversation: ${conversationId}`
             );
+            socket.join(conversationId);
         });
 
         // Handle leaving a conversation
         socket.on('leave_conversation', (conversationId) => {
-            socket.leave(conversationId);
             console.log(
                 `User ${socket.user.username} left conversation: ${conversationId}`
             );
+            socket.leave(conversationId);
         });
 
         // Handle sending messages
@@ -133,7 +137,6 @@ const socketHandler = (io) => {
                 }
 
                 const message = await Message.create(messageData);
-                console.log(message);
 
                 // Populate message data với lean() để tăng performance
                 const populateMessage = await Message.findById(message._id)
@@ -166,15 +169,32 @@ const socketHandler = (io) => {
         });
 
         socket.on('disconnect', async () => {
-            await User.findByIdAndUpdate(
-                socket.userId,
-                { $set: { isOnline: false } },
-                { new: true }
-            );
             console.log(
-                `❌ Client ${socket.user.username} disconnected:`,
+                `❌ Client ${socket.user?.username || 'Unknown'} disconnected:`,
                 socket.id
             );
+
+            if (socket.userId) {
+                await User.findByIdAndUpdate(
+                    socket.userId,
+                    { $set: { isOnline: false } },
+                    { new: true }
+                );
+
+                // Leave all conversations
+                const conversations = await Conversation.find({
+                    participants: socket.userId,
+                    isActive: true,
+                });
+                conversations.forEach((conversation) => {
+                    socket.leave(conversation._id.toString());
+                });
+                console.log(
+                    `User ${
+                        socket.user?.username || 'Unknown'
+                    } left all conversations on disconnect`
+                );
+            }
         });
     });
 };

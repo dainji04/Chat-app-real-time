@@ -88,7 +88,6 @@ export class DetailMessage implements OnInit, AfterViewChecked {
   }
 
   openImageModal(imageUrl: string): void {
-    // Open image in a modal or new tab
     window.open(imageUrl, '_blank');
   }
 
@@ -102,13 +101,6 @@ export class DetailMessage implements OnInit, AfterViewChecked {
 
     this.socketService.sendMessage(messageData);
     this.newMessageText = '';
-    // Scroll to bottom of messages container
-    setTimeout(() => {
-      const messagesContainer = document.body;
-      if (messagesContainer) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }
-    }, 100);
   }
 
   ngOnDestroy() {

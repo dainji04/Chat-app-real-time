@@ -7,9 +7,17 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class SocketService {
-  private socket: Socket;
+  private socket: Socket | null = null;
 
   constructor(private token: Token) {
+    this.initializeSocket();
+  }
+
+  private initializeSocket() {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+
     this.socket = io('http://localhost:3000', {
       auth: {
         token: this.token.getAccessToken(),
@@ -19,7 +27,7 @@ export class SocketService {
     });
 
     this.socket.on('connect', () => {
-      console.log('✅ Connected to socket server', this.socket.id);
+      console.log('✅ Connected to socket server', this.socket?.id);
     });
 
     this.socket.on('disconnect', () => {
@@ -27,29 +35,67 @@ export class SocketService {
     });
   }
 
+  // Phương thức để reconnect với token mới
+  reconnectWithNewToken() {
+    console.log('🔄 Reconnecting socket with new token...');
+
+    // Disconnect hoàn toàn socket cũ
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
+    // Khởi tạo socket mới với token mới
+    this.initializeSocket();
+  }
+
+  // Thêm method để force disconnect
+  forceDisconnect() {
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+      console.log('🔌 Socket force disconnected and cleaned');
+    }
+  }
+
   listen<T = any>(event: string): Observable<T> {
     return new Observable((subscriber) => {
-      this.socket.on(event, (data: T) => {
-        subscriber.next(data);
-      });
+      if (this.socket) {
+        this.socket.on(event, (data: T) => {
+          subscriber.next(data);
+        });
+      }
     });
   }
 
   disconnect() {
-    this.socket.disconnect();
+    if (this.socket) {
+      this.socket.disconnect();
+      console.log('Disconnected from socket server');
+    }
   }
 
   connect() {
-    // Socket.IO không tự reconnect sau khi disconnect thủ công → cần tạo lại
-    this.socket.connect();
+    if (this.socket) {
+      this.socket.connect();
+      console.log('Reconnected to socket server');
+    }
   }
 
   joinConversation(conversationId: string) {
-    this.socket.emit('join_conversation', conversationId);
+    console.log(`Joining conversation: ${conversationId}`);
+    if (this.socket) {
+      this.socket.emit('join_conversation', conversationId);
+    }
   }
 
   leaveConversation(conversationId: string) {
-    this.socket.emit('leave_conversation', conversationId);
+    if (this.socket) {
+      this.socket.emit('leave_conversation', conversationId);
+      console.log(`Left conversation: ${conversationId}`);
+    }
   }
 
   sendMessage(data: {
@@ -59,6 +105,8 @@ export class SocketService {
     media?: any;
     replyTo?: string;
   }) {
-    this.socket.emit('send_message', data);
+    if (this.socket) {
+      this.socket.emit('send_message', data);
+    }
   }
 }

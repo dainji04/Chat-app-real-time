@@ -11,6 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../../directives/click-outside';
 import { debounceTime } from 'rxjs';
 import { User } from '../../services/user';
+import { SocketService } from '../../services/socket-service';
 
 @Component({
   selector: 'app-header',
@@ -47,12 +48,16 @@ export class Header implements OnInit {
   constructor(
     private authService: Auth,
     private userService: User,
+    private socketService: SocketService,
     private router: Router
   ) {}
 
   logout() {
+    // Force disconnect và clear socket hoàn toàn
+    this.socketService.forceDisconnect();
     this.authService.logout().subscribe({
       next: () => {
+        localStorage.removeItem('user');
         this.router.navigate(['/auth/login']);
       },
       error: (error) => {

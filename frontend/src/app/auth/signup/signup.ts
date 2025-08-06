@@ -10,6 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
 import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { Auth } from '../../services/auth';
+import { SocketService } from '../../services/socket-service';
 
 @Component({
   selector: 'app-signup',
@@ -36,6 +37,7 @@ export class Signup {
     private fb: FormBuilder,
     // public themeService: ThemeService,
     private authService: Auth,
+    private socketService: SocketService,
     private router: Router
   ) {}
 
@@ -76,6 +78,7 @@ export class Signup {
     if (this.formData.valid) {
       this.authService.signup(this.formData.value).subscribe({
         next: (response: any) => {
+          this.socketService.connect();
           console.log('Signup successful', response);
           this.router.navigate(['/']);
         },

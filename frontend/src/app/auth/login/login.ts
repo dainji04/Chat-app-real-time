@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { Auth } from '../../services/auth';
 import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
+import { SocketService } from '../../services/socket-service';
 
 @Component({
   selector: 'app-login',
@@ -35,6 +36,7 @@ export class Login {
     private fb: FormBuilder,
     // public themeService: ThemeService,
     private authService: Auth,
+    private socketService: SocketService,
     private router: Router
   ) {}
 
@@ -59,6 +61,8 @@ export class Login {
       const { username, password } = this.formData.value;
       this.authService.login(username, password).subscribe({
         next: (response: any) => {
+          // Reconnect socket với token mới
+          this.socketService.reconnectWithNewToken();
           console.log('Login successful', response);
           this.loading = false;
           this.router.navigate(['/']);

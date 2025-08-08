@@ -14,36 +14,35 @@ const appRoutes: Routes = [
       {
         path: '',
         component: Home,
-        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+        canActivate: [authGuard],
       },
       {
         path: 'messages',
         loadComponent: () =>
           import('./messages/messages').then((c) => c.Messages),
-        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+        canActivate: [authGuard],
       },
       {
         path: 'profile',
         loadComponent: () => import('./profile/profile').then((c) => c.Profile),
-        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+        canActivate: [authGuard],
       },
       {
         path: 'settings',
         loadComponent: () =>
           import('./settings/settings').then((c) => c.Settings),
-        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+        canActivate: [authGuard],
       },
       {
         path: 'friends',
         loadComponent: () => import('./friends/friends').then((c) => c.Friends),
-        canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+        canActivate: [authGuard],
       },
     ],
   },
   {
     path: 'auth',
     component: AuthLayout,
-
     children: [
       {
         path: 'login',
@@ -60,7 +59,7 @@ const appRoutes: Routes = [
   },
   {
     path: 'messages/:id',
-    canActivate: [authGuard], // Bảo vệ trang chính bằng AuthGuard
+    canActivate: [authGuard],
     component: ChatLayout,
     children: [
       {

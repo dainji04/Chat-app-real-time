@@ -7,7 +7,11 @@
   <ul class="messages__list">
     <li *ngFor="let message of messages">
       <a class="messages__item" [routerLink]="['/messages', message._id]">
-        <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
+        <div style="position: relative;">
+          <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
+          <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
+            class="dot fa-solid fa-circle"></i>
+        </div>
         <div class="messages__item-content">
           <h3 class="messages__item-sender">{{ message.name }}</h3>
           <p class="messages__item-text">{{ message.lastMessage ?

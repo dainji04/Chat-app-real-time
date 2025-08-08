@@ -31,8 +31,9 @@
                             <button *ngIf="isFriend()" (click)="getOrCreateConversation()" class="primary-btn">
                                 chat
                             </button>
-                            <button *ngIf="!isFriend() && !isOwnProfile()" (click)="addFriend()"
-                                class="primary-btn">add</button>
+                            <button *ngIf="!isFriend() && !isOwnProfile()" (click)="addFriend()" class="primary-btn">
+                                add
+                            </button>
                         </div>
                     </div>
                 </form>

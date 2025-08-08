@@ -1,6 +1,6 @@
 import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../services/message';
 import { SocketService } from '../services/socket-service';
@@ -39,6 +39,7 @@ export class DetailMessage implements OnInit, AfterViewChecked {
     private route: ActivatedRoute,
     private messageService: Message,
     private router: Router,
+    private location: Location,
     private socketService: SocketService
   ) {
     // Get current user ID from localStorage
@@ -86,7 +87,7 @@ export class DetailMessage implements OnInit, AfterViewChecked {
   }
 
   goBack(): void {
-    this.router.navigate(['/messages']);
+    this.location.back();
   }
 
   isOwnMessage(message: any): boolean {

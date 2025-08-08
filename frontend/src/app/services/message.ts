@@ -21,4 +21,21 @@ export class Message {
   sendMessage(messageData: any): Observable<any> {
     return this.api.post<any>('messages/send-message', messageData);
   }
+
+  //upload media
+  uploadMedia(formData: FormData): Observable<any> {
+    return this.api.post('messages/upload', formData);
+  }
+
+  // delete media
+  deleteMedia(publicId: string): Observable<any> {
+    return this.api.deleteWithData('messages/delete', { publicId });
+  }
+
+  // get or create conversation
+  getOrCreateConversation(userId: string): Observable<any> {
+    return this.api.post<any>('messages/conversations', {
+      userId,
+    });
+  }
 }

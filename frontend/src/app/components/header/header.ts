@@ -9,7 +9,7 @@ import {
 import { Auth } from '../../services/auth';
 import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../../directives/click-outside';
-import { debounceTime, filter } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import { User } from '../../services/user';
 import { SocketService } from '../../services/socket-service';
 import { FriendService } from '../../services/friends';
@@ -62,11 +62,9 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // this.resultUser = this.user;
-
     this.searchForm
       .get('email')!
-      .valueChanges.pipe(debounceTime(1000)) // chờ 1s sau khi ngừng gõ
+      .valueChanges.pipe(debounceTime(300)) // chờ 1s sau khi ngừng gõ
       .subscribe(() => {
         this.onSearchInput();
       });

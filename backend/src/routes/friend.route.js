@@ -175,11 +175,7 @@ router.post('/add', verifyAccessToken, friendController.addFriend);
  *       400:
  *         description: Lời mời đã được xử lý
  */
-router.post(
-    '/accept-request',
-    verifyAccessToken,
-    friendController.acceptFriendRequest
-);
+router.post('/accept', verifyAccessToken, friendController.acceptFriendRequest);
 
 /**
  * @swagger
@@ -212,11 +208,7 @@ router.post(
  *                   items:
  *                     $ref: '#/components/schemas/FriendRequest'
  */
-router.get(
-    '/list-requests',
-    verifyAccessToken,
-    friendController.getFriendRequests
-);
+router.get('/requests', verifyAccessToken, friendController.getFriendRequests);
 
 /**
  * @swagger

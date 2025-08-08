@@ -5,7 +5,9 @@ class FriendController {
         try {
             const user = req.user; // middleware should set req.user
 
-            const friends = await User.find({ _id: { $in: user.friends } });
+            const friends = await User.find({
+                _id: { $in: user.friends },
+            }).select('username avatar firstName lastName email _id isOnline');
 
             return res.status(200).json({
                 message: 'Friends retrieved successfully',
@@ -131,9 +133,13 @@ class FriendController {
         try {
             const user = req.user;
 
+            const friendRequests = await User.find({
+                _id: { $in: user.friendRequests.received },
+            }).select('username avatar firstName lastName email _id isOnline');
+
             res.status(200).json({
                 message: 'Friend requests retrieved successfully',
-                friendRequests: user.friendRequests.received,
+                friendRequests: friendRequests,
             });
         } catch (error) {
             return res

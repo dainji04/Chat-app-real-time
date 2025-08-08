@@ -132,7 +132,12 @@ class UserController {
                 return res.status(400).json({ message: 'Email is required' });
             }
 
-            const user = await User.findOne({ email });
+            const user = await User.findOne({ email })
+                .populate('friends', 'firstName lastName username avatar')
+                .populate(
+                    'friendRequests.sent',
+                    'firstName lastName username avatar'
+                );
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });

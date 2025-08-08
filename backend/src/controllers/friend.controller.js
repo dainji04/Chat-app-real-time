@@ -35,6 +35,34 @@ class FriendController {
                     message: 'Cannot send friend request to yourself',
                 });
             }
+
+            if (
+                friend.friendRequests.sent
+                    .toString()
+                    .includes(user._id.toString())
+            ) {
+                user.friends.push(friendId);
+                friend.friends.push(user._id);
+                user.friendRequests.received.pull(friendId);
+                friend.friendRequests.sent.pull(user._id);
+
+                await user.save();
+                await friend.save();
+                return res.status(200).json({
+                    message: 'Friend request accepted successfully',
+                });
+            }
+
+            if (
+                friend.friendRequests.received
+                    .toString()
+                    .includes(user._id.toString())
+            ) {
+                return res.status(400).json({
+                    message: 'Friend request already sent',
+                });
+            }
+
             if (!friend) {
                 return res.status(404).json({ message: 'Friend not found' });
             }

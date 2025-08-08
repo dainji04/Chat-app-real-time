@@ -9,9 +9,11 @@ import {
 import { Auth } from '../../services/auth';
 import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../../directives/click-outside';
-import { debounceTime } from 'rxjs';
+import { debounceTime, filter } from 'rxjs';
 import { User } from '../../services/user';
 import { SocketService } from '../../services/socket-service';
+import { FriendService } from '../../services/friends';
+import { Message } from '../../services/message';
 
 @Component({
   selector: 'app-header',
@@ -29,13 +31,17 @@ export class Header implements OnInit {
   searchForm: FormGroup = new FormGroup({
     email: new FormControl(''),
   });
+
   isSearching: boolean = false;
 
   isProfile: boolean = false;
 
   user: any = null;
 
-  resultUser: any = {};
+  resultUser: any = null;
+
+  // button state
+  isChat: boolean = false;
 
   toggleSearch() {
     this.isSearching = !this.isSearching;
@@ -49,8 +55,44 @@ export class Header implements OnInit {
     private authService: Auth,
     private userService: User,
     private socketService: SocketService,
-    private router: Router
+    private router: Router,
+    private friendService: FriendService,
+    private messageService: Message
   ) {}
+  ngOnInit(): void {
+    this.user = JSON.parse(localStorage.getItem('user') || 'null');
+
+    // this.resultUser = this.user;
+
+    this.searchForm
+      .get('email')!
+      .valueChanges.pipe(debounceTime(1000)) // chờ 1s sau khi ngừng gõ
+      .subscribe(() => {
+        this.onSearchInput();
+      });
+  }
+
+  isOwnProfile() {
+    return (
+      this.user && this.resultUser && this.user._id === this.resultUser._id
+    );
+  }
+
+  isFriend() {
+    if (!this.user || !this.resultUser || !this.user.friends) {
+      return false;
+    }
+
+    let isFriend = false;
+
+    for (let friend of this.user.friends) {
+      if (friend._id === this.resultUser._id) {
+        isFriend = true;
+      }
+    }
+
+    return isFriend;
+  }
 
   logout() {
     // Force disconnect và clear socket hoàn toàn
@@ -66,17 +108,27 @@ export class Header implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.user = JSON.parse(localStorage.getItem('user') || 'null');
+  addFriend() {
+    this.friendService.addFriend(this.resultUser._id).subscribe({
+      next: (response) => {
+        console.log('Friend added successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error adding friend:', error);
+      },
+    });
+  }
 
-    this.resultUser = this.user;
-
-    this.searchForm
-      .get('email')!
-      .valueChanges.pipe(debounceTime(1000)) // chờ 1s sau khi ngừng gõ
-      .subscribe(() => {
-        this.onSearchInput();
-      });
+  getOrCreateConversation() {
+    this.messageService.getOrCreateConversation(this.resultUser._id).subscribe({
+      next: (response: any) => {
+        this.router.navigate(['/messages', response.data.conversation._id]);
+      },
+      error: (error: any) => {
+        alert('chat failed');
+        console.error('Error getting or creating conversation:', error);
+      },
+    });
   }
 
   onSearchInput() {

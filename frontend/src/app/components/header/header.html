@@ -18,11 +18,22 @@
                                 type="text" placeholder="type email">
                         </div>
                     </div>
-                    <div class="result__search" *ngIf="isSearching">
+                    <div class="result__search" *ngIf="isSearching && resultUser!= null">
                         <a class="result__search-link" *ngIf="resultUser">
                             <img [src]="resultUser?.avatar" alt="{{ resultUser?.username }} avatar" class="avatar">
                             <span>{{ resultUser?.firstName + ' ' + resultUser?.lastName }}</span>
                         </a>
+                        <div class="button__state">
+                            <button *ngIf="isOwnProfile()" class="primary-btn" (click)="isSearching=false"
+                                routerLink="/profile">
+                                view
+                            </button>
+                            <button *ngIf="isFriend()" (click)="getOrCreateConversation()" class="primary-btn">
+                                chat
+                            </button>
+                            <button *ngIf="!isFriend() && !isOwnProfile()" (click)="addFriend()"
+                                class="primary-btn">add</button>
+                        </div>
                     </div>
                 </form>
             </li>

@@ -10,7 +10,7 @@
     <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()">
       <!-- firstName -->
       <div class="form__group">
-        <label for="firstName" class="form__label">firstName</label>
+        <label for="firstName" class="form__label">First Name</label>
         <input type="text" id="firstName" class="form__input" formControlName="firstName" required minlength="2"
           maxlength="20" autocomplete="off">
 
@@ -27,7 +27,7 @@
 
       <!-- lastName -->
       <div class="form__group">
-        <label for="lastName" class="form__label">lastName</label>
+        <label for="lastName" class="form__label">Last Name</label>
         <input type="text" id="lastName" class="form__input" formControlName="lastName" required minlength="2"
           maxlength="20" autocomplete="off">
 
@@ -94,7 +94,7 @@
 
     <div class="auth__footer">
       <p class="auth__footer-text">Already have an account?</p>
-      <a class="auth__footer-link" routerLink="auth/login">Login</a>
+      <a class="auth__footer-link" routerLink="/auth/login">Login</a>
     </div>
 
     <div class="or">

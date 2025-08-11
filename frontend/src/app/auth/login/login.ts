@@ -27,14 +27,13 @@ import { SocketService } from '../../services/socket-service';
 export class Login {
   title: string = 'Login';
   description: string =
-    'Log in to your account to start chatting with your friends.';
+    'Login to your account to start chatting with your friends.';
   errorMessage: string = '';
   formData!: FormGroup;
   loading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
-    // public themeService: ThemeService,
     private authService: Auth,
     private socketService: SocketService,
     private router: Router

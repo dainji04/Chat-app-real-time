@@ -4,7 +4,7 @@
         <ul class="header__nav-list">
             <li class="header__nav-item">
                 <h1 class="header__nav-logo">
-                    <a routerLink="/">
+                    <a routerLinkActive="active" routerLink="/">
                         Dainji
                     </a>
                 </h1>
@@ -18,14 +18,16 @@
                                 type="text" placeholder="type email">
                         </div>
                     </div>
-                    <div class="result__search" *ngIf="isSearching && resultUser!= null">
-                        <a class="result__search-link" *ngIf="resultUser">
+                    @if (isSearching) {
+                    <div class="result__search">
+                        @if (isSearching && resultUser != null) {
+                        <a class="result__search-link">
                             <img [src]="resultUser?.avatar" alt="{{ resultUser?.username }} avatar" class="avatar">
                             <span>{{ resultUser?.firstName + ' ' + resultUser?.lastName }}</span>
                         </a>
                         <div class="button__state">
                             <button *ngIf="isOwnProfile()" class="primary-btn" (click)="isSearching=false"
-                                routerLink="/profile">
+                                routerLinkActive="active" routerLink="/profile">
                                 view
                             </button>
                             <button *ngIf="isFriend()" (click)="getOrCreateConversation()" class="primary-btn">
@@ -35,7 +37,13 @@
                                 add
                             </button>
                         </div>
+                        } @else if (isSearching && resultUser == null) {
+                        <div class="result__search-link">
+                            <span>No user found</span>
+                        </div>
+                        }
                     </div>
+                    }
                 </form>
             </li>
             <li class="header__nav-item profile" appClickOutside (appClickOutside)="isProfile = false">
@@ -50,12 +58,62 @@
                         </div>
                     </div>
                     <ul>
-                        <li><a (click)="toggleProfile()" routerLink="/profile">Profile</a></li>
-                        <li><a (click)="toggleProfile()" routerLink="/settings">Settings</a></li>
-                        <li><a (click)="logout()">Logout</a></li>
+                        <li>
+                            <a (click)="toggleProfile()" routerLinkActive="active" routerLink="/profile">
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a (click)="toggleProfile()" routerLinkActive="active" routerLink="/settings">
+                                Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a (click)="logout()">
+                                Logout
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>
         </ul>
     </nav>
+</header>
+
+<!-- desktop, tablet header -->
+<header class="header__desktop">
+    <div class="header__sidebar">
+        <div class="header__sidebar--left">
+            <h1 class="header__sidebar-logo">
+                <a routerLinkActive="active" routerLink="/">
+                    Dainji
+                </a>
+            </h1>
+            <ul class="header__sidebar-menu">
+                <li class="header__sidebar-item">
+                    <a class="header__sidebar-link" routerLinkActive="active" routerLink="/messages">
+                        <i class="fa-solid fa-comments"></i>
+                        <p>Messages</p>
+                    </a>
+                </li>
+                <li class="header__sidebar-item">
+                    <a class="header__sidebar-link" routerLinkActive="active" routerLink="friends">
+                        <i class="fa-solid fa-user-group"></i>
+                        <p>Friends</p>
+                    </a>
+                </li>
+            </ul>
+            <div class="header__sidebar-item settings">
+                <a class="header__sidebar-link" routerLinkActive="active" routerLink="settings">
+                    <i class="fa-solid fa-gear"></i>
+                    <p>Settings</p>
+                </a>
+            </div>
+        </div>
+        <div class="router">
+            <div>
+                <!-- <router-outlet></router-outlet> -->
+            </div>
+        </div>
+    </div>
 </header>

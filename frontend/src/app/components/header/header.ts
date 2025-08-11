@@ -64,10 +64,26 @@ export class Header implements OnInit {
 
     this.searchForm
       .get('email')!
-      .valueChanges.pipe(debounceTime(300)) // chờ 1s sau khi ngừng gõ
+      .valueChanges.pipe(debounceTime(500)) // chờ 500ms sau khi ngừng gõ
       .subscribe(() => {
         this.onSearchInput();
       });
+  }
+
+  onSearchInput() {
+    this.resultUser = null;
+    this.userService.searchByEmail(this.searchForm.value.email).subscribe({
+      next: (response) => {
+        this.resultUser = response.user;
+        console.log(this.resultUser);
+      },
+      error: (error) => {
+        console.error('Search failed:', error);
+        if (error.status === 404) {
+          console.log('User not found');
+        }
+      },
+    });
   }
 
   isOwnProfile() {
@@ -125,18 +141,6 @@ export class Header implements OnInit {
       error: (error: any) => {
         alert('chat failed');
         console.error('Error getting or creating conversation:', error);
-      },
-    });
-  }
-
-  onSearchInput() {
-    this.userService.searchByEmail(this.searchForm.value.email).subscribe({
-      next: (response) => {
-        this.resultUser = response.user;
-        console.log(this.resultUser);
-      },
-      error: (error) => {
-        console.error('Search failed:', error);
       },
     });
   }

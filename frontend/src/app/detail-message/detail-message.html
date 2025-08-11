@@ -1,3 +1,4 @@
+@if (id != '') {
 <div class="detail-message-container">
     <!-- Header -->
     <div class="chat-header">
@@ -19,74 +20,107 @@
     <!-- Messages Container -->
     <div class="messages-container">
         <div class="messages-list">
-            <div *ngFor="let message of messages" class="message-wrapper"
-                [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
+            @for (message of messages; track message._id) {
+            <div class="message-wrapper" [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
 
                 <div class="message">
                     <!-- Avatar (only for other users) -->
-                    <div class="message__avatar" *ngIf="!isOwnMessage(message)">
+                    @if (!isOwnMessage(message)) {
+                    <div class="message__avatar">
                         <img [src]="message.sender.avatar" [alt]="'User avatar'" />
                     </div>
+                    }
 
                     <!-- Message Content -->
                     <div class="message__content">
                         <!-- Text Message -->
-                        <div *ngIf="message.content.type === 'text'" class="message__bubble message__bubble--text">
+                        @if (message.content.type === 'text') {
+                        <div class="message__bubble message__bubble--text">
                             <p class="message__text">{{ message.content.text }}</p>
                         </div>
+                        }
 
                         <!-- Image Message -->
-                        <div *ngIf="message.content.type === 'image'" class="message__bubble message__bubble--media">
+                        @else if (message.content.type === 'image') {
+                        <div class="message__bubble message__bubble--media">
                             <img [src]="message.content.media.url" alt="Shared image" class="message__image"
                                 (click)="openImageModal(message.content.media.url)" />
-                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                            @if(message.content.text) {
+                            <p class="message__text">{{ message.content.text }}</p>
+                            }
                         </div>
+                        }
 
                         <!-- Video Message -->
-                        <div *ngIf="message.content.type === 'video'" class="message__bubble message__bubble--media">
+                        @else if (message.content.type === 'video') {
+                        <div class="message__bubble message__bubble--media">
                             <video [src]="message.content.media.url" controls class="message__video">
                             </video>
-                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                            @if(message.content.text) {
+                            <p class="message__text">{{ message.content.text }}</p>
+                            }
                         </div>
+                        }
 
                         <!-- File Message -->
-                        <div *ngIf="message.content.type === 'file'" class="message__bubble message__bubble--file">
+                        @else if (message.content.type === 'file') {
+                        <div class="message__bubble message__bubble--file">
                             <div class="file-info">
                                 <i class="fa-solid fa-file"></i>
                                 <span>{{ message.content.fileName || 'File' }}</span>
                             </div>
-                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                            @if(message.content.text) {
+                            <p class="message__text">{{ message.content.text }}</p>
+                            }
                         </div>
+                        }
 
                         <!-- audio Message -->
-                        <div *ngIf="message.content.type === 'audio'" class="message__bubble message__bubble--media">
+                        @else if (message.content.type === 'audio') {
+                        <div class="message__bubble message__bubble--media">
                             <audio controls class="message__audio">
                                 <source [src]="message.content.media.url" type="audio/mpeg" />
                                 Trình duyệt của bạn không hỗ trợ audio.
                             </audio>
-                            <p *ngIf="message.content.text" class="message__text">{{ message.content.text }}</p>
+                            @if(message.content.text) {
+                            <p class="message__text">{{ message.content.text }}</p>
+                            }
                         </div>
+                        }
 
 
                         <!-- Message Status & Time -->
                         <div class="message__meta">
                             <span class="message__time">{{ message.createdAt | date: 'hh:mm' }}</span>
-                            <div class="message__status" *ngIf="isOwnMessage(message)">
-                                <i class="fa-solid fa-check" *ngIf="message.readBy.length === 0"></i>
-                                <i class="fa-solid fa-check-double" *ngIf="message.readBy.length > 0"></i>
+                            @if (isOwnMessage(message)) {
+                            <div class="message__status">
+                                @if (message.readBy.length === 0) {
+                                <i class="fa-solid fa-check"></i>
+                                }
+                                @else if (message.readBy.length === 1) {
+                                <i class="fa-solid fa-check-double"></i>
+                                }
                             </div>
-                            <span class="message__edited" *ngIf="message.edited.isEdited">(edited)</span>
+                            }
+                            @if (message.edited.isEdited) {
+                            <span class="message__edited">(edited)</span>
+                            }
                         </div>
 
                         <!-- Reactions -->
-                        <div class="message__reactions" *ngIf="message.reactions.length > 0">
-                            <span *ngFor="let reaction of message.reactions" class="reaction">
+                        @if (message.reactions.length > 0) {
+                        <div class="message__reactions">
+                            @for(reaction of message.reactions; track reaction.emoji) {
+                            <span class="reaction">
                                 {{ reaction.emoji }} {{ reaction.count }}
                             </span>
+                            }
                         </div>
+                        }
                     </div>
                 </div>
             </div>
+            }
             <div id="bottom"></div>
         </div>
     </div>
@@ -125,3 +159,16 @@
         </div>
     </div>
 </div>
+}
+
+@else if (id != '' && messages.length === 0) {
+<div class="no-message">
+    <h2>Loading</h2>
+</div>
+}
+
+@else {
+<div class="detail-message-container">
+    <app-home></app-home>
+</div>
+}

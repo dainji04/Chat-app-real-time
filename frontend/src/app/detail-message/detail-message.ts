@@ -1,4 +1,12 @@
-import { AfterViewChecked, Component, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +14,7 @@ import { Message } from '../services/message';
 import { SocketService } from '../services/socket-service';
 import { Subscription } from 'rxjs';
 import { ClickOutside } from '../directives/click-outside';
+import { Home } from '../home/home';
 
 interface formMedia {
   url: string;
@@ -16,12 +25,15 @@ interface formMedia {
 
 @Component({
   selector: 'app-detail-message',
-  imports: [CommonModule, FormsModule, ClickOutside],
+  imports: [CommonModule, FormsModule, ClickOutside, Home],
   templateUrl: './detail-message.html',
   styleUrl: './detail-message.scss',
 })
-export class DetailMessage implements OnInit, AfterViewChecked {
-  id: string = '';
+export class DetailMessage implements OnInit, OnChanges {
+  @Input() id: string = '';
+  @Output() closeDetail = new EventEmitter<void>();
+
+  // id: string = '';
   messages: any[] = [];
   newMessageText: string = '';
   currentUserId: string = '';
@@ -38,8 +50,6 @@ export class DetailMessage implements OnInit, AfterViewChecked {
   constructor(
     private route: ActivatedRoute,
     private messageService: Message,
-    private router: Router,
-    private location: Location,
     private socketService: SocketService
   ) {
     // Get current user ID from localStorage
@@ -58,14 +68,7 @@ export class DetailMessage implements OnInit, AfterViewChecked {
 
     this.socketService.joinConversation(this.id!);
 
-    this.messageService.getConversationById(this.id!).subscribe({
-      next: (data) => {
-        this.messages = data.data;
-      },
-      error: (error) => {
-        console.error('Error fetching conversation:', error);
-      },
-    });
+    this.loadMessages();
 
     // Lắng nghe tin nhắn từ server
     this.receiveSub = this.socketService
@@ -76,9 +79,22 @@ export class DetailMessage implements OnInit, AfterViewChecked {
       });
   }
 
-  ngAfterViewChecked(): void {
-    console.log('call from ngAfterViewChecked');
-    this.scrollToBottom();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['id']) {
+      this.id = changes['id'].currentValue;
+      this.loadMessages();
+    }
+  }
+
+  loadMessages() {
+    this.messageService.getConversationById(this.id!).subscribe({
+      next: (data) => {
+        this.messages = data.data;
+      },
+      error: (error) => {
+        console.error('Error fetching conversation:', error);
+      },
+    });
   }
 
   scrollToBottom() {
@@ -87,7 +103,7 @@ export class DetailMessage implements OnInit, AfterViewChecked {
   }
 
   goBack(): void {
-    this.location.back();
+    this.closeDetail.emit();
   }
 
   isOwnMessage(message: any): boolean {

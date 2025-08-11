@@ -2,4 +2,12 @@
   padding-top: 80px;
   padding-bottom: 150px;
   background-color: #f8f9fa !important;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 768px) {
+  .main-layout {
+    padding: 0;
+  }
 }

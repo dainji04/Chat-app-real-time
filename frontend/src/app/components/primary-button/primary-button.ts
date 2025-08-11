@@ -4,11 +4,14 @@ import { Component, Input } from '@angular/core';
   selector: 'app-primary-button',
   standalone: true,
   imports: [],
-  templateUrl: './primary-button.html',
+  template: `
+    <button [disabled]="disabled" class="primary-button">
+      {{text}}
+    </button>
+  `,
   styleUrl: './primary-button.scss',
 })
 export class PrimaryButton {
   @Input() text: string = 'Click Me';
-
   @Input() disabled: boolean = false;
 }

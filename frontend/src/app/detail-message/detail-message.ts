@@ -75,10 +75,13 @@ export class DetailMessage implements OnInit, OnChanges {
       .listen<any>('receive_message')
       .subscribe(async (data) => {
         this.messages.push(data.message);
-        this.scrollToBottom();
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 1000);
       });
   }
 
+  // load messages if id changes
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['id']) {
       this.id = changes['id'].currentValue;
@@ -87,14 +90,20 @@ export class DetailMessage implements OnInit, OnChanges {
   }
 
   loadMessages() {
-    this.messageService.getConversationById(this.id!).subscribe({
-      next: (data) => {
-        this.messages = data.data;
-      },
-      error: (error) => {
-        console.error('Error fetching conversation:', error);
-      },
-    });
+    if (this.id != '') {
+      this.messageService.getConversationById(this.id!).subscribe({
+        next: (data) => {
+          this.messages = data.data;
+          console.log(data.data);
+          setTimeout(() => {
+            this.scrollToBottom();
+          }, 1000);
+        },
+        error: (error) => {
+          console.error('Error fetching conversation:', error);
+        },
+      });
+    }
   }
 
   scrollToBottom() {

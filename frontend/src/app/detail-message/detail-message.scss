@@ -142,7 +142,7 @@
     word-wrap: break-word;
 
     &--text {
-      max-width: 100%;
+      max-width: 200px;
     }
 
     &--media {
@@ -302,6 +302,7 @@
     font-size: 1rem;
     padding: 0.5rem 0;
     color: #333;
+    width: 100%;
 
     &::placeholder {
       color: #666;
@@ -319,5 +320,9 @@
 
   .back-btn {
     display: none;
+  }
+
+  .message__bubble--text {
+    max-width: 400px;
   }
 }

@@ -166,19 +166,8 @@
       }
     }
 
-    .options-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: $primary-color;
-      font-size: 20px;
-      padding: 10px 20px;
-      border-radius: 8px;
+    .options-wrapper {
       position: relative;
-
-      &:hover {
-        background-color: #f0f0f0;
-      }
 
       .options {
         position: absolute;
@@ -206,17 +195,37 @@
             background-color: #f0f0f0;
           }
 
-          a {
+          button {
             text-decoration: none;
             color: $primary-color;
             display: flex;
             justify-content: start;
+            outline: none;
+            border: none;
+            background-color: transparent;
 
             &.delete {
               color: $danger-color;
             }
           }
         }
+      }
+    }
+
+    .options-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: $primary-color;
+      font-size: 20px;
+      border-radius: 8px;
+
+      i {
+        padding: 10px 20px;
+      }
+
+      &:hover {
+        background-color: #f0f0f0;
       }
     }
   }

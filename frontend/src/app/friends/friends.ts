@@ -38,13 +38,14 @@ export class Friends implements OnInit {
       });
   }
 
-  showOptions(userId: string): void {
-    if (this.isUserShowOptions == null) {
-      this.isUserShowOptions = userId;
-    } else {
-      this.isUserShowOptions =
-        this.isUserShowOptions === userId ? null : userId;
-    }
+  showOptions(userId: string) {
+    this.isUserShowOptions = this.isUserShowOptions === userId ? null : userId;
+    console.log(`isUserShowOptions: ${this.isUserShowOptions}`);
+  }
+
+  closeOptions() {
+    console.log('called');
+    this.isUserShowOptions = null;
   }
 
   search(): void {

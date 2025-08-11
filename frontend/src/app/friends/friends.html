@@ -37,19 +37,42 @@
                     </div>
                     <span>{{ friend?.firstName + ' ' + friend?.lastName }}</span>
                 </div>
-                <button *ngIf="typeOfList == 'all'" class="options-btn" (click)="showOptions(friend._id)">
+                <!-- <button *ngIf="typeOfList == 'all'" class="options-btn" (click)="showOptions(friend._id)">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
-                    <ul class="options" [ngClass]="{'show': isUserShowOptions === friend._id}">
-                        <li><a (click)="getOrCreateConversation(friend._id)" href="#">Chat with
-                                {{friend?.username}}</a>
+                    <ul appClickOutside (appClickOutside)="showOptions(friend._id)" class="options"
+                        [ngClass]="{'show': isUserShowOptions === friend._id}">
+                        <li>
+                            <button (click)="getOrCreateConversation(friend._id)">
+                                Chat with {{friend?.username}}
+                            </button>
                         </li>
                         <li>
-                            <a (click)="unFriend(friend._id)" class="delete" href="#">Unfriend with
-                                {{friend?.username}}
-                            </a>
+                            <button (click)="unFriend(friend._id)" class="delete">
+                                Unfriend with {{friend?.username}}
+                            </button>
                         </li>
                     </ul>
-                </button>
+                </button> -->
+
+                <div class="options-wrapper">
+                    <button *ngIf="typeOfList == 'all'" class="options-btn" (click)="showOptions(friend._id)">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+
+                    <ul *ngIf="isUserShowOptions === friend._id" appClickOutside (appClickOutside)="closeOptions()"
+                        class="options" [ngClass]="{'show': isUserShowOptions === friend._id}">
+                        <li>
+                            <button (click)="getOrCreateConversation(friend._id)">
+                                Chat with {{friend?.username}}
+                            </button>
+                        </li>
+                        <li>
+                            <button (click)="unFriend(friend._id)" class="delete">
+                                Unfriend with {{friend?.username}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
 
                 <button *ngIf="typeOfList === 'requests'" class="accept-btn friend-btn"
                     (click)="acceptRequest(friend._id)">

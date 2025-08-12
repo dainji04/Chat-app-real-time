@@ -6,14 +6,14 @@ import {
   ReactiveFormsModule,
   FormGroup,
 } from '@angular/forms';
-import { Auth } from '../../services/auth';
+import { Auth } from '../../services/auth/auth';
 import { Router, RouterModule } from '@angular/router';
-import { ClickOutside } from '../../directives/click-outside';
+import { ClickOutside } from '../../directives/clickOutSide/click-outside';
 import { debounceTime } from 'rxjs';
-import { User } from '../../services/user';
-import { SocketService } from '../../services/socket-service';
-import { FriendService } from '../../services/friends';
-import { Message } from '../../services/message';
+import { User } from '../../services/user/user';
+import { SocketService } from '../../services/socket/socket-service';
+import { FriendService } from '../../services/friends/friends';
+import { Message } from '../../services/messages/message';
 
 @Component({
   selector: 'app-header',

@@ -6,8 +6,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { User } from '../services/user';
-import { Auth } from '../services/auth';
+import { User } from '../services/user/user';
+import { Auth } from '../services/auth/auth';
 import { debounceTime } from 'rxjs';
 
 @Component({

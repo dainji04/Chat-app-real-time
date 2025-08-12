@@ -7,13 +7,13 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule, Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Message } from '../services/message';
-import { SocketService } from '../services/socket-service';
+import { Message } from '../services/messages/message';
+import { SocketService } from '../services/socket/socket-service';
 import { Subscription } from 'rxjs';
-import { ClickOutside } from '../directives/click-outside';
+import { ClickOutside } from '../directives/clickOutSide/click-outside';
 import { Home } from '../home/home';
 
 interface formMedia {

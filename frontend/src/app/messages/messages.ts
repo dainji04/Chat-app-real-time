@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { Message } from '../services/message';
+import { Message } from '../services/messages/message';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DetailMessage } from '../detail-message/detail-message';

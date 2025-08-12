@@ -7,10 +7,10 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Auth } from '../../services/auth';
+import { Auth } from '../../services/auth/auth';
 import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
-import { SocketService } from '../../services/socket-service';
+import { SocketService } from '../../services/socket/socket-service';
 
 @Component({
   selector: 'app-login',

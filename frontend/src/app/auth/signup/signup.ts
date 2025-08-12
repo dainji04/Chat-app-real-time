@@ -9,8 +9,8 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
 import { PrimaryButton } from '../../components/primary-button/primary-button';
-import { Auth } from '../../services/auth';
-import { SocketService } from '../../services/socket-service';
+import { Auth } from '../../services/auth/auth';
+import { SocketService } from '../../services/socket/socket-service';
 
 @Component({
   selector: 'app-signup',

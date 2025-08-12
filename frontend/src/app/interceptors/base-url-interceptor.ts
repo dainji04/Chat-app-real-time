@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Token } from '../services/token';
+import { Token } from '../services/token/token';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 

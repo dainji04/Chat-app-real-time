@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Socket, io } from 'socket.io-client';
-import { Token } from './token';
+import { Token } from '../token/token';
 import { Observable } from 'rxjs';
 
 @Injectable({

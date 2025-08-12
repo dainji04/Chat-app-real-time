@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Api } from './api';
-import { Token } from './token';
-import { signUp } from '../types/auth';
+import { Api } from '../api/api';
+import { Token } from '../token/token';
+import { signUp } from '../../types/auth';
 import { firstValueFrom, Observable, tap } from 'rxjs';
 
 @Injectable({

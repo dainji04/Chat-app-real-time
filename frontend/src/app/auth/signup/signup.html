@@ -1,111 +1,90 @@
 <div class="container">
-  <div class="auth">
-    <!-- Remove or comment out the app-auth-intro component until itapp's properly configured -->
-    <app-auth-intro [title]="title" [description]="description"></app-auth-intro>
+	<div class="auth">
+		<app-auth-intro [title]="title" [description]="description"></app-auth-intro>
 
-    <div *ngIf="errorMessage" class="alert alert-error">
-      {{ errorMessage }}
-    </div>
+		@if (errorMessage) {
+			<div class="alert alert-error">
+				<p>{{ errorMessage }}</p>
+			</div>
+		}
 
-    <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()">
-      <!-- firstName -->
-      <div class="form__group">
-        <label for="firstName" class="form__label">First Name</label>
-        <input type="text" id="firstName" class="form__input" formControlName="firstName" required minlength="2"
-          maxlength="20" autocomplete="off">
+		<form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()">
+			<!-- firstName -->
+			<div class="form__group">
+				<label for="firstName" class="form__label">First Name</label>
+				<input type="text" id="firstName" class="form__input" formControlName="firstName" required minlength="2"
+					maxlength="20" autocomplete="off" />
 
-        <!-- show errors -->
-        <div
-          *ngIf="formData.get('firstName')?.invalid && (formData.get('firstName')?.dirty || formData.get('firstName')?.touched)"
-          class="alert alert-warning">
-          <div *ngIf="formData.get('firstName')?.errors?.['required']">First Name is required.</div>
-          <div *ngIf="formData.get('firstName')?.errors?.['minlength']">
-            First Name must be at least 2 characters long.
-          </div>
-        </div>
-      </div>
+				<!-- show error in validates -->
+				<app-show-error-validate [inputField]="formData.get('firstName')"
+                    [fieldName]="'First name'" [minLength]="2" [maxLength]="10">
+                </app-show-error-validate>
+			</div>
 
-      <!-- lastName -->
-      <div class="form__group">
-        <label for="lastName" class="form__label">Last Name</label>
-        <input type="text" id="lastName" class="form__input" formControlName="lastName" required minlength="2"
-          maxlength="20" autocomplete="off">
+			<!-- lastName -->
+			<div class="form__group">
+				<label for="lastName" class="form__label">Last Name</label>
+				<input type="text" id="lastName" class="form__input" formControlName="lastName" required minlength="2"
+					maxlength="20" autocomplete="off" />
 
-        <!-- show errors -->
-        <div
-          *ngIf="formData.get('lastName')?.invalid && (formData.get('lastName')?.dirty || formData.get('lastName')?.touched)"
-          class="alert alert-warning">
-          <div *ngIf="formData.get('lastName')?.errors?.['required']">Last Name is required.</div>
-          <div *ngIf="formData.get('lastName')?.errors?.['minlength']">
-            Last Name must be at least 2 characters long.
-          </div>
-        </div>
-      </div>
+				<!-- show error in validates -->
+                <app-show-error-validate [inputField]="formData.get('lastName')"
+                    [fieldName]="'Last name'" [minLength]="2" [maxLength]="10">
+                </app-show-error-validate>
+            </div>
 
-      <!-- username -->
-      <div class="form__group">
-        <label for="username" class="form__label">Username</label>
-        <input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
-          maxlength="10" autocomplete="off">
-        <div
-          *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
-          class="alert alert-warning">
-          <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
-          <div *ngIf="formData.get('username')?.errors?.['minlength']">
-            Username must be at least 5 characters long.
-          </div>
-          <div *ngIf="formData.get('username')?.errors?.['maxlength']">
-            Username must be at most 10 characters long.
-          </div>
-        </div>
-      </div>
+			<!-- username -->
+			<div class="form__group">
+				<label for="username" class="form__label">Username</label>
+				<input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
+					maxlength="10" autocomplete="off" />
 
-      <!-- email -->
-      <div class="form__group">
-        <label for="email" class="form__label">Email</label>
-        <input type="email" id="email" class="form__input" formControlName="email" required email autocomplete="off">
-        <div *ngIf="formData.get('email')?.invalid && (formData.get('email')?.dirty || formData.get('email')?.touched)"
-          class="alert alert-warning">
-          <div *ngIf="formData.get('email')?.errors?.['required']">Email is required.</div>
-          <div *ngIf="formData.get('email')?.errors?.['email']">
-            Please enter a valid email address.
-          </div>
-        </div>
-      </div>
+                <!-- show error in validates -->
+                <app-show-error-validate [inputField]="formData.get('username')"
+                    [fieldName]="'Username'" [minLength]="5" [maxLength]="10">
+                </app-show-error-validate>
+            </div>
 
-      <!-- password -->
-      <div class="form__group">
-        <label for="password" class="form__label">Password</label>
-        <input type="password" id="password" class="form__input" formControlName="password" required minlength="6"
-          autocomplete="off">
-        <div *ngIf="formData.get('password')?.invalid && (formData.get('password')?.dirty ||
-          formData.get('password')?.touched)" class="alert alert-warning">
-          <div *ngIf="formData.get('password')?.errors?.['required']">Password is required.</div>
-          <div *ngIf="formData.get('password')?.errors?.['minlength']">
-            Password must be at least 6 characters long.
-          </div>
-        </div>
-      </div>
-      <div class="form__submit">
-        <app-primary-button [disabled]="loading" [text]="loading ? 'Signing Up...' : 'Sign Up'" class="form__submit"
-          type="submit"></app-primary-button>
-      </div>
-    </form>
+			<!-- email -->
+			<div class="form__group">
+				<label for="email" class="form__label">Email</label>
+				<input type="email" id="email" class="form__input" formControlName="email" required email
+					autocomplete="off" />
 
-    <div class="auth__footer">
-      <p class="auth__footer-text">Already have an account?</p>
-      <a class="auth__footer-link" routerLink="/auth/login">Login</a>
-    </div>
+				<!-- show Error in validate -->
+                <app-show-error-validate [inputField]="formData.get('email')" [fieldName]="'Email'"></app-show-error-validate>
+            </div>
 
-    <div class="or">
-      <div class="or__line"></div>
-      <span class="or__text">or</span>
-      <div class="or__line"></div>
-    </div>
+			<!-- password -->
+			<div class="form__group">
+				<label for="password" class="form__label">Password</label>
+				<input type="password" id="password" class="form__input" formControlName="password" required
+					minlength="6" autocomplete="off" />
 
-    <div class="social-auth">
-      <app-primary-button [text]="'Sign up with Google'"></app-primary-button>
-    </div>
+				<!-- Show error in validate -->
+                <app-show-error-validate [inputField]="formData.get('password')"
+                    [fieldName]="'Password'" [minLength]="6">
+                </app-show-error-validate>
+            </div>
+			<div class="form__submit">
+				<app-primary-button [disabled]="loading" [text]="loading ? 'Signing Up...' : 'Sign Up'"
+					class="form__submit" type="submit"></app-primary-button>
+			</div>
+		</form>
 
-  </div>
+		<div class="auth__footer">
+			<p class="auth__footer-text">Already have an account?</p>
+			<a class="auth__footer-link" routerLink="/auth/login">Login</a>
+		</div>
+
+		<div class="or">
+			<div class="or__line"></div>
+			<span class="or__text">or</span>
+			<div class="or__line"></div>
+		</div>
+
+		<div class="social-auth">
+			<app-primary-button [text]="'Sign up with Google'"></app-primary-button>
+		</div>
+	</div>
 </div>

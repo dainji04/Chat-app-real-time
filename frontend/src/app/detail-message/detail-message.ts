@@ -84,6 +84,7 @@ export class DetailMessage implements OnInit, OnChanges {
   // load messages if id changes
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['id']) {
+      this.messages = [];
       this.id = changes['id'].currentValue;
       this.loadMessages();
     }

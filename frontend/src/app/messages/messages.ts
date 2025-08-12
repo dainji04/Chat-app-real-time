@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import { Message } from '../services/messages/message';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -12,6 +12,7 @@ import { DetailMessage } from '../detail-message/detail-message';
 })
 export class Messages implements OnInit, OnDestroy {
   @ViewChild('detail') detailElement: any;
+  @ViewChild('message') messageElement: any;
   messages: any[] = [];
   selectedMessageId: string = '';
   isDetailOpen: boolean = false;
@@ -38,6 +39,9 @@ export class Messages implements OnInit, OnDestroy {
 
     // Show detail with animation
     this.detailElement.nativeElement.classList.add('show');
+    setTimeout(() => {
+        this.messageElement.nativeElement.classList.add('hide');
+    }, 100);
   }
 
   closeDetail() {
@@ -47,6 +51,7 @@ export class Messages implements OnInit, OnDestroy {
     document.body.classList.remove('detail-message-open');
 
     // Hide detail with animation
+      this.messageElement.nativeElement.classList.remove('hide');
     this.detailElement.nativeElement.classList.remove('show');
 
     // Clear selected message after animation

@@ -8,11 +8,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { debounceTime } from 'rxjs';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss',
 })
@@ -33,8 +32,8 @@ export class ResetPassword implements OnInit {
 
   ngOnInit(): void {
     this.formReset = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
     });
 
     this.formReset

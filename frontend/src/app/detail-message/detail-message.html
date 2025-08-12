@@ -120,6 +120,10 @@
                     </div>
                 </div>
             </div>
+            } @empty {
+            <div class="no-message">
+                <h2>No messages</h2>
+            </div>
             }
             <div id="bottom"></div>
         </div>
@@ -130,7 +134,8 @@
         <div class="message-input">
             <button class="attach-btn" clickOutSide (appClickOutside)="isShowOptionMedia = false">
                 <i class="fa-solid fa-paperclip" (click)="isShowOptionMedia=!isShowOptionMedia"></i>
-                <ul class="media-options" *ngIf="isShowOptionMedia">
+                @if (isShowOptionMedia) {
+                <ul class="media-options">
                     <li>
                         <label for="image">Image</label>
                         <input hidden type="file" id="image" name="image" (change)="onFileSelected($event, 'image')"
@@ -145,11 +150,14 @@
                             accept="audio/*" class="avatar__input">
                     </li>
                 </ul>
+                }
             </button>
             <div class="message-input-box">
-                <div *ngIf="file">
+                @if (file) {
+                <div>
                     {{file.name}}
                 </div>
+                }
                 <input type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
                     (keyup.enter)="sendMessage()" />
             </div>

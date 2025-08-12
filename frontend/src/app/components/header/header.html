@@ -9,7 +9,7 @@
                     </a>
                 </h1>
             </li>
-            <li appClickOutside (appClickOutside)="isSearching = false">
+            <li (appClickOutside)="isSearching = false">
                 <form [formGroup]="searchForm" class="header__search-form" (ngSubmit)="onSearchInput()">
                     <div class="header__search">
                         <i (click)="toggleSearch()" class="fa-solid fa-magnifying-glass"></i>
@@ -21,60 +21,67 @@
                     @if (isSearching) {
                     <div class="result__search">
                         @if (isSearching && resultUser != null) {
-                        <a class="result__search-link">
-                            <img [src]="resultUser?.avatar" alt="{{ resultUser?.username }} avatar" class="avatar">
-                            <span>{{ resultUser?.firstName + ' ' + resultUser?.lastName }}</span>
-                        </a>
-                        <div class="button__state">
-                            <button *ngIf="isOwnProfile()" class="primary-btn" (click)="isSearching=false"
-                                routerLinkActive="active" routerLink="/profile">
-                                view
-                            </button>
-                            <button *ngIf="isFriend()" (click)="getOrCreateConversation()" class="primary-btn">
-                                chat
-                            </button>
-                            <button *ngIf="!isFriend() && !isOwnProfile()" (click)="addFriend()" class="primary-btn">
-                                add
-                            </button>
-                        </div>
+                            <a class="result__search-link">
+                                <img [src]="resultUser?.avatar" alt="{{ resultUser?.username }} avatar" class="avatar">
+                                <span>{{ resultUser?.firstName + ' ' + resultUser?.lastName }}</span>
+                            </a>
+                            <div class="button__state">
+                                @if (isOwnProfile()) {
+                                    <button class="primary-btn" (click)="isSearching=false"
+                                        routerLinkActive="active" routerLink="/profile">
+                                        view
+                                    </button>
+                                }
+                                @if (isFriend()) {
+                                    <button (click)="getOrCreateConversation()" class="primary-btn">
+                                        chat
+                                    </button>
+                                } @else {
+                                    <button (click)="addFriend()" class="primary-btn">
+                                        add
+                                    </button>
+                                }
+                            </div>
                         } @else if (isSearching && resultUser == null) {
-                        <div class="result__search-link">
-                            <span>No user found</span>
-                        </div>
+                            <div class="result__search-link">
+                                <span>No user found</span>
+                            </div>
                         }
                     </div>
                     }
                 </form>
             </li>
-            <li class="header__nav-item profile" appClickOutside (appClickOutside)="isProfile = false">
+            <li class="header__nav-item profile" (appClickOutside)="isProfile = false">
                 <img (click)="toggleProfile()" [src]="user.avatar" [alt]="user.username + ' avatar'" class="avatar">
                 <!-- Profile Menu -->
-                <div *ngIf="isProfile" class="profile__menu">
-                    <div class="profile__user-info">
-                        <img [src]="user.avatar" class="avatar" alt="avatar_user">
-                        <div>
-                            <h3 class="profile__user-fullname">{{ user.firstName + ' ' + user.lastName }}</h3>
-                            <p class="profile__username">&#64;{{ user.username }}</p>
+                @if (isProfile) {
+                    <div class="profile__menu">
+                        <div class="profile__user-info">
+                            <img [src]="user.avatar" class="avatar" alt="avatar_user">
+                            <div>
+                                <h3 class="profile__user-fullname">{{ user.firstName + ' ' + user.lastName }}</h3>
+                                <p class="profile__username">&#64;{{ user.username }}</p>
+                            </div>
                         </div>
+                        <ul>
+                            <li>
+                                <a (click)="toggleProfile()" routerLinkActive="active" routerLink="/profile">
+                                    Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a (click)="toggleProfile()" routerLinkActive="active" routerLink="/settings">
+                                    Settings
+                                </a>
+                            </li>
+                            <li>
+                                <a (click)="logout()">
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <ul>
-                        <li>
-                            <a (click)="toggleProfile()" routerLinkActive="active" routerLink="/profile">
-                                Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a (click)="toggleProfile()" routerLinkActive="active" routerLink="/settings">
-                                Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a (click)="logout()">
-                                Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                }
             </li>
         </ul>
     </nav>

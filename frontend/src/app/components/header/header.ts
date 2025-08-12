@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormsModule,
   FormControl,
@@ -20,7 +19,6 @@ import { Message } from '../../services/messages/message';
   imports: [
     ReactiveFormsModule,
     FormsModule,
-    CommonModule,
     RouterModule,
     ClickOutside,
   ],

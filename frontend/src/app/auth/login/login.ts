@@ -6,21 +6,21 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { Auth } from '../../services/auth/auth';
 import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
 import { SocketService } from '../../services/socket/socket-service';
+import {ShowErrorValidate} from '../../components/show-error-validate/show-error-validate';
 
 @Component({
   selector: 'app-login',
-  imports: [
-    PrimaryButton,
-    AuthIntroComponent,
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-  ],
+    imports: [
+        PrimaryButton,
+        AuthIntroComponent,
+        ReactiveFormsModule,
+        RouterModule,
+        ShowErrorValidate,
+    ],
   templateUrl: './login.html',
   styleUrls: ['../auth.scss'],
 })

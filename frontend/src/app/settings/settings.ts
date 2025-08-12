@@ -1,4 +1,3 @@
-import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -9,10 +8,11 @@ import {
 import { User } from '../services/user/user';
 import { Auth } from '../services/auth/auth';
 import { debounceTime } from 'rxjs';
+import {ShowErrorValidate} from '../components/show-error-validate/show-error-validate';
 
 @Component({
   selector: 'app-settings',
-  imports: [ReactiveFormsModule, CommonModule, ReactiveFormsModule],
+    imports: [ReactiveFormsModule, ReactiveFormsModule, ShowErrorValidate],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -53,7 +53,7 @@ export class Settings implements OnInit {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(20),
+          Validators.maxLength(10),
         ],
       ],
       lastName: [
@@ -61,7 +61,7 @@ export class Settings implements OnInit {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(20),
+          Validators.maxLength(10),
         ],
       ],
       bio: [this.user.bio || '', [Validators.maxLength(200)]],

@@ -2,9 +2,11 @@
     <div class="auth">
         <app-auth-intro [title]="title" [description]="description"></app-auth-intro>
 
-        <div *ngIf="errorMessage" class="alert alert-error">
-            {{ errorMessage }}
-        </div>
+        @if (errorMessage) {
+            <div class="alert alert-error">
+                <p>{{ errorMessage }}</p>
+            </div>
+        }
 
         <form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()">
             <!-- username -->
@@ -12,16 +14,10 @@
                 <label for="username" class="form__label">Username</label>
                 <input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
                     maxlength="10" autocomplete="off">
-                <div *ngIf="formData.get('username')?.invalid && (formData.get('username')?.dirty || formData.get('username')?.touched)"
-                    class="alert alert-warning">
-                    <div *ngIf="formData.get('username')?.errors?.['required']">Username is required.</div>
-                    <div *ngIf="formData.get('username')?.errors?.['minlength']">
-                        Username must be at least 5 characters long.
-                    </div>
-                    <div *ngIf="formData.get('username')?.errors?.['maxlength']">
-                        Username must be at most 10 characters long.
-                    </div>
-                </div>
+                <!-- show error in validates -->
+                <app-show-error-validate [inputField]="formData.get('username')"
+                    [fieldName]="'Username'" [minLength]="5" [maxLength]="10">
+                </app-show-error-validate>
             </div>
 
             <!-- password -->
@@ -29,13 +25,10 @@
                 <label for="password" class="form__label">Password</label>
                 <input type="password" id="password" class="form__input" formControlName="password" required
                     minlength="6" autocomplete="off">
-                <div *ngIf="formData.get('password')?.invalid && (formData.get('password')?.dirty ||
-        formData.get('password')?.touched)" class="alert alert-warning">
-                    <div *ngIf="formData.get('password')?.errors?.['required']">Password is required.</div>
-                    <div *ngIf="formData.get('password')?.errors?.['minlength']">
-                        Password must be at least 6 characters long.
-                    </div>
-                </div>
+                <!-- Show error in validate -->
+                <app-show-error-validate [inputField]="formData.get('password')"
+                    [fieldName]="'Password'" [minLength]="6">
+                </app-show-error-validate>
             </div>
             <div class="form__submit">
                 <app-primary-button [disabled]="loading" [text]="loading ? 'Loading...' : 'Login'" class="form__submit"
@@ -62,5 +55,4 @@
             <app-primary-button [text]="'Login with Google'"></app-primary-button>
         </div>
     </div>
-
 </div>

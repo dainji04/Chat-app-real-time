@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
   FormBuilder,
@@ -11,17 +10,18 @@ import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
 import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { Auth } from '../../services/auth/auth';
 import { SocketService } from '../../services/socket/socket-service';
+import {ShowErrorValidate} from '../../components/show-error-validate/show-error-validate';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    PrimaryButton,
-    AuthIntroComponent,
-  ],
+    imports: [
+        ReactiveFormsModule,
+        RouterModule,
+        PrimaryButton,
+        AuthIntroComponent,
+        ShowErrorValidate,
+    ],
   templateUrl: './signup.html',
   styleUrl: '../auth.scss',
 })
@@ -48,7 +48,7 @@ export class Signup {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(20),
+          Validators.maxLength(10),
         ],
       ],
       lastName: [
@@ -56,7 +56,7 @@ export class Signup {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(20),
+          Validators.maxLength(10),
         ],
       ],
       username: [

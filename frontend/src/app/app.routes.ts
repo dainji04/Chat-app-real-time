@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Home } from './home/home';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { authGuard } from './guards/authGuard/auth-guard';
@@ -12,29 +11,31 @@ const appRoutes: Routes = [
     children: [
       {
         path: '',
-        component: Home,
-        canActivate: [authGuard],
+        redirectTo: 'messages',
+        pathMatch: 'full',
       },
       {
         path: 'messages',
         loadComponent: () =>
-          import('./messages/messages').then((c) => c.Messages),
+            import('./messages/messages').then((c) => c.Messages),
         canActivate: [authGuard],
       },
       {
         path: 'profile',
-        loadComponent: () => import('./profile/profile').then((c) => c.Profile),
+        loadComponent: () =>
+            import('./profile/profile').then((c) => c.Profile),
         canActivate: [authGuard],
       },
       {
         path: 'settings',
         loadComponent: () =>
-          import('./settings/settings').then((c) => c.Settings),
+            import('./settings/settings').then((c) => c.Settings),
         canActivate: [authGuard],
       },
       {
         path: 'friends',
-        loadComponent: () => import('./friends/friends').then((c) => c.Friends),
+        loadComponent: () =>
+            import('./friends/friends').then((c) => c.Friends),
         canActivate: [authGuard],
       },
     ],
@@ -43,46 +44,37 @@ const appRoutes: Routes = [
     path: 'auth',
     component: AuthLayout,
     children: [
-      {
-        path: 'login',
-        loadComponent: () => import('./auth/login/login').then((c) => c.Login),
-        canActivate: [guestGuard],
-      },
-      {
-        path: 'sign-up',
-        loadComponent: () =>
-          import('./auth/signup/signup').then((c) => c.Signup),
-        canActivate: [guestGuard],
-      },
+        {
+            path: 'login',
+            loadComponent: () =>
+                import('./auth/login/login').then((c) => c.Login),
+            canActivate: [guestGuard],
+        },
+        {
+            path: 'sign-up',
+            loadComponent: () =>
+                import('./auth/signup/signup').then((c) => c.Signup),
+            canActivate: [guestGuard],
+        },
     ],
   },
-  // {
-  //   path: 'messages/:id',
-  //   canActivate: [authGuard],
-  //   component: ChatLayout,
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadComponent: () =>
-  //         import('./detail-message/detail-message').then(
-  //           (c) => c.DetailMessage
-  //         ),
-  //     },
-  //   ],
-  // },
   {
     path: 'reset-password',
     loadComponent: () =>
-      import('./reset-password/reset-password').then((c) => c.ResetPassword),
+        import('./reset-password/reset-password').then(
+            (c) => c.ResetPassword
+        ),
   },
   {
     path: 'forgot-password',
     loadComponent: () =>
-      import('./forgot-password/forgot-password').then((c) => c.ForgotPassword),
+        import('./forgot-password/forgot-password').then(
+            (c) => c.ForgotPassword
+        ),
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'messages',
     pathMatch: 'full',
   },
 ];

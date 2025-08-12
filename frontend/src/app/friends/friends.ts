@@ -14,12 +14,14 @@ import { ClickOutside } from '../directives/click-outside';
   styleUrl: './friends.scss',
 })
 export class Friends implements OnInit {
+  listFriendsBackup: any[] | null = null; // save the old list friend before searching (filter)
   listFriends: any[] | null = null;
   formFilterAndSearch = new FormGroup({
     searchTerms: new FormControl(''),
   });
   typeOfList: string = 'all'; // 'all', 'requests', 'recommendations'
   isUserShowOptions: string | null = null;
+  isSearching: boolean = false;
 
   constructor(
     private friendService: FriendService,
@@ -52,39 +54,45 @@ export class Friends implements OnInit {
     const term =
       this.formFilterAndSearch.get('searchTerms')?.value?.trim() || '';
     if (term == '') {
-      this.friendService.getFriends().subscribe((data: any) => {
-        this.listFriends = data.friends;
-        this.typeOfList = 'all';
-      });
+      this.listFriends = this.listFriendsBackup; // restore the old list
+      this.isSearching = false; // turn off searching: not found,...
     } else {
+      this.listFriendsBackup = this.listFriends; // save the old list before searching
       this.listFriends =
         this.listFriends?.filter((friend) =>
           friend.username.toLowerCase().includes(term.toLowerCase())
         ) || [];
-      this.typeOfList = 'search'; // Reset type of list to 'all' when searching
+      this.isSearching = true; // Reset type of list to 'all' when searching
     }
   }
 
+  resetListFriend() {
+    this.listFriendsBackup = null; // Reset backup list when fetching all friends
+    this.listFriends = null; // Reset current list
+    this.isUserShowOptions = null; // turn off show option in get all friends
+
+  }
+
   getAll(): void {
+    this.resetListFriend();
     this.friendService.getFriends().subscribe((data: any) => {
       this.listFriends = data.friends;
       this.typeOfList = 'all';
-      this.isUserShowOptions = null;
     });
   }
 
   getFriendRequests(): void {
+    this.resetListFriend();
     this.friendService.getFriendRequests().subscribe((data: any) => {
       this.listFriends = data.friendRequests;
       this.typeOfList = 'requests';
-      this.isUserShowOptions = null; // Hide options when switching lists
     });
   }
 
   getFriendRecommendations(): void {
-    this.listFriends = [];
+    this.resetListFriend();
     this.typeOfList = 'recommendations';
-    this.isUserShowOptions = null;
+    this.listFriends = []
   }
 
   getOrCreateConversation(friendId: string): void {

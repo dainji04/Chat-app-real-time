@@ -26,82 +26,76 @@
         <div class="friends__length">
             <h1>{{ listFriends?.length || 0 }} Friends</h1>
         </div>
+        @if (listFriends) {
+            <div class="friends__list">
+                @for (friend of listFriends; let idx = $index; track friend._id) {
+                    <div class="friends__list-item">
+                        <div class="user">
+                            <div class="status">
+                                <img [src]="friend?.avatar" alt="{{ friend?.username }} avatar" class="avatar">
+                                <i [ngClass]="{'online': friend?.isOnline, 'offline': !friend?.isOnline}"
+                                    class="dot fa-solid fa-circle"></i>
+                            </div>
+                            <span>{{ friend?.firstName + ' ' + friend?.lastName }}</span>
+                        </div>
 
-        <div class="friends__list" *ngIf="listFriends">
-            <div class="friends__list-item" *ngFor="let friend of listFriends, let i = index">
-                <div class="user">
-                    <div class="status">
-                        <img [src]="friend?.avatar" alt="{{ friend?.username }} avatar" class="avatar">
-                        <i [ngClass]="{'online': friend?.isOnline, 'offline': !friend?.isOnline}"
-                            class="dot fa-solid fa-circle"></i>
+                        <div class="options-wrapper">
+                            @if (typeOfList === 'all') {
+                                <button class="options-btn" (click)="showOptions(friend._id)">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                @if(isUserShowOptions === friend._id) {
+                                <ul appClickOutside (appClickOutside)="closeOptions()" class="options"
+                                    [ngClass]="{'show': isUserShowOptions === friend._id}">
+                                    <li>
+                                        <button (click)="getOrCreateConversation(friend._id)">
+                                            Chat with {{friend?.username}}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button (click)="unFriend(friend._id)" class="delete">
+                                            Unfriend with {{friend?.username}}
+                                        </button>
+                                    </li>
+                                </ul>
+                                }
+                            }
+                            @else if (typeOfList === 'requests') {
+                                <button class="accept-btn friend-btn" (click)="acceptRequest(friend._id)">
+                                    accept
+                                </button>
+                            }
+                            @else if (typeOfList === 'recommendations') {
+                                <button class="add-btn friend-btn">
+                                    add
+                                </button>
+                            }
+                        </div>
                     </div>
-                    <span>{{ friend?.firstName + ' ' + friend?.lastName }}</span>
-                </div>
-                <!-- <button *ngIf="typeOfList == 'all'" class="options-btn" (click)="showOptions(friend._id)">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                    <ul appClickOutside (appClickOutside)="showOptions(friend._id)" class="options"
-                        [ngClass]="{'show': isUserShowOptions === friend._id}">
-                        <li>
-                            <button (click)="getOrCreateConversation(friend._id)">
-                                Chat with {{friend?.username}}
-                            </button>
-                        </li>
-                        <li>
-                            <button (click)="unFriend(friend._id)" class="delete">
-                                Unfriend with {{friend?.username}}
-                            </button>
-                        </li>
-                    </ul>
-                </button> -->
-
-                <div class="options-wrapper">
-                    <button *ngIf="typeOfList == 'all'" class="options-btn" (click)="showOptions(friend._id)">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-
-                    <ul *ngIf="isUserShowOptions === friend._id" appClickOutside (appClickOutside)="closeOptions()"
-                        class="options" [ngClass]="{'show': isUserShowOptions === friend._id}">
-                        <li>
-                            <button (click)="getOrCreateConversation(friend._id)">
-                                Chat with {{friend?.username}}
-                            </button>
-                        </li>
-                        <li>
-                            <button (click)="unFriend(friend._id)" class="delete">
-                                Unfriend with {{friend?.username}}
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-
-                <button *ngIf="typeOfList === 'requests'" class="accept-btn friend-btn"
-                    (click)="acceptRequest(friend._id)">
-                    accept
-                </button>
-
-                <button *ngIf="typeOfList === 'recommendations'" class="add-btn friend-btn">
-                    add
-                </button>
+                }
             </div>
-        </div>
-
-        <ng-container *ngIf="listFriends == undefined || listFriends?.length === 0">
-            <ng-container *ngIf="typeOfList === 'all'">
-                <p>No friends.</p>
-            </ng-container>
-            <ng-container *ngIf="typeOfList === 'requests'">
-                <p>No friend requests.</p>
-            </ng-container>
-            <ng-container *ngIf="typeOfList === 'recommendations'">
-                <p>No friend recommendations.</p>
-            </ng-container>
-            <ng-container *ngIf="typeOfList === 'search'">
-                <p>No friends found.</p>
-            </ng-container>
-        </ng-container>
-
-        <ng-container *ngIf="listFriends === null">
+        }
+        <!-- show loading in the first time -->
+        @if(!listFriends) {
             <p>Loading friends...</p>
-        </ng-container>
+        }
+        <!-- show no friends when list empty and not searching -->
+        @else if ((listFriends == undefined || listFriends.length === 0 && !isSearching)) {
+            @switch (typeOfList) {
+                @case ('all') {
+                    <p>No friends.</p>
+                }
+                @case ('requests') {
+                    <p>No friend requests.</p>
+                }
+                @case ('recommendations') {
+                    <p>No friend recommendations.</p>
+                }
+            }
+        }
+        <!-- show not found searching -->
+        @else if (isSearching && listFriends.length === 0) {
+            <p>No friends found.</p>
+        }
     </div>
 </div>

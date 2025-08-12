@@ -2,8 +2,8 @@ import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { MainLayout } from './layouts/main-layout/main-layout';
-import { authGuard } from './guards/auth-guard';
-import { guestGuard } from './guards/guest-guard';
+import { authGuard } from './guards/authGuard/auth-guard';
+import { guestGuard } from './guards/guestGuard/guest-guard';
 
 const appRoutes: Routes = [
   {

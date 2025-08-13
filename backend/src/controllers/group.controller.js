@@ -1,11 +1,15 @@
 const userModel = require('../models/user.model');
 const Conversation = require('../models/conversation.model.js');
+const {
+    uploadToCloudinary,
+    deleteFromCloudinary,
+} = require('../utils/cloudinary.js');
 
 class GroupController {
     // /api/groups/create [POST] : create a new group chat
     async createGroup(req, res) {
         try {
-            const { name, description, participantIds = [] } = req.body;
+            let { name, description, participantIds = [], avatar = null } = req.body;
             const user = req.user;
 
             if (!name || !description || !participantIds) {
@@ -37,16 +41,18 @@ class GroupController {
                 });
             }
 
-            const avatarGroup = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                name
-            )}&background=random&color=fff&size=256`;
+            if(!avatar) {
+                avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    name
+                )}&background=random&color=fff&size=256`;
+            }
 
             const newGroup = await Conversation.create({
                 participants: participants,
                 type: 'group',
                 name,
                 description,
-                avatar: avatarGroup,
+                avatar: avatar,
                 admin: user._id,
             });
 
@@ -237,6 +243,7 @@ class GroupController {
         try {
             const { groupId } = req.body;
             const file = req.file;
+            console.log(file);
 
             if (!groupId) {
                 return res.status(400).json({

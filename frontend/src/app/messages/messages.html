@@ -55,7 +55,7 @@
                         <label for="avatar">
                             <i class="fa-solid fa-camera"></i>
                         </label>
-                        <input hidden type="file" name="avatar" id="avatar">
+                        <input hidden (change)="onFileSelected($event)" type="file" name="avatar" id="avatar">
                     </div>
                     <div class="info-group__name">
                         <input type="text" name="nameGroup" id="name-group" placeholder="Type group name" [(ngModel)]="formGroupChat.name">
@@ -77,7 +77,7 @@
             </div>
             <div class="create-group__footer">
                 <button class="cancel btn">Cancel</button>
-                <button class="create btn" (click)="createGroup()">Create</button>
+                <button class="create btn" (click)="createGroup()">{{isCreatingGroup ? 'Creating...' : 'Create'}}</button>
             </div>
         </div>
     </div>

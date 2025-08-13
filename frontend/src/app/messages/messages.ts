@@ -7,6 +7,7 @@ import { ClickOutside } from '../directives/clickOutSide/click-outside';
 import { FriendService } from '../services/friends/friends';
 import { Groups } from '../services/groups/groups';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface group {
     name: string;
@@ -43,6 +44,9 @@ export class Messages implements OnInit, OnDestroy {
         description: 'default desc',
         participantIds: [],
     };
+    file!: File;
+    isCreatingGroup: boolean = false;
+
 
     constructor(
         private messageService: Message,
@@ -121,15 +125,42 @@ export class Messages implements OnInit, OnDestroy {
             this.formGroupChat.participantIds = mem.filter(
                 (memberId) => memberId !== id
             );
-            console.log(mem);
         }
     }
 
     createGroup() {
+        this.isCreatingGroup = true;
         this.groupServices.createGroup(this.formGroupChat).subscribe({
-            next: (res: any) => {
-                console.log(res);
+            next: async (res: any) => {
+                if (this.file) {
+                    await this.onUpload(res.data.group._id);
+                }
+                this.isCreatingGroup = false;
+                this.isShowCreateGroupBox = false;
+                this.fetchMessages();
             },
+            error: (err: HttpErrorResponse) => {
+                alert(err.error.message);
+                this.isCreatingGroup = false;
+            }
+        });
+    }
+
+    onFileSelected($event: any): void {
+        this.file = $event.target.files[0];
+    }
+
+    onUpload(groupId: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.groupServices.uploadGroupAvatar(groupId, this.file).subscribe({
+                next: (res) => {
+                    alert('upload avatar group successfully');
+                    resolve();
+                },
+                error: (err) => {
+                    reject(err);
+                }
+            });
         });
     }
 

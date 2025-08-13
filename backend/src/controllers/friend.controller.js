@@ -7,7 +7,7 @@ class FriendController {
 
             const friends = await User.find({
                 _id: { $in: user.friends },
-            }).select('username avatar firstName lastName email _id isOnline');
+            }).select('username avatar firstName lastName email _id isOnline').sort({firstName: 1});
 
             return res.status(200).json({
                 message: 'Friends retrieved successfully',

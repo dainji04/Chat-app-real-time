@@ -19,15 +19,7 @@ const messageSchema = new mongoose.Schema(
             },
             type: {
                 type: String,
-                enum: [
-                    'text',
-                    'image',
-                    'video',
-                    'file',
-                    'gift',
-                    'emoji',
-                    'audio',
-                ],
+                enum: ['text', 'image', 'video', 'audio'],
                 default: 'text',
             },
             media: {
@@ -39,15 +31,15 @@ const messageSchema = new mongoose.Schema(
                 duration: Number, // For videos/voice messages
                 thumbnail: String, // For videos
             },
-            gift: {
-                type: String,
-                name: String,
-                animation: String,
-            },
         },
         replyTo: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Message',
+        },
+        status: {
+            type: String,
+            enum: ['sent', 'delivered', 'read'],
+            default: 'sent',
         },
         readBy: [
             {

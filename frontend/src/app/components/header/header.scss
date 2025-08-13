@@ -216,14 +216,16 @@
   .header {
     &__desktop {
       display: block;
+      // lỗi index do 2 dom khác nhau
+      position: relative;
+      z-index: 2;
     }
+
     &__mobile {
       display: none;
     }
 
     &__sidebar {
-      // background-color: #fff;
-      // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       &--left {
         position: fixed;
         top: 0;
@@ -250,8 +252,9 @@
       }
 
       &-menu {
+        flex: 1;
         display: flex;
-        justify-content: center;
+        justify-content: start;
         align-items: center;
         flex-direction: column;
         gap: 10px;
@@ -259,9 +262,62 @@
 
       &-item {
         &.settings {
-          flex: 1;
-          display: flex;
-          align-items: end;
+          position: relative;
+
+          button {
+            border: none;
+            outline: none;
+          }
+        }
+
+        .setting {
+          &__options {
+            position: absolute;
+            left: 20px;
+            bottom: 100%;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px 40px;
+
+            .user {
+              &-info {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #ccc;
+              }
+
+              &-fullname {
+                white-space: nowrap;
+              }
+            }
+
+            &-list {
+              margin-top: 20px;
+              display: grid;
+            }
+
+            &-link {
+              display: flex;
+              align-items: center;
+              gap: 20px;
+              color: #000;
+              font-size: 18px;
+              padding: 10px 0;
+
+              &:hover {
+                color: $primary-color;
+                background-color: #f5f5f5;
+              }
+
+              i {
+                font-size: 20px;
+              }
+            }
+          }
         }
       }
 

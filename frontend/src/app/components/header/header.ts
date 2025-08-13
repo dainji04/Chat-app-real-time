@@ -33,6 +33,7 @@ export class Header implements OnInit {
   isSearching: boolean = false;
 
   isProfile: boolean = false;
+  isProfileDesktop: boolean = false;
 
   user: any = null;
 

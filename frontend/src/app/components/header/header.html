@@ -110,16 +110,43 @@
                     </a>
                 </li>
             </ul>
-            <div class="header__sidebar-item settings">
-                <a class="header__sidebar-link" routerLinkActive="active" routerLink="settings">
+            <div class="header__sidebar-item settings" (appClickOutside)="isProfileDesktop = false">
+                <button (click)="isProfileDesktop = !isProfileDesktop" class="header__sidebar-link">
                     <i class="fa-solid fa-gear"></i>
                     <p>Settings</p>
-                </a>
-            </div>
-        </div>
-        <div class="router">
-            <div>
-                <!-- <router-outlet></router-outlet> -->
+                </button>
+                <!-- Profile Menu -->
+                @if (isProfileDesktop) {
+                    <div class="setting__options">
+                        <div class="user-info">
+                            <img [src]="user.avatar" class="avatar" alt="avatar_user">
+                            <div>
+                                <h3 class="user-fullname">{{ user.firstName + ' ' + user.lastName }}</h3>
+                                <p class="profile__username">&#64;{{ user.username }}</p>
+                            </div>
+                        </div>
+                        <ul class="setting__options-list">
+                            <li class="setting__options-item">
+                                <a (click)="toggleProfile()" class="setting__options-link" routerLinkActive="active" routerLink="/profile">
+                                    <i class="fa-solid fa-circle-user"></i>
+                                    <p>Profile</p>
+                                </a>
+                            </li>
+                            <li class="setting__options-item">
+                                <a (click)="toggleProfile()" class="setting__options-link" routerLinkActive="active" routerLink="/settings">
+                                    <i class="fa-solid fa-gear"></i>
+                                    <p>Settings</p>
+                                </a>
+                            </li>
+                            <li class="setting__options-item">
+                                <a (click)="logout()"  href="#"  class="setting__options-link">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                    <p>Logout</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
             </div>
         </div>
     </div>

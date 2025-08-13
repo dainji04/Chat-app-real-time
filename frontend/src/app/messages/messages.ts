@@ -3,65 +3,138 @@ import { Message } from '../services/messages/message';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DetailMessage } from '../detail-message/detail-message';
+import { ClickOutside } from '../directives/clickOutSide/click-outside';
+import { FriendService } from '../services/friends/friends';
+import { Groups } from '../services/groups/groups';
+import { FormsModule } from '@angular/forms';
+
+interface group {
+    name: string;
+    description: string;
+    participantIds: string[];
+    avatar?: string;
+}
 
 @Component({
-  selector: 'app-messages',
-  imports: [CommonModule, RouterModule, DetailMessage],
-  templateUrl: './messages.html',
-  styleUrl: './messages.scss',
+    selector: 'app-messages',
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        DetailMessage,
+        ClickOutside,
+    ],
+    templateUrl: './messages.html',
+    styleUrl: './messages.scss',
 })
 export class Messages implements OnInit, OnDestroy {
-  @ViewChild('detail') detailElement: any;
-  @ViewChild('message') messageElement: any;
-  messages: any[] = [];
-  selectedMessageId: string = '';
-  isDetailOpen: boolean = false;
+    @ViewChild('detail') detailElement: any;
+    @ViewChild('message') messageElement: any;
+    messages: any[] = [];
+    selectedMessageId: string = '';
+    isDetailOpen: boolean = false;
 
-  constructor(private messageService: Message) {}
+    // create group chat
+    isShowCreateOptions: boolean = false;
+    isShowCreateGroupBox: boolean = false;
+    listFriends: any[] = [];
+    formGroupChat: group = {
+        name: '',
+        description: 'default desc',
+        participantIds: [],
+    };
 
-  ngOnInit(): void {
-    this.fetchMessages();
-  }
+    constructor(
+        private messageService: Message,
+        private friendServices: FriendService,
+        private groupServices: Groups
+    ) {}
 
-  fetchMessages() {
-    this.messageService.getAllConversations().subscribe((data: any) => {
-      this.messages = data.data;
-    });
-  }
+    ngOnInit(): void {
+        this.fetchMessages();
+    }
 
-  selectMessage(messageId: string) {
-    // Navigate to the detail message component with the selected message ID
-    this.selectedMessageId = messageId;
-    this.isDetailOpen = true;
+    fetchMessages() {
+        this.messageService.getAllConversations().subscribe((data: any) => {
+            this.messages = data.data;
+        });
+    }
 
-    // Add class to prevent body scroll
-    document.body.classList.add('detail-message-open');
+    showCreateOptions() {
+        this.isShowCreateOptions = !this.isShowCreateOptions;
+    }
 
-    // Show detail with animation
-    this.detailElement.nativeElement.classList.add('show');
-    setTimeout(() => {
-        this.messageElement.nativeElement.classList.add('hide');
-    }, 100);
-  }
+    showCreateGroupBox() {
+        this.isShowCreateGroupBox = !this.isShowCreateGroupBox;
+        if (this.listFriends.length === 0) {
+            this.friendServices.getFriends().subscribe({
+                next: (res: any) => {
+                    this.listFriends = res.friends;
+                },
+            });
+        }
+    }
 
-  closeDetail() {
-    this.isDetailOpen = false;
+    selectMessage(messageId: string) {
+        // Navigate to the detail message component with the selected message ID
+        this.selectedMessageId = messageId;
+        this.isDetailOpen = true;
 
-    // Remove class to restore body scroll
-    document.body.classList.remove('detail-message-open');
+        // Add class to prevent body scroll
+        document.body.classList.add('detail-message-open');
 
-    // Hide detail with animation
-      this.messageElement.nativeElement.classList.remove('hide');
-    this.detailElement.nativeElement.classList.remove('show');
+        // Show detail with animation
+        this.detailElement.nativeElement.classList.add('show');
+        setTimeout(() => {
+            this.messageElement.nativeElement.classList.add('hide');
+        }, 100);
+    }
 
-    // Clear selected message after animation
-    setTimeout(() => {
-      this.selectedMessageId = '';
-    }, 300);
-  }
+    closeDetail() {
+        this.isDetailOpen = false;
 
-  ngOnDestroy() {
-    // Clean up body class when component is destroyed
-    document.body.classList.remove('detail-message-open');
-  }
+        // Remove class to restore body scroll
+        document.body.classList.remove('detail-message-open');
+
+        // Hide detail with animation
+        this.messageElement.nativeElement.classList.remove('hide');
+        this.detailElement.nativeElement.classList.remove('show');
+
+        // Clear selected message after animation
+        setTimeout(() => {
+            this.selectedMessageId = '';
+        }, 300);
+    }
+
+    toggleMember(id: string, event: Event) {
+        const checked = (event.target as HTMLInputElement).checked;
+
+        let mem = this.formGroupChat.participantIds;
+
+        if (checked) {
+            // Thêm vào nếu chưa có
+            if (!mem.includes(id)) {
+                mem.push(id);
+            }
+        } else {
+            // Xoá ra
+            this.formGroupChat.participantIds = mem.filter(
+                (memberId) => memberId !== id
+            );
+            console.log(mem);
+        }
+    }
+
+    createGroup() {
+        this.groupServices.createGroup(this.formGroupChat).subscribe({
+            next: (res: any) => {
+                console.log(res);
+            },
+        });
+    }
+
+    ngOnDestroy() {
+        // Clean up body class when component is destroyed
+        document.body.classList.remove('detail-message-open');
+    }
 }

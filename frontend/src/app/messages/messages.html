@@ -4,12 +4,19 @@
             <h1 class="messages__header-title">
                 Conversations
             </h1>
+            <div class="circle" (click)="showCreateOptions()" >
+                <i class="fa-solid fa-plus"></i>
+                <ul [ngClass]="{'show': isShowCreateOptions}" class="create__options options">
+                    <li><button (click)="showCreateGroupBox()">create a group chat</button></li>
+                    <li><button>create something</button></li>
+                </ul>
+            </div>
         </div>
         <ul class="messages__list">
             @for (message of messages; track message._id) {
                 <li>
-                    <button class="messages__item" (click)="selectMessage(message._id)">
-                        <div style="position: relative;">
+                    <button [ngClass]="{'selected': selectedMessageId === message._id}" class="messages__item" (click)="selectMessage(message._id)">
+                        <div style="position: relative; z-index: 1">
                             <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
                             <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
                                 class="dot fa-solid fa-circle"></i>
@@ -31,3 +38,47 @@
         </app-detail-message>
     </div>
 </div>
+
+<!-- create group box -->
+@if(isShowCreateGroupBox) {
+    <div class="overlay" (click)="isShowCreateGroupBox=false">
+        <div class="create-group"  (click)="$event.stopPropagation()">
+            <div class="create-group__header">
+                <h1>Create group</h1>
+                <div class="close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="create-group__body">
+                <div class="info-group">
+                    <div class="info-group__upload-avatar">
+                        <label for="avatar">
+                            <i class="fa-solid fa-camera"></i>
+                        </label>
+                        <input hidden type="file" name="avatar" id="avatar">
+                    </div>
+                    <div class="info-group__name">
+                        <input type="text" name="nameGroup" id="name-group" placeholder="Type group name" [(ngModel)]="formGroupChat.name">
+                    </div>
+                </div>
+                <ul class="member">
+                    @for (friend of listFriends; track friend._id; let idx = $index) {
+                        <li>
+                            <input type="checkbox" name="addMember" [id]="'addMember' + idx" 
+                                [checked]="formGroupChat.participantIds.includes(friend._id)"
+                                (change)="toggleMember(friend._id, $event)">
+                            <label [for]="'addMember' + idx" class="user">
+                                <img [src]="friend?.avatar" alt="avatar user" class="user-avatar">
+                                <h3 class="user-name">{{friend?.firstName}} {{friend?.lastName}}</h3>
+                            </label>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="create-group__footer">
+                <button class="cancel btn">Cancel</button>
+                <button class="create btn" (click)="createGroup()">Create</button>
+            </div>
+        </div>
+    </div>
+}

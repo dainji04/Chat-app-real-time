@@ -27,4 +27,12 @@ export class Groups {
     formData.append('groupId', groupId);
     return this.apiService.put('groups/upload-avatar', formData);
   }
+
+  deleteGroup(groupId: string): Observable<any> {
+    return this.apiService.deleteWithData('groups/delete', { groupId });
+  }
+
+  leaveGroup(groupId: string): Observable<any> {
+    return this.apiService.put('groups/leave', { groupId });
+  }
 }

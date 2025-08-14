@@ -401,7 +401,7 @@ class GroupController {
     async promoteToModerator(req, res) {
         try {
             const user = req.user;
-            const { groupId, userId } = req.params;
+            const { groupId, userId } = req.body;
             const group = await Conversation.findById(groupId);
 
             if (!group) {
@@ -455,7 +455,7 @@ class GroupController {
     async demoteToUser(req, res) {
         try {
             const user = req.user;
-            const { groupId, userId } = req.params;
+            const { groupId, userId } = req.body;
 
             const group = await Conversation.findById(groupId);
             if (!group) {
@@ -509,7 +509,7 @@ class GroupController {
     async leaveGroup(req, res) {
         try {
             const user = req.user;
-            const { groupId } = req.params;
+            const { groupId } = req.body;
 
             const group = await Conversation.findById(groupId);
             if (!group) {

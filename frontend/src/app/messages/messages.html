@@ -15,11 +15,14 @@
         <ul class="messages__list">
             @for (message of messages; track message._id) {
                 <li>
-                    <button [ngClass]="{'selected': selectedMessageId === message._id}" class="messages__item" (click)="selectMessage(message._id)">
+                    <button [ngClass]="{'selected': selectedMessageId === message._id}" 
+                        class="messages__item" (click)="selectMessage(message)">
                         <div style="position: relative; z-index: 1">
                             <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
-                            <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
-                                class="dot fa-solid fa-circle"></i>
+                            @if(message.type !== 'group') {
+                                <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
+                                     class="dot fa-solid fa-circle"></i>
+                            }
                         </div>
                         <div class="messages__item-content">
                             <h3 class="messages__item-sender">{{ message.name }}</h3>
@@ -34,7 +37,7 @@
         </ul>
     </div>
     <div #detail class="messages__detail">
-        <app-detail-message [id]="selectedMessageId" (closeDetail)="closeDetail()">
+        <app-detail-message [id]="selectedMessageId" (closeDetail)="closeDetail()" [conversation]="detailConversation" (loadGroupEvent)="fetchMessages()">
         </app-detail-message>
     </div>
 </div>

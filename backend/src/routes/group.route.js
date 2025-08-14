@@ -296,7 +296,7 @@ router.delete('/delete', verifyAccessToken, groupController.deleteGroup); // Del
  *         description: Không tìm thấy nhóm hoặc user
  */
 router.put(
-    '/:groupId/promote/:userId',
+    '/promote',
     verifyAccessToken,
     groupController.promoteToModerator
 ); // Promote user to moderator
@@ -331,7 +331,7 @@ router.put(
  *         description: Không tìm thấy nhóm hoặc user
  */
 router.put(
-    '/:groupId/demote/:userId',
+    '/demote',
     verifyAccessToken,
     groupController.demoteToUser
 ); // Demote moderator to user
@@ -359,6 +359,6 @@ router.put(
  *       400:
  *         description: Không thể rời nhóm (có thể là admin duy nhất)
  */
-router.put('/:groupId/leave', verifyAccessToken, groupController.leaveGroup); // Leave a group
+router.put('/leave', verifyAccessToken, groupController.leaveGroup); // Leave a group
 
 module.exports = router;

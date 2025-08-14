@@ -1,0 +1,9 @@
+@mixin box {
+    margin: 20px;
+    background: #fff;
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    height: calc(100vh - 40px);
+}

@@ -1,14 +1,5 @@
 @use '../../styles/variables' as *;
-
-@mixin box {
-    margin: 20px;
-    background: #fff;
-    width: 100%;
-    padding: 10px 20px;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-    height: calc(100vh - 40px);
-}
+@use '../../styles/mixin' as *;
 
 body.detail-message-open {
     overflow: hidden;
@@ -32,7 +23,7 @@ body.detail-message-open {
     .messages {
         margin: 10px 20px 100px 20px;
         height: 100vh;
-        overflow-y: auto;
+        overflow-y: hidden;
 
         &.hide {
             display: none;
@@ -50,12 +41,14 @@ body.detail-message-open {
         }
 
         &__list {
+            height: 100%;
             list-style: none;
             padding: 0;
             margin: 10px 0;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            overflow-y: auto;
         }
 
         &__item {
@@ -424,12 +417,15 @@ body.detail-message-open {
             }
 
             &__detail {
+                width: 100%;
                 display: block;
                 transform: none;
                 position: relative;
-                @include box;
+                background-color: transparent;
                 padding: 0;
                 width: calc(100% - 40px);
+                overflow: hidden;
+                box-shadow: none;
             }
 
             &__item {
@@ -444,12 +440,6 @@ body.detail-message-open {
 }
 
 @media only screen and (min-width: 1024px) {
-    body.detail-message-open {
-        overflow: auto;
-        position: relative;
-        width: auto;
-    }
-
     .container {
         display: grid;
         grid-template-columns: 2fr 5fr;
@@ -458,22 +448,5 @@ body.detail-message-open {
         align-items: start;
         padding-left: 112px;
         background: #f5f5f5;
-
-        .messages {
-            @include box;
-
-            &.hide {
-                display: block;
-            }
-
-            &__detail {
-                display: block;
-                transform: none;
-                position: relative;
-                @include box;
-                padding: 0;
-                width: calc(100% - 40px);
-            }
-        }
     }
 }

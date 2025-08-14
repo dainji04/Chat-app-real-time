@@ -1,171 +1,236 @@
 @if (id != '') {
-<div class="detail-message-container">
-    <!-- Header -->
-    <div class="chat-header">
-        <div class="chat-header__left">
-            <button class="back-btn" (click)="goBack()">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-            <div class="chat-info">
-                <h3 class="chat-title">Conversation</h3>
-                <p class="chat-subtitle">{{ messages.length }} messages</p>
+<div class="container">
+    <div class="detail-message-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header__left">
+                <button class="back-btn" (click)="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="chat-info">
+                    <h3 class="chat-title">{{conversation.name}}</h3>
+                    <p class="chat-subtitle">{{ messages.length }} messages</p>
+                </div>
+            </div>
+            <div class="chat-header__right">
+                <button class="menu-btn" (click)="isShowSideBar = !isShowSideBar">
+                    <i class="fa-solid fa-ellipsis"></i>
+                </button>
             </div>
         </div>
-        <div class="chat-header__right">
-            <button class="menu-btn">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-        </div>
-    </div>
-    <!-- Messages Container -->
-    <div class="messages-container">
-        <div class="messages-list">
-            @for (message of messages; track message._id) {
-            <div class="message-wrapper" [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
+        <!-- Messages Container -->
+        <div class="messages-container">
+            <div class="messages-list">
+                @for (message of messages; track message._id) {
+                <div class="message-wrapper" [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
+    
+                    <div class="message">
+                        <!-- Avatar (only for other users) -->
+                        @if (!isOwnMessage(message)) {
+                        <div class="message__avatar">
+                            <img [src]="message.sender.avatar" [alt]="'User avatar'" />
+                        </div>
+                        }
+    
+                        <!-- Message Content -->
+                        <div class="message__content">
+                            <!-- Text Message -->
+                            @if (message.content.type === 'text') {
+                            <div class="message__bubble message__bubble--text">
+                                <pre class="message__text">{{ message.content.text }}</pre>
+                            </div>
+                            }
+    
+                            <!-- Image Message -->
+                            @else if (message.content.type === 'image') {
+                            <div class="message__bubble message__bubble--media">
+                                <img [src]="message.content.media.url" alt="Shared image" class="message__image"
+                                    (click)="openImageModal(message.content.media.url)" />
+                                @if(message.content.text) {
+                                <p class="message__text">{{ message.content.text }}</p>
+                                }
+                            </div>
+                            }
+    
+                            <!-- Video Message -->
+                            @else if (message.content.type === 'video') {
+                            <div class="message__bubble message__bubble--media">
+                                <video [src]="message.content.media.url" controls class="message__video">
+                                </video>
+                                @if(message.content.text) {
+                                <p class="message__text">{{ message.content.text }}</p>
+                                }
+                            </div>
+                            }
+    
+                            <!-- File Message -->
+                            @else if (message.content.type === 'file') {
+                            <div class="message__bubble message__bubble--file">
+                                <div class="file-info">
+                                    <i class="fa-solid fa-file"></i>
+                                    <span>{{ message.content.fileName || 'File' }}</span>
+                                </div>
+                                @if(message.content.text) {
+                                <p class="message__text">{{ message.content.text }}</p>
+                                }
+                            </div>
+                            }
+    
+                            <!-- audio Message -->
+                            @else if (message.content.type === 'audio') {
+                            <div class="message__bubble message__bubble--media">
+                                <audio controls class="message__audio">
+                                    <source [src]="message.content.media.url" type="audio/mpeg" />
+                                    Trình duyệt của bạn không hỗ trợ audio.
+                                </audio>
+                                @if(message.content.text) {
+                                <p class="message__text">{{ message.content.text }}</p>
+                                }
+                            </div>
+                            }
+    
+                            <!-- Message Status & Time -->
+                            <div class="message__meta">
+                                <span class="message__time">{{ message.createdAt | date: 'hh:mm' }}</span>
+                                @if (isOwnMessage(message)) {
+                                <div class="message__status">
+                                    @if (message.readBy.length === 0) {
+                                    <i class="fa-solid fa-check"></i>
+                                    }
+                                    @else if (message.readBy.length === 1) {
+                                    <i class="fa-solid fa-check-double"></i>
+                                    }
+                                </div>
+                                }
+                                @if (message.edited.isEdited) {
+                                <span class="message__edited">(edited)</span>
+                                }
+                            </div>
+    
+                            <!-- Reactions -->
+                            @if (message.reactions.length > 0) {
+                            <div class="message__reactions">
+                                @for(reaction of message.reactions; track reaction.emoji) {
+                                <span class="reaction">
+                                    {{ reaction.emoji }} {{ reaction.count }}
+                                </span>
+                                }
+                            </div>
+                            }
 
-                <div class="message">
-                    <!-- Avatar (only for other users) -->
-                    @if (!isOwnMessage(message)) {
-                    <div class="message__avatar">
-                        <img [src]="message.sender.avatar" [alt]="'User avatar'" />
+                            
+                        </div>
+                    </div>
+                </div>
+                } @empty {
+                <div class="no-message">
+                    <h2>No messages</h2>
+                </div>
+                }
+                <div id="bottom"></div>
+            </div>
+        </div>
+    
+        <!-- Message Input -->
+        <div class="message-input-container">
+            <div class="message-input">
+                <button class="attach-btn" clickOutSide (appClickOutside)="isShowOptionMedia = false">
+                    <i class="fa-solid fa-paperclip" (click)="isShowOptionMedia=!isShowOptionMedia"></i>
+                    @if (isShowOptionMedia) {
+                    <ul class="media-options">
+                        <li>
+                            <label for="image">
+                                <i class="fa-solid fa-image"></i> Image
+                            </label>
+                            <input hidden type="file" id="image" name="image" (change)="onFileSelected($event, 'image')"
+                                accept="image/*" class="avatar__input">
+                        </li>
+                        <li>
+                            <label for="video">
+                                <i class="fa-solid fa-video"></i> Video
+                            </label>
+                            <input hidden type="file" id="video" name="video" (change)="onFileSelected($event, 'video')"
+                                accept="video/*" class="avatar__input">
+                        </li>
+                        <li>
+                            <label for="audio">
+                                <i class="fa-solid fa-microphone"></i> Audio
+                            </label>
+                            <input hidden type="file" id="audio" name="audio" (change)="onFileSelected($event, 'audio')"
+                                accept="audio/*" class="avatar__input">
+                        </li>
+                    </ul>
+                    }
+                </button>
+                <div class="message-input-box">
+                    @if (file) {
+                    <div class="file-preview">
+                        <p class="file-name">{{file.name}}</p>
+                        <button (click)="deleteOldImage()" class="remove-file-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                     }
+                    <textarea type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
+                        (keyup.enter)="sendMessage()"></textarea>
+                </div>
+                <button class="send-btn" (click)="sendMessage()" >
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Message Content -->
-                    <div class="message__content">
-                        <!-- Text Message -->
-                        @if (message.content.type === 'text') {
-                        <div class="message__bubble message__bubble--text">
-                            <p class="message__text">{{ message.content.text }}</p>
-                        </div>
-                        }
-
-                        <!-- Image Message -->
-                        @else if (message.content.type === 'image') {
-                        <div class="message__bubble message__bubble--media">
-                            <img [src]="message.content.media.url" alt="Shared image" class="message__image"
-                                (click)="openImageModal(message.content.media.url)" />
-                            @if(message.content.text) {
-                            <p class="message__text">{{ message.content.text }}</p>
-                            }
-                        </div>
-                        }
-
-                        <!-- Video Message -->
-                        @else if (message.content.type === 'video') {
-                        <div class="message__bubble message__bubble--media">
-                            <video [src]="message.content.media.url" controls class="message__video">
-                            </video>
-                            @if(message.content.text) {
-                            <p class="message__text">{{ message.content.text }}</p>
-                            }
-                        </div>
-                        }
-
-                        <!-- File Message -->
-                        @else if (message.content.type === 'file') {
-                        <div class="message__bubble message__bubble--file">
-                            <div class="file-info">
-                                <i class="fa-solid fa-file"></i>
-                                <span>{{ message.content.fileName || 'File' }}</span>
-                            </div>
-                            @if(message.content.text) {
-                            <p class="message__text">{{ message.content.text }}</p>
-                            }
-                        </div>
-                        }
-
-                        <!-- audio Message -->
-                        @else if (message.content.type === 'audio') {
-                        <div class="message__bubble message__bubble--media">
-                            <audio controls class="message__audio">
-                                <source [src]="message.content.media.url" type="audio/mpeg" />
-                                Trình duyệt của bạn không hỗ trợ audio.
-                            </audio>
-                            @if(message.content.text) {
-                            <p class="message__text">{{ message.content.text }}</p>
-                            }
-                        </div>
-                        }
-
-
-                        <!-- Message Status & Time -->
-                        <div class="message__meta">
-                            <span class="message__time">{{ message.createdAt | date: 'hh:mm' }}</span>
-                            @if (isOwnMessage(message)) {
-                            <div class="message__status">
-                                @if (message.readBy.length === 0) {
-                                <i class="fa-solid fa-check"></i>
-                                }
-                                @else if (message.readBy.length === 1) {
-                                <i class="fa-solid fa-check-double"></i>
-                                }
-                            </div>
-                            }
-                            @if (message.edited.isEdited) {
-                            <span class="message__edited">(edited)</span>
-                            }
-                        </div>
-
-                        <!-- Reactions -->
-                        @if (message.reactions.length > 0) {
-                        <div class="message__reactions">
-                            @for(reaction of message.reactions; track reaction.emoji) {
-                            <span class="reaction">
-                                {{ reaction.emoji }} {{ reaction.count }}
-                            </span>
-                            }
-                        </div>
-                        }
+    <!-- side bar -->
+     @if (isShowSideBar) {
+        <div class="side-bar">
+            <div class="header">
+                <div class="info">
+                    <img class="avatar" [src]="conversation.avatar" alt="avatar group">
+                    <div>
+                        <h1>{{conversation.name}}</h1>
+                        <p>{{conversation.description}}</p>
                     </div>
                 </div>
-            </div>
-            } @empty {
-            <div class="no-message">
-                <h2>No messages</h2>
-            </div>
-            }
-            <div id="bottom"></div>
-        </div>
-    </div>
-
-    <!-- Message Input -->
-    <div class="message-input-container">
-        <div class="message-input">
-            <button class="attach-btn" clickOutSide (appClickOutside)="isShowOptionMedia = false">
-                <i class="fa-solid fa-paperclip" (click)="isShowOptionMedia=!isShowOptionMedia"></i>
-                @if (isShowOptionMedia) {
-                <ul class="media-options">
-                    <li>
-                        <label for="image">Image</label>
-                        <input hidden type="file" id="image" name="image" (change)="onFileSelected($event, 'image')"
-                            accept="image/*" class="avatar__input">
-                    </li>
-                    <li><label for="video">video</label>
-                        <input hidden type="file" id="video" name="video" (change)="onFileSelected($event, 'video')"
-                            accept="video/*" class="avatar__input">
-                    </li>
-                    <li><label for="audio">audio</label>
-                        <input hidden type="file" id="audio" name="audio" (change)="onFileSelected($event, 'audio')"
-                            accept="audio/*" class="avatar__input">
-                    </li>
-                </ul>
-                }
-            </button>
-            <div class="message-input-box">
-                @if (file) {
-                <div>
-                    {{file.name}}
+                <div class="options">
+                    @if (conversation.type === 'group') {
+                        <div class="options__group add-member">
+                            <button>
+                                <i class="fa-solid fa-user-plus"></i>
+                            </button>
+                            <p>Add</p>
+                        </div>
+                    }
                 </div>
-                }
-                <input type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
-                    (keyup.enter)="sendMessage()" />
             </div>
-            <button class="send-btn" (click)="sendMessage()" [disabled]="disableSend()">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
+            <div class="body">
+                @if (conversation.type === 'group') {
+                    <div class="body__option member">
+                        Members in group 
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                }
+                <div class="body__option media">
+                    Media in group
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="body__option support">
+                    Privacy and Security
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="footer">
+                @if (conversation.admin === currentUserId) {
+                    <button (click)="deleteGroup()" class="alert alert-error">
+                        delete group
+                    </button>
+                }
+                <button (click)="leaveGroup()" class="alert alert-error">
+                    leave of group
+                </button>
+            </div>
         </div>
-    </div>
+    }
 </div>
 }
 
@@ -176,7 +241,7 @@
 }
 
 @else {
-<div class="detail-message-container">
+<div class="hello-page">
     <app-home></app-home>
 </div>
 }

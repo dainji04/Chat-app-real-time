@@ -153,6 +153,64 @@ class UserController {
                 .json({ message: 'Server error', error: error.message });
         }
     }
+
+    // api/user/status/enter-conversation [PUT]
+    async enterGroup(req, res) {
+        try {
+            const user = req.user; // middleware should set req.user
+
+            user.isInConversation = true;
+            await user.save();
+
+            return res.status(200).json({
+                message: 'User entered the conversation',
+                user,
+            });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ message: 'Server error', error: error.message });
+        }
+    }
+
+    // api/user/status/leave-conversation [PUT]
+    async leaveGroup(req, res) {
+        try {
+            const user = req.user; // middleware should set req.user
+
+            user.isInConversation = false;
+            await user.save();
+
+            return res.status(200).json({
+                message: 'User left the conversation',
+                user,
+            });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ message: 'Server error', error: error.message });
+        }
+    }
+
+    // api/user/save-fcm-token [PUT]
+    async saveFcmToken(req, res) {
+        try {
+            const user = req.user;
+
+            user.FCMtoken = req.body.FCMtoken;
+
+            await user.save();
+
+            return res.status(200).json({
+                message: 'FCM token saved successfully',
+                user,
+            });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ message: 'Server error', error: error.message });
+        }
+    }
 }
 
 module.exports = new UserController();

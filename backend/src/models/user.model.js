@@ -90,6 +90,14 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        isInConversation: { // user is active in any group.
+            type: Boolean,
+            default: false,
+        },
+        FCMtoken: { // token firebase to send notifications
+            type: String,
+            default: null,
+        },
         lastSeen: {
             type: Date,
             default: Date.now,

@@ -181,4 +181,22 @@ router.get('/profile', verifyAccessToken, userController.getProfile);
  */
 router.get('/search', verifyAccessToken, userController.searchUserByEmail);
 
+router.put(
+    '/status/enter-conversation',
+    verifyAccessToken,
+    userController.enterGroup
+); // Change user status in group
+
+router.put(
+    '/status/leave-conversation',
+    verifyAccessToken,
+    userController.leaveGroup
+); // Change user status in group
+
+router.put(
+    '/save-fcm-token',
+    verifyAccessToken,
+    userController.saveFcmToken
+); // Change user status in group
+
 module.exports = router;

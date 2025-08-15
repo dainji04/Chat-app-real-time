@@ -3,6 +3,8 @@ const User = require('../models/user.model.js');
 const Conversation = require('../models/conversation.model.js');
 const Message = require('../models/message.model.js');
 
+const firebase = require('../utils/firebase.js');
+
 const authenSocket = async (socket, next) => {
     try {
         const token =
@@ -33,6 +35,8 @@ const authenSocket = async (socket, next) => {
     }
 };
 
+const onlineUsers = new Map();
+
 const socketHandler = (io) => {
     io.use(authenSocket);
 
@@ -40,6 +44,8 @@ const socketHandler = (io) => {
         console.log(
             `✅ Client socket: ${socket.user.username} connected with socket id: ${socket.id}`
         );
+
+        onlineUsers.set(socket.userId, socket.id);
 
         await User.findByIdAndUpdate(
             socket.userId,
@@ -55,6 +61,17 @@ const socketHandler = (io) => {
 
         conversations.forEach((conversation) => {
             socket.join(conversation._id.toString());
+        });
+
+        // update status message to delivered if its not readed
+        const messages = await Message.find({
+            conversation: { $in: conversations.map((c) => c._id) },
+            status: 'sent',
+        });
+
+        messages.forEach((message) => {
+            message.status = 'delivered';
+            message.save();
         });
 
         // Handle joining a conversation
@@ -128,12 +145,22 @@ const socketHandler = (io) => {
                     },
                 };
 
+
                 if (media && type !== 'text') {
                     messageData.content.media = media;
                 }
 
                 if (replyTo) {
                     messageData.replyTo = replyTo;
+                }
+
+                // Update status messages if receiver is online
+                const receiveUserId = conversation.participants
+                    .find((p) => p._id.toString() !== socket.userId)
+                    .toString();
+
+                if (onlineUsers.has(receiveUserId.toString())) {
+                    messageData.status = 'delivered';
                 }
 
                 const message = await Message.create(messageData);
@@ -149,19 +176,41 @@ const socketHandler = (io) => {
                     `📩 Message sent by ${socket.user.username} in conversation ${conversationId}`
                 );
 
-                // Emit message to all participants TRƯỚC khi update conversation
+                // Update conversation last message and activity status after emitting
+                conversation.lastMessage = message._id;
+                conversation.lastActivity = new Date();
+
+                await conversation.save();
+                
+                // Emit message to all participants before updating conversation
                 io.to(conversationId).emit('receive_message', {
                     message: populateMessage,
                     conversationId: conversationId,
                 });
+                console.log(
+                    `📩 Message delivered to online user: ${receiveUserId}`
+                );
 
-                // Update conversation last message and activity SAU khi đã emit
-                conversation.lastMessage = message._id;
-                conversation.lastActivity = new Date();
-                await conversation.save();
+                const populateConversation = await Conversation.findById(
+                    conversationId
+                )
+                    .populate(
+                        'participants',
+                        'username firstName lastName avatar isInConversation FCMtoken'
+                    )
+                    .lean();
 
-                // Send push notification to offline users (if implemented)
-                // await sendPushNotification(conversation, message);
+                for (const participant of populateConversation.participants) {
+                    if (participant._id.toString() !== socket.userId && !participant.isInConversation && participant.FCMtoken) {
+                        await firebase.sendPushNotification({
+                            userId: participant._id.toString(),
+                            title: 'Tin nhắn mới',
+                            body: message.content.text,
+                            conversationId,
+                            token: participant.FCMtoken,
+                        });
+                    }
+                }
             } catch (error) {
                 console.error('Send message error:', error);
                 socket.emit('error', { message: 'Failed to send message' });

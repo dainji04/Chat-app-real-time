@@ -78,7 +78,8 @@ class MessageController {
             const messages = await Message.find({
                 conversation: conversationId,
             })
-                .populate('sender', 'name avatar')
+                .populate('sender', 'username avatar')
+                .populate('replyTo', 'content')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
@@ -94,6 +95,41 @@ class MessageController {
                     page: parseInt(page),
                     limit: parseInt(limit),
                     hasMore: messages.length === parseInt(limit),
+                },
+            });
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    async getMediaInConversationById(req, res) {
+        try {
+            const { conversationId } = req.params;
+            const { page = 1, limit = 20 } = req.query;
+            const skip = (page - 1) * limit;
+
+            const media = await Message.find({
+                conversation: conversationId,
+                'content.media.url': { $exists: true, $ne: null },
+            })
+                .populate('sender', 'username avatar')
+                .populate('content', 'media')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean();
+
+            if (!media || media.length === 0) {
+                return res.status(404).json({ message: 'No media found' });
+            }
+
+            res.status(200).json({
+                data: media,
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    hasMore: media.length === parseInt(limit),
                 },
             });
         } catch (error) {

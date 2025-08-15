@@ -213,6 +213,12 @@ router.get(
     messageController.getConversationById
 );
 
+router.get(
+    '/:conversationId/media',
+    verifyAccessToken,
+    messageController.getMediaInConversationById
+);
+
 /**
  * @swagger
  * /api/messages/conversations:

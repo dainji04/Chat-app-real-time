@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Api } from '../api/api';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,5 +20,17 @@ export class User {
 
   searchByEmail(email: string) {
     return this.apiService.get<any>(`user/search?email=${email}`);
+  }
+
+  enterGroup() {
+    return this.apiService.putWithoutData<any>('user/status/enter-conversation');
+  }
+
+  leaveGroup() {
+    return this.apiService.putWithoutData<any>('user/status/leave-conversation');
+  }
+
+  saveFcmToken(token: string) {
+    return this.apiService.put<any>('user/save-fcm-token', { FCMtoken: token });
   }
 }

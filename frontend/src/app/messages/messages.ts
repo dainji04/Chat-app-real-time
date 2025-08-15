@@ -8,6 +8,7 @@ import { FriendService } from '../services/friends/friends';
 import { Groups } from '../services/groups/groups';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { User } from '../services/user/user';
 
 interface group {
   name: string;
@@ -48,14 +49,29 @@ export class Messages implements OnInit, OnDestroy {
   file!: File;
   isCreatingGroup: boolean = false;
 
+  private beforeUnloadListener?: () => void;
+
   constructor(
     private messageService: Message,
     private friendServices: FriendService,
-    private groupServices: Groups
+    private groupServices: Groups,
+    private userServices: User
   ) { }
 
   ngOnInit(): void {
     this.fetchMessages();
+
+    this.beforeUnloadListener = () => {
+      this.cleanup();
+    };
+
+    window.addEventListener('beforeunload', this.beforeUnloadListener);
+  }
+
+  private cleanup() {
+    // Gộp tất cả cleanup logic vào 1 hàm
+    document.body.classList.remove('detail-message-open');
+    this.leaveGroup();
   }
 
   fetchMessages() {
@@ -85,6 +101,8 @@ export class Messages implements OnInit, OnDestroy {
     this.detailConversation = message;
     this.isDetailOpen = true;
 
+    this.enterGroup();
+
     // Add class to prevent body scroll
     document.body.classList.add('detail-message-open');
 
@@ -109,7 +127,30 @@ export class Messages implements OnInit, OnDestroy {
     setTimeout(() => {
       this.selectedMessageId = '';
       this.detailConversation = {};
+      this.leaveGroup();
     }, 300);
+  }
+
+  enterGroup() {
+    this.userServices.enterGroup().subscribe({
+      next: (res) => {
+        console.log('User entered group:', res);
+      },
+      error: (err) => {
+        console.error('Error entering group:', err);
+      },
+    });
+  }
+
+  leaveGroup() {
+    this.userServices.leaveGroup().subscribe({
+      next: (res) => {
+        console.log('User left group:', res);
+      },
+      error: (err) => {
+        console.error('Error leaving group:', err);
+      },
+    });
   }
 
   toggleMember(id: string, event: Event) {
@@ -168,6 +209,11 @@ export class Messages implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // Clean up body class when component is destroyed
-    document.body.classList.remove('detail-message-open');
+    this.cleanup();
+
+    // Remove event listener để tránh memory leak
+    if (this.beforeUnloadListener) {
+      window.removeEventListener('beforeunload', this.beforeUnloadListener);
+    }
   }
 }

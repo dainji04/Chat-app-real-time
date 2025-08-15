@@ -26,6 +26,11 @@ export class Api {
     return this.http.put<T>(`${this.baseUrl}/${endpoint}`, data);
   }
 
+  // PUT without data
+  putWithoutData<T>(endpoint: string): Observable<T> {
+    return this.http.put<T>(`${this.baseUrl}/${endpoint}`, {});
+  }
+
   // DELETE request
   delete<T>(endpoint: string, data: any = null): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);

@@ -38,4 +38,8 @@ export class Message {
       userId,
     });
   }
+
+  getMediaInConversation(conversationId: string): Observable<any> {
+    return this.api.get<any>(`messages/${conversationId}/media`);
+  }
 }

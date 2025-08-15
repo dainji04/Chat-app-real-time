@@ -23,7 +23,7 @@
             <div class="messages-list">
                 @for (message of messages; track message._id) {
                 <div class="message-wrapper" [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
-    
+                    
                     <div class="message">
                         <!-- Avatar (only for other users) -->
                         @if (!isOwnMessage(message)) {
@@ -34,60 +34,76 @@
     
                         <!-- Message Content -->
                         <div class="message__content">
-                            <!-- Text Message -->
-                            @if (message.content.type === 'text') {
-                            <div class="message__bubble message__bubble--text">
-                                <pre class="message__text">{{ message.content.text }}</pre>
+                            @if (!isOwnMessage(message)) {
+                            <div class="message__sender">
+                                <p>{{message.sender.username}}</p>
                             </div>
                             }
-    
-                            <!-- Image Message -->
-                            @else if (message.content.type === 'image') {
-                            <div class="message__bubble message__bubble--media">
-                                <img [src]="message.content.media.url" alt="Shared image" class="message__image"
-                                    (click)="openImageModal(message.content.media.url)" />
-                                @if(message.content.text) {
-                                <p class="message__text">{{ message.content.text }}</p>
-                                }
-                            </div>
-                            }
-    
-                            <!-- Video Message -->
-                            @else if (message.content.type === 'video') {
-                            <div class="message__bubble message__bubble--media">
-                                <video [src]="message.content.media.url" controls class="message__video">
-                                </video>
-                                @if(message.content.text) {
-                                <p class="message__text">{{ message.content.text }}</p>
-                                }
-                            </div>
-                            }
-    
-                            <!-- File Message -->
-                            @else if (message.content.type === 'file') {
-                            <div class="message__bubble message__bubble--file">
-                                <div class="file-info">
-                                    <i class="fa-solid fa-file"></i>
-                                    <span>{{ message.content.fileName || 'File' }}</span>
+                            <div class="message__container">
+                                <!-- Text Message -->
+                                @if (message.content.type === 'text') {
+                                <div class="message__bubble message__bubble--text"
+                                    [ngClass]="{'message__bubble--media': message.replyTo}"
+                                >
+                                    @if (message.replyTo) {
+                                        <div class="message__reply" style="background-color: #fff; color: #000;">
+                                            <pre class="message__text">{{ message.replyTo.content.text }}</pre>
+                                        </div>
+                                    }
+                                    <pre class="message__text">{{ message.content.text }}</pre>
                                 </div>
-                                @if(message.content.text) {
-                                <p class="message__text">{{ message.content.text }}</p>
+                                }
+                                <!-- Image Message -->
+                                @else if (message.content.type === 'image') {
+                                <div class="message__bubble message__bubble--media">
+                                    <img [src]="message.content.media.url" alt="Shared image" class="message__image"
+                                        (click)="openImageModal(message.content.media.url)" />
+                                    @if(message.content.text) {
+                                    <p class="message__text">{{ message.content.text }}</p>
+                                    }
+                                </div>
+                                }
+                                <!-- Video Message -->
+                                @else if (message.content.type === 'video') {
+                                <div class="message__bubble message__bubble--media">
+                                    <video [src]="message.content.media.url" controls class="message__video">
+                                    </video>
+                                    @if(message.content.text) {
+                                    <p class="message__text">{{ message.content.text }}</p>
+                                    }
+                                </div>
+                                }
+                                <!-- File Message -->
+                                @else if (message.content.type === 'file') {
+                                <div class="message__bubble message__bubble--file">
+                                    <div class="file-info">
+                                        <i class="fa-solid fa-file"></i>
+                                        <span>{{ message.content.fileName || 'File' }}</span>
+                                    </div>
+                                    @if(message.content.text) {
+                                    <p class="message__text">{{ message.content.text }}</p>
+                                    }
+                                </div>
+                                }
+                                <!-- audio Message -->
+                                @else if (message.content.type === 'audio') {
+                                <div class="message__bubble message__bubble--media">
+                                    <audio controls class="message__audio">
+                                        <source [src]="message.content.media.url" type="audio/mpeg" />
+                                        Trình duyệt của bạn không hỗ trợ audio.
+                                    </audio>
+                                    @if(message.content.text) {
+                                    <p class="message__text">{{ message.content.text }}</p>
+                                    }
+                                </div>
+                                }
+
+                                @if (!isOwnMessage(message)) {
+                                    <div class="forward" (click)="setForwardMessage(message)">
+                                        <i class="fa-solid fa-share"></i>
+                                    </div>
                                 }
                             </div>
-                            }
-    
-                            <!-- audio Message -->
-                            @else if (message.content.type === 'audio') {
-                            <div class="message__bubble message__bubble--media">
-                                <audio controls class="message__audio">
-                                    <source [src]="message.content.media.url" type="audio/mpeg" />
-                                    Trình duyệt của bạn không hỗ trợ audio.
-                                </audio>
-                                @if(message.content.text) {
-                                <p class="message__text">{{ message.content.text }}</p>
-                                }
-                            </div>
-                            }
     
                             <!-- Message Status & Time -->
                             <div class="message__meta">
@@ -171,7 +187,15 @@
                         </button>
                     </div>
                     }
-                    <textarea type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
+                    @if(forwardMessage) {
+                        <div class="file-preview">
+                            <p class="file-name">{{forwardMessage}}</p>
+                            <button class="remove-file-btn" (click)="forwardMessage=''">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    }
+                    <textarea #inputText type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
                         (keyup.enter)="sendMessage()"></textarea>
                 </div>
                 <button class="send-btn" (click)="sendMessage()" >
@@ -206,28 +230,60 @@
             <div class="body">
                 @if (conversation.type === 'group') {
                     <div class="body__option member">
-                        Members in group 
-                        <i class="fa-solid fa-chevron-right"></i>
+                        <div class="title" (click)="isShowMember = !isShowMember">
+                            <p>Members in group </p>
+                            <i class="fa-solid fa-chevron-right" [ngClass]="{'isShow': isShowMember}"></i>
+                        </div>
+                        <div class="member__list list" [ngClass]="{'show': isShowMember, 'close': isShowMember == false}">
+                            @for(member of conversation.participants; track member._id) {
+                                <div class="member__item item">
+                                    <div class="left">
+                                        <img class="avatar" [src]="member.avatar" alt="avatar" >
+                                        <p>{{member.username}}</p>
+                                    </div>
+                                    <div class="right">
+                                        <i class="fa-solid fa-ellipsis"></i>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 }
                 <div class="body__option media">
-                    Media in group
-                    <i class="fa-solid fa-chevron-right"></i>
+                    <div class="title" (click)="getMediaInConversation()">
+                        <p>Media in group</p>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                    <div class="media__list list" [ngClass]="{'show': isShowMedia, 'close': isShowMedia == false, 'empty': listMedia.length === 0}">
+                        @for(item of listMedia; track item._id) {
+                            <div class="media__item item">
+                                <img [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)" >
+                            </div>
+                        } @empty {
+                            <div class="no-media">
+                                <p>No media found</p>
+                            </div>
+                        }
+                    </div>
                 </div>
                 <div class="body__option support">
-                    Privacy and Security
-                    <i class="fa-solid fa-chevron-right"></i>
+                    <div class="title">
+                        <p>Support</p>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
                 </div>
-            </div>
-            <div class="footer">
-                @if (conversation.admin === currentUserId) {
-                    <button (click)="deleteGroup()" class="alert alert-error">
-                        delete group
-                    </button>
-                }
-                <button (click)="leaveGroup()" class="alert alert-error">
-                    leave of group
-                </button>
+                <div class="body__option">
+                    @if (conversation.type === 'group') {
+                        @if (conversation.admin === currentUserId) {
+                        <button (click)="deleteGroup()" class="alert alert-error">
+                            delete group
+                        </button>
+                        }
+                        <button (click)="leaveGroup()" class="alert alert-error">
+                            leave of group
+                        </button>
+                    }
+                </div>
             </div>
         </div>
     }

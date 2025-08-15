@@ -1,11 +1,13 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -36,21 +38,34 @@ export class DetailMessage implements OnInit, OnChanges {
     @Output() closeDetail = new EventEmitter<void>();
     @Output() loadGroupEvent = new EventEmitter<void>(); // load when delete or leave
 
+    @ViewChild('inputText') inputText!: ElementRef;
+
     // id: string = '';
     messages: any[] = [];
+    currentPage: number = 1;
+    limit: number = 20;
+    isLoading: boolean = false; // loading older messages
+
     newMessageText: string = '';
     currentUserId: string = '';
 
-    isShowOptionMedia: boolean = false;
+    isShowOptionMedia: boolean = false; // show options media to upload
     selectedFile: boolean = false;
     file: File | null = null;
 
-    formMedia: formMedia | null = null;
+    formMedia: formMedia | null = null; // save media from response when uploaded
     isUploading: boolean = false;
 
     isShowSideBar: boolean = false;
 
-    private receiveSub!: Subscription;
+    private receiveSub!: Subscription; // listen receive new messages
+
+    forwardMessage: string = '';
+    forwardMessageId: string = '';
+
+    isShowMember: boolean | null= null;
+    isShowMedia: boolean | null = null;
+    listMedia: any[] = [];
 
     constructor(
         private route: ActivatedRoute,
@@ -70,8 +85,6 @@ export class DetailMessage implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        this.id = this.route.snapshot.paramMap.get('id') || '';
-
         this.socketService.joinConversation(this.id!);
 
         this.loadMessages();
@@ -83,7 +96,7 @@ export class DetailMessage implements OnInit, OnChanges {
                 this.messages.push(data.message);
                 setTimeout(() => {
                     this.scrollToBottom();
-                }, 1000);
+                }, 500);
             });
     }
 
@@ -93,6 +106,9 @@ export class DetailMessage implements OnInit, OnChanges {
             this.messages = [];
             this.id = changes['id'].currentValue;
             this.loadMessages();
+            this.isShowMember = null;
+            this.isShowMedia = null;
+            this.listMedia = [];
         }
     }
 
@@ -101,15 +117,33 @@ export class DetailMessage implements OnInit, OnChanges {
             this.messageService.getConversationById(this.id!).subscribe({
                 next: (data) => {
                     this.messages = data.data;
-                    console.log(data.data);
+                    this.inputText.nativeElement.focus();
                     setTimeout(() => {
                         this.scrollToBottom();
-                    }, 1000);
+                    }, 500);
                 },
                 error: (error) => {
                     console.error('Error fetching conversation:', error);
                 },
             });
+        }
+    }
+
+    getMediaInConversation() {
+        if(!this.isShowMedia) {
+            this.messageService.getMediaInConversation(this.id).subscribe({
+                next: (data) => {
+                    this.listMedia = data.data;
+                    this.isShowMedia = true;
+                },
+                error: (error) => {
+                    console.error('Error fetching media:', error);
+                    this.isShowMedia = true;
+                },
+            });
+        } else {
+            this.isShowMedia = false;
+            this.listMedia = [];
         }
     }
 
@@ -148,10 +182,22 @@ export class DetailMessage implements OnInit, OnChanges {
             messageData.type = this.formMedia.type;
         }
 
+        if (this.forwardMessage != '' && this.forwardMessageId != '') {
+            messageData.replyTo = this.forwardMessageId;
+        }
+
         this.socketService.sendMessage(messageData);
         this.newMessageText = '';
         this.formMedia = null;
         this.file = null;
+        this.forwardMessage = '';
+        this.forwardMessageId = '';
+    }
+
+    setForwardMessage(message: any) {
+        this.forwardMessage = message.content.text;
+        this.forwardMessageId = message._id;
+        this.inputText.nativeElement.focus();
     }
 
     onFileSelected($event: any, type: string): void {
@@ -238,5 +284,8 @@ export class DetailMessage implements OnInit, OnChanges {
         this.formMedia = null;
         this.file = null;
         console.log('clean all from detail messages');
+        this.isShowMember = false;
+        this.isShowMedia = false;
+        this.listMedia = [];
     }
 }

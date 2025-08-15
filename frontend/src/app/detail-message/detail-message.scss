@@ -123,8 +123,40 @@
   gap: 0.75rem;
   max-width: 70%;
 
+  &__sender {
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    
+    .forward {
+      display: none;
+      padding: 10px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+
+    &:hover > .forward {
+      display: block;
+    }
+  }
+
   &__avatar {
     flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     img {
       width: 40px;
@@ -409,6 +441,7 @@
     z-index: 101;
     margin-left: 0;
     padding-top: 40px;
+    overflow-y: auto;
 
     .header {
       display: flex;
@@ -478,18 +511,108 @@
 
       &__option {
         width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        display: grid;
         cursor: pointer;
         padding: 10px;
         border-radius: 8px;
 
-        &:hover {
-          color: $primary-color;
-          background-color: #e0e0e04d;
+        &:hover > .title {
+          color: $primary-color !important;
+        }
+
+        .title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          user-select: none;
+
+          i {
+            transition: 0.5s all;
+            &.isShow {
+              transform: rotate(90deg);
+            }
+          }
+          
+        }
+
+        .list {
+          display: grid;
+          gap: 10px;
+          height: 0px;
+          // transition: 1s height;
+          overflow: auto;
+
+          &.show {
+            animation: show 0.5s forwards;
+          }
+
+          &.close {
+            animation: close 0.5s forwards;
+            margin-top: 0;
+          }
+        }
+
+        .media {
+          &__list {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+
+            &.empty {
+              grid-template-columns: 1fr;
+              justify-items: center;
+            }
+          }
+
+          &__item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+
+            img {
+              max-width: 100%;
+              border-radius: 8px;
+            }
+          }
+        }
+
+        .item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 10px;
+          color: #000;
+
+          .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
         }
       }
     }
+  }
+}
+
+@keyframes show {
+  from {
+    height: 0px;
+    margin-top: 0px;
+  }
+  to {
+    height: 200px;
+    margin-top: 20px;
+  }
+}
+
+@keyframes close {
+  from {
+    height: 200px;
+    margin-top: 20px;
+  }
+  to {
+    height: 0px;
+    margin-top: 0px;
   }
 }

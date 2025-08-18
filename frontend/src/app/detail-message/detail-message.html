@@ -19,8 +19,13 @@
             </div>
         </div>
         <!-- Messages Container -->
-        <div class="messages-container">
+        <div #messagesList (scroll)="onScroll()" class="messages-container">
             <div class="messages-list">
+                @if (loadOldMessage && messages.length !== 0) {
+                    <div style="display: flex; justify-content: center; align-items: center; background-color: #007bff; color: white; padding: 10px; border-radius: 5px;">
+                        <p>Loading messages...</p>
+                    </div>
+                }
                 @for (message of messages; track message._id) {
                 <div class="message-wrapper" [ngClass]="{'message-wrapper--own': isOwnMessage(message)}">
                     
@@ -99,7 +104,7 @@
                                 }
 
                                 @if (!isOwnMessage(message)) {
-                                    <div class="forward" (click)="setForwardMessage(message)">
+                                    <div class="forward" (click)="setReplyToMessage(message)">
                                         <i class="fa-solid fa-share"></i>
                                     </div>
                                 }
@@ -133,8 +138,6 @@
                                 }
                             </div>
                             }
-
-                            
                         </div>
                     </div>
                 </div>
@@ -187,10 +190,10 @@
                         </button>
                     </div>
                     }
-                    @if(forwardMessage) {
+                    @if(replyToMessage) {
                         <div class="file-preview">
-                            <p class="file-name">{{forwardMessage}}</p>
-                            <button class="remove-file-btn" (click)="forwardMessage=''">
+                            <p class="file-name">{{replyToMessage}}</p>
+                            <button class="remove-file-btn" (click)="replyToMessage=''">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
@@ -209,8 +212,27 @@
      @if (isShowSideBar) {
         <div class="side-bar">
             <div class="header">
+                <div class="pagination">
+                    <button class="pagination__btn" (click)="isShowSideBar = !isShowSideBar">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                </div>
                 <div class="info">
-                    <img class="avatar" [src]="conversation.avatar" alt="avatar group">
+                    <div class="info__avatar">
+                        @if (conversation.type === 'group' && isUploadAvatarGroup) {
+                            <div class="overlay" (click)="toggleUploadAvatarGroup($event)">
+                                <div class="modal__change-avatar">
+                                    <label class="avatar-label" for="file_avatar">
+                                        <img #avatar class="avatar" [src]="conversation.avatar" alt="avatar group">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </label>
+                                    <input type="file" hidden id="file_avatar" (change)="onFileGroupSelected($event)" accept="image/*">
+                                    <button class="primary-btn" [disabled]="!fileAvatarGroup" (click)="uploadAvatarGroup()">Upload</button>
+                                </div>
+                            </div>
+                        }
+                        <img class="avatar" [src]="conversation.avatar" alt="avatar group" (click)="isUploadAvatarGroup = true">
+                    </div>
                     <div>
                         <h1>{{conversation.name}}</h1>
                         <p>{{conversation.description}}</p>
@@ -239,11 +261,35 @@
                                 <div class="member__item item">
                                     <div class="left">
                                         <img class="avatar" [src]="member.avatar" alt="avatar" >
+                                        @if (member._id === conversation.admin) {
+                                            <i style="color: rgb(150, 150, 38);" class="fas fa-crown"></i>
+                                        } @else if (conversation.moderators.includes(member._id)) {
+                                            <i class="fas fa-gavel"></i>
+                                        }
                                         <p>{{member.username}}</p>
                                     </div>
-                                    <div class="right">
-                                        <i class="fa-solid fa-ellipsis"></i>
-                                    </div>
+                                    @if (checkPermissionToShowOption()) {
+                                         <div class="right" (click)="setUserIdShowOption(member._id)">
+                                            <i class="fa-solid fa-ellipsis"></i>
+                                        </div>
+                                        @if (userIdShowOption === member._id) {
+                                            <ul class="options">
+                                                @if (conversation.admin === currentUserId) {
+                                                    <li>
+                                                        <button (click)="upgradeUserToModerator(member._id)">Make Moderator</button>
+                                                    </li>
+                                                    <li>
+                                                        <button (click)="downgradeModeratorToRegularUser(member._id)">Make Regular User</button>
+                                                    </li>
+                                                }
+                                                @if (conversation.moderators.includes(currentUserId) || conversation.admin === currentUserId) {
+                                                    <li class="remove ">
+                                                        <button class="delete" (click)="removeUser(member._id)">Remove</button>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    }
                                 </div>
                             }
                         </div>
@@ -257,7 +303,15 @@
                     <div class="media__list list" [ngClass]="{'show': isShowMedia, 'close': isShowMedia == false, 'empty': listMedia.length === 0}">
                         @for(item of listMedia; track item._id) {
                             <div class="media__item item">
-                                <img [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)" >
+                                @if (item.content.type === 'image') {
+                                    <img class="media__item--image" [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)">
+                                } @else if (item.content.type === 'video') {
+                                    <video [poster]="item.content.media.thumbnail"
+                                        [src]="item.content.media.url" class="media__item--video"
+                                        (click)="openImageModal(item.content.media.url)"
+                                        >
+                                    </video>
+                                }
                             </div>
                         } @empty {
                             <div class="no-media">

@@ -36,6 +36,14 @@ body:not(.dark-theme):not(.light-theme) {
   border: none;
   cursor: pointer;
 
+   // Disabled state - cần specificity cao hơn
+  &:disabled,
+  &[disabled] {
+    background-color: darken($primary-color, 5%) !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+  }
+
   &:hover {
     background-color: $primary-color;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);

@@ -154,13 +154,16 @@ const socketHandler = (io) => {
                     messageData.replyTo = replyTo;
                 }
 
+                let receiveUserId;
                 // Update status messages if receiver is online
-                const receiveUserId = conversation.participants
-                    .find((p) => p._id.toString() !== socket.userId)
-                    .toString();
+                if (conversation.participants.length > 1) {
+                    receiveUserId = conversation.participants
+                        .find((p) => p._id.toString() !== socket.userId)
+                        .toString();
 
-                if (onlineUsers.has(receiveUserId.toString())) {
-                    messageData.status = 'delivered';
+                    if (onlineUsers.has(receiveUserId.toString())) {
+                        messageData.status = 'delivered';
+                    }
                 }
 
                 const message = await Message.create(messageData);
@@ -187,6 +190,7 @@ const socketHandler = (io) => {
                     message: populateMessage,
                     conversationId: conversationId,
                 });
+
                 console.log(
                     `📩 Message delivered to online user: ${receiveUserId}`
                 );

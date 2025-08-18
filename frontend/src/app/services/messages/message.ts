@@ -17,6 +17,10 @@ export class Message {
     return this.api.get<any>(`messages/${conversationId}`);
   }
 
+  loadMoreMessages(conversationId: string, page: number, limit: number): Observable<any> {
+    return this.api.get<any>(`messages/${conversationId}?page=${page}&limit=${limit}`);
+  }
+
   // Send a message
   sendMessage(messageData: any): Observable<any> {
     return this.api.post<any>('messages/send-message', messageData);

@@ -39,12 +39,13 @@ export class DetailMessage implements OnInit, OnChanges {
     @Output() loadGroupEvent = new EventEmitter<void>(); // load when delete or leave
 
     @ViewChild('inputText') inputText!: ElementRef;
+    @ViewChild('avatar') avatar!: ElementRef;
+    @ViewChild('messagesList') messagesList!: ElementRef;
 
-    // id: string = '';
     messages: any[] = [];
     currentPage: number = 1;
     limit: number = 20;
-    isLoading: boolean = false; // loading older messages
+    loadOldMessage: boolean = false; // infinities loading message
 
     newMessageText: string = '';
     currentUserId: string = '';
@@ -60,12 +61,19 @@ export class DetailMessage implements OnInit, OnChanges {
 
     private receiveSub!: Subscription; // listen receive new messages
 
-    forwardMessage: string = '';
-    forwardMessageId: string = '';
+    replyToMessage: string = '';
+    replyToMessageId: string = '';
 
     isShowMember: boolean | null= null;
     isShowMedia: boolean | null = null;
     listMedia: any[] = [];
+
+    userIdShowOption: string | null = null; // id to show option: remove, moderator, regular user
+
+    isUploadAvatarGroup: boolean = false;
+    fileAvatarGroup: File | null = null;
+    currentObjectURL: string | null = null; // preview avatar group
+
 
     constructor(
         private route: ActivatedRoute,
@@ -109,24 +117,54 @@ export class DetailMessage implements OnInit, OnChanges {
             this.isShowMember = null;
             this.isShowMedia = null;
             this.listMedia = [];
+            this.currentPage = 1; // reset current page when id changes
         }
     }
 
     loadMessages() {
         if (this.id != '') {
+            this.loadOldMessage = true;
             this.messageService.getConversationById(this.id!).subscribe({
                 next: (data) => {
                     this.messages = data.data;
                     this.inputText.nativeElement.focus();
                     setTimeout(() => {
                         this.scrollToBottom();
-                    }, 500);
+                    }, 100);
                 },
                 error: (error) => {
                     console.error('Error fetching conversation:', error);
                 },
             });
         }
+    }
+
+    // onscroll top
+    onScroll() {
+        const messagesList = this.messagesList.nativeElement;
+        if (!messagesList || this.loadOldMessage) return;
+        const scrollTop = messagesList.scrollTop;
+        const threshold = 100; // Load more messages when scrolled to the top 100px
+
+        // Load more messages if scrolled to the top
+        if (scrollTop < threshold) {
+            this.loadMoreMessages();
+        }
+    }
+
+    loadMoreMessages() {
+        this.loadOldMessage = true;
+        this.currentPage++;
+        this.messageService.loadMoreMessages(this.id, this.currentPage, this.limit).subscribe({
+            next: (data) => {
+                this.messages = [...data.data, ...this.messages];
+                this.loadOldMessage = false;
+            },
+            error: (error) => {
+                console.error('Error loading more messages:', error);
+                this.loadOldMessage = false;
+            },
+        });
     }
 
     getMediaInConversation() {
@@ -150,16 +188,23 @@ export class DetailMessage implements OnInit, OnChanges {
     scrollToBottom() {
         const bottomMessages = document.querySelector('#bottom');
         bottomMessages?.scrollIntoView({ behavior: 'smooth' });
+
+        setTimeout(() => {
+            this.loadOldMessage = false;
+        }, 100);
     }
 
+    // back to conversation pages in mobile
     goBack(): void {
         this.closeDetail.emit();
     }
 
+    // check is own to render UI
     isOwnMessage(message: any): boolean {
         return message.sender._id === this.currentUserId;
     }
 
+    // open media modal
     openImageModal(imageUrl: string): void {
         window.open(imageUrl, '_blank');
     }
@@ -182,22 +227,81 @@ export class DetailMessage implements OnInit, OnChanges {
             messageData.type = this.formMedia.type;
         }
 
-        if (this.forwardMessage != '' && this.forwardMessageId != '') {
-            messageData.replyTo = this.forwardMessageId;
+        if (this.replyToMessage != '' && this.replyToMessageId != '') {
+            messageData.replyTo = this.replyToMessageId;
         }
 
         this.socketService.sendMessage(messageData);
         this.newMessageText = '';
         this.formMedia = null;
         this.file = null;
-        this.forwardMessage = '';
-        this.forwardMessageId = '';
+        this.replyToMessage = '';
+        this.replyToMessageId = '';
     }
 
-    setForwardMessage(message: any) {
-        this.forwardMessage = message.content.text;
-        this.forwardMessageId = message._id;
+    // reply to message
+    setReplyToMessage(message: any) {
+        this.replyToMessage = message.content.text;
+        this.replyToMessageId = message._id;
         this.inputText.nativeElement.focus();
+    }
+
+    toggleUploadAvatarGroup($event: any): void {
+        $event.stopPropagation();
+        this.isUploadAvatarGroup = !this.isUploadAvatarGroup;
+    }
+
+    // upload avatar group
+    onFileGroupSelected($event: any): void {
+        const files = $event.target.files;
+    
+        // Check if files exist
+        if (!files || files.length === 0) {
+            return;
+        }
+        
+        const file = files[0];
+        
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Vui lòng chọn file ảnh hợp lệ (JPEG, PNG, WebP)');
+            return;
+        }
+        
+        // Validate file size (ví dụ: max 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            alert('File quá lớn. Vui lòng chọn file nhỏ hơn 5MB');
+            return;
+        }
+        
+        // Revoke previous object URL to prevent memory leak
+        if (this.currentObjectURL) {
+            URL.revokeObjectURL(this.currentObjectURL);
+        }
+        
+        // Create new object URL
+        this.fileAvatarGroup = file;
+        this.currentObjectURL = URL.createObjectURL(file);
+        
+        if (this.avatar?.nativeElement) {
+            this.avatar.nativeElement.src = this.currentObjectURL;
+        }
+    }
+
+    uploadAvatarGroup() {
+        this.groupService.uploadAvatarGroup(this.fileAvatarGroup!, this.id).subscribe({
+            next: (res) => {
+                alert('Upload avatar group successfully');
+                this.loadGroupEvent.emit();
+                this.isUploadAvatarGroup = false;
+            },
+            error: (err) => {
+                alert(err.error.message);
+                console.log('err: ', err);
+            },
+        });
     }
 
     onFileSelected($event: any, type: string): void {
@@ -252,6 +356,75 @@ export class DetailMessage implements OnInit, OnChanges {
         }
     }
 
+    // member in group: options
+    checkPermissionToShowOption(): boolean {
+        if (this.currentUserId === this.conversation.admin) {
+            return true;
+        } 
+        if (this.conversation.moderators.includes(this.currentUserId)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    setUserIdShowOption(userId: string | null) {
+        if(this.userIdShowOption) {
+            this.userIdShowOption = null;
+        } else {
+            this.userIdShowOption = userId;
+        }
+    }
+
+    // upgrade user to moderator
+    upgradeUserToModerator(userId: string) {
+        this.groupService.upgradeUserToModerator(userId, this.id).subscribe({
+            next: (res) => {
+                alert('success');
+                this.loadGroupEvent.emit();
+                this.userIdShowOption = null;
+                this.conversation.moderators.push(userId);
+            },
+            error: (err) => {
+                alert(err.error.message);
+                console.log('err: ', err);
+            },
+        });
+    }
+
+    // downgrade moderator to regular user
+    downgradeModeratorToRegularUser(userId: string) {
+        this.groupService.downgradeModeratorToRegularUser(userId, this.id).subscribe({
+            next: (res) => {
+                alert('success');
+                this.loadGroupEvent.emit();
+                this.userIdShowOption = null;
+                this.conversation.moderators = this.conversation.moderators.filter(
+                    (m: any) => m !== userId
+                );
+            },
+            error: (err) => {
+                alert(err.error.message);
+                console.log('err: ', err);
+            },
+        });
+    }
+
+    removeUser(userId: string) {
+        this.groupService.removeUser(userId, this.id).subscribe({
+            next: (res) => {
+                alert('success');
+                this.loadGroupEvent.emit();
+                this.userIdShowOption = null;
+                this.conversation.participants = this.conversation.participants.filter((p: any) => p._id !== userId);
+            },
+            error: (err) => {
+                alert(err.error.message);
+                console.log('err: ', err);
+            },
+        });
+    }
+
     // Group
     deleteGroup() {
         this.groupService.deleteGroup(this.id).subscribe({
@@ -287,5 +460,12 @@ export class DetailMessage implements OnInit, OnChanges {
         this.isShowMember = false;
         this.isShowMedia = false;
         this.listMedia = [];
+
+        // revoke old object URL
+        if (this.currentObjectURL) {
+            URL.revokeObjectURL(this.currentObjectURL);
+        }
+
+        this.currentPage = 1;
     }
 }

@@ -40,4 +40,11 @@ export class Token {
       return true;
     }
   }
+
+  getRefreshToken() {
+    return document.cookie
+      .split('; ')
+      .find(row => row.startsWith('refresh_token='))
+      ?.split('=')[1];
+  }
 }

@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model');
 const Conversation = require('../models/conversation.model.js');
+const Message = require('../models/message.model.js');
 const {
     uploadToCloudinary,
     deleteFromCloudinary,
@@ -152,8 +153,8 @@ class GroupController {
         }
     }
 
-    // /api/groups/remove-members [PUT] : remove arrays of users
-    async removeMembers(req, res) {
+    // /api/groups/remove-multi-members [PUT] : remove arrays of users
+    async removeMultiMembers(req, res) {
         try {
             const user = req.user;
 
@@ -165,14 +166,19 @@ class GroupController {
                 });
             }
 
+            if (removeMemberIds.includes(user._id.toString())) {
+                return res.status(400).json({
+                    message: 'You cannot remove yourself from the group.',
+                });
+            }
+
             // check if the group exists
             const group = await Conversation.findById(groupId);
             if (!group) {
                 return res.status(404).json({ message: 'Group not found.' });
             }
 
-            // check if the user is the admin of the group
-            console.log(group.admin.toString(), user._id.toString());
+            // check if the user is the admin of the group or a moderator
             if (
                 group.admin.toString() !== user._id.toString() &&
                 !group.moderators.includes(user._id)
@@ -218,6 +224,63 @@ class GroupController {
             }
 
             group.participants.pull(...oldRemoveMembers);
+            if (group.participants.length === 0) {
+                await group.deleteOne();
+                return res.status(200).json({
+                    message: 'Group deleted as it has no members.',
+                });
+            }
+            await group.save();
+
+            return res.status(200).json({
+                message: 'Members removed successfully.',
+                data: {
+                    group: group,
+                },
+            });
+        } catch (error) {
+            console.error('Error removing members from group:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    // /api/groups/remove-members [PUT] : remove a member
+    async removeMembers(req, res) {
+        try {
+            const user = req.user;
+
+            const { groupId, removeMemberId } = req.body;
+
+            if (!groupId || !removeMemberId) {
+                return res.status(400).json({
+                    message: 'Group ID and participant ID are required.',
+                });
+            }
+
+            if (removeMemberId.includes(user._id.toString())) {
+                return res.status(400).json({
+                    message: 'You cannot remove yourself from the group.',
+                });
+            }
+
+            // check if the group exists
+            const group = await Conversation.findById(groupId);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found.' });
+            }
+
+            // check if the user is the admin of the group or a moderator
+            if (
+                group.admin.toString() !== user._id.toString() &&
+                !group.moderators.includes(user._id)
+            ) {
+                return res.status(403).json({
+                    message:
+                        'Only the group admin or moderators can remove members.',
+                });
+            }
+
+            group.participants.pull(removeMemberId);
             if (group.participants.length === 0) {
                 await group.deleteOne();
                 return res.status(200).json({
@@ -385,6 +448,16 @@ class GroupController {
                 });
             }
 
+            // delete all media in cloudinary
+            const messages = await Message.find({ conversation: groupId });
+            messages.forEach(async (message) => {
+                if (message.content.type === 'image' || message.content.type === 'video') {
+                    await deleteFromCloudinary(message.content.media.publicId);
+                }
+            });
+
+            await Message.deleteMany({ conversation: groupId });
+
             await group.deleteOne();
             return res.status(200).json({
                 message: 'Group deleted successfully.',
@@ -397,14 +470,14 @@ class GroupController {
         }
     }
 
-    // /api/groups/:groupId/promote/:userId [PUT] : user to moderator
+    // /api/groups/promote [PUT] : user to moderator
     async promoteToModerator(req, res) {
         try {
             const user = req.user;
             const { groupId, userId } = req.body;
             const group = await Conversation.findById(groupId);
 
-            if (!group) {
+            if (!group || group.type !== 'group') {
                 return res.status(404).json({ message: 'Group not found.' });
             }
 
@@ -451,7 +524,7 @@ class GroupController {
         }
     }
 
-    // /api/groups/:groupId/demote/:userId [PUT] : moderator to user
+    // /api/groups/demote [PUT] : moderator to user
     async demoteToUser(req, res) {
         try {
             const user = req.user;

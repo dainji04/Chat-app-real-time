@@ -84,23 +84,6 @@ export class Auth {
     if (this.tokenService.hasToken() && !this.tokenService.isTokenExpired()) {
       return true;
     }
-    // else {
-    //   await this.refreshToken().subscribe({
-    //     next: (response) => {
-    //       if (response.accessToken) {
-    //         this.tokenService.setAccessToken(response.accessToken);
-    //       }
-    //       console.log('Token refreshed successfully', response);
-    //       return true;
-    //     },
-    //     error: () => {
-    //       // Nếu refresh token không thành công, xóa token và trả về false
-    //       this.logout();
-    //       return false;
-    //     },
-    //   });
-    //   return false;
-    // }
 
     try {
       const response = await firstValueFrom(this.refreshToken());

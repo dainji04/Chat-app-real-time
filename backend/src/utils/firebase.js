@@ -7,7 +7,6 @@ const sendPushNotification = async ({
     conversationId, // using click to this conversation
     token 
   }) => {
-  console.log(`Sending FCM to user: ${userId}, title: ${title}, body: ${body}, conversationId: ${conversationId}, token: ${token}`);
   if (!token || typeof token !== 'string' || token.trim() === '') {
     console.error(`Invalid FCM token for user ${userId}:`, token);
     return;
@@ -16,8 +15,6 @@ const sendPushNotification = async ({
     data: { title, body },
     token: token.trim(),
   };
-
-  console.log(message);
 
   try {
     await admin.messaging().send(message);

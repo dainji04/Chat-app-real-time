@@ -204,6 +204,7 @@ const socketHandler = (io) => {
                     )
                     .lean();
 
+                // Gửi thông báo đẩy cho người dùng không trực tuyến
                 for (const participant of populateConversation.participants) {
                     if (participant._id.toString() !== socket.userId && !participant.isInConversation && participant.FCMtoken) {
                         await firebase.sendPushNotification({

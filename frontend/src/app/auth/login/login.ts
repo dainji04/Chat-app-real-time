@@ -11,6 +11,7 @@ import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
 import { SocketService } from '../../services/socket/socket-service';
 import {ShowErrorValidate} from '../../components/show-error-validate/show-error-validate';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
   selector: 'app-login',
@@ -36,7 +37,8 @@ export class Login {
     private fb: FormBuilder,
     private authService: Auth,
     private socketService: SocketService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -62,19 +64,21 @@ export class Login {
         next: (response: any) => {
           // Reconnect socket với token mới
           this.socketService.reconnectWithNewToken();
-          console.log('Login successful', response);
+          this.toastService.showSuccess('Success', 'Login successful');
           this.loading = false;
           this.router.navigate(['/']);
         },
         error: (error: any) => {
-          console.error('Signup failed', error.error.message);
+          this.toastService.showError(
+            'Error',
+            error.error.message || 'Login failed. Please try again.'
+          );
           this.errorMessage =
-            error.error.message || 'Signup failed. Please try again.';
+            error.error.message || 'Login failed. Please try again.';
           this.loading = false;
         },
       });
     } else {
-      console.error('Form is invalid');
       // Mark all fields as touched to show validation messages
       this.formData.markAllAsTouched();
       this.loading = false;

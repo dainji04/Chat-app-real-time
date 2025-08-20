@@ -30,8 +30,17 @@ body.detail-message-open {
         }
 
         &__header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #ccc !important;
+
+            &-search {
+                display: none;
+                flex: 1;
+            }
 
             &-title {
                 font-size: 24px;
@@ -332,7 +341,7 @@ body.detail-message-open {
         gap: 20px;
         justify-content: start;
         align-items: start;
-        padding-left: 90px;
+        padding-left: 70px;
         background: #f5f5f5;
 
         .messages {
@@ -348,9 +357,13 @@ body.detail-message-open {
                 justify-content: space-between;
                 align-items: center;
 
+                &-search {
+                    display: block;
+                }
+
                 .circle {
-                    width: 40px;
-                    height: 40px;
+                    width: 30px;
+                    height: 30px;
                     background-color: lighten($primary-color, 10%);
                     border-radius: 50%;
                     display: flex;
@@ -366,13 +379,13 @@ body.detail-message-open {
 
                     i {
                         color: #fff;
-                        font-size: 24px;
+                        font-size: 18px;
                     }
 
                     .options {
                         position: absolute;
                         top: 100%;
-                        right: 0;
+                        left: 0;
                         background-color: #fff;
                         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
                         border-radius: 6px;
@@ -441,12 +454,7 @@ body.detail-message-open {
 
 @media only screen and (min-width: 1024px) {
     .container {
-        display: grid;
         grid-template-columns: 1fr 3fr;
-        gap: 20px;
-        justify-content: start;
-        align-items: start;
         padding-left: 112px;
-        background: #f5f5f5;
     }
 }

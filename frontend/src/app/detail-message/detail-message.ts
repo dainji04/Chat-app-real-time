@@ -19,6 +19,12 @@ import { ClickOutside } from '../directives/clickOutSide/click-outside';
 import { Home } from '../home/home';
 import { Groups } from '../services/groups/groups';
 
+import { ToastService } from '../services/toast/toast';
+import { ConfirmationService } from 'primeng/api';
+
+// primeng
+import { ConfirmDialog } from 'primeng/confirmdialog';
+
 interface formMedia {
   url: string;
   publicId: string;
@@ -28,9 +34,10 @@ interface formMedia {
 
 @Component({
     selector: 'app-detail-message',
-    imports: [CommonModule, FormsModule, ClickOutside, Home],
+    imports: [CommonModule, FormsModule, ClickOutside, Home, ConfirmDialog],
     templateUrl: './detail-message.html',
     styleUrl: './detail-message.scss',
+    providers: [ConfirmationService]
 })
 export class DetailMessage implements OnInit, OnChanges {
     @Input() id: string = '';
@@ -46,6 +53,7 @@ export class DetailMessage implements OnInit, OnChanges {
     currentPage: number = 1;
     limit: number = 20;
     loadOldMessage: boolean = false; // infinities loading message
+    loadMore: boolean = true; // still more messages to load
 
     newMessageText: string = '';
     currentUserId: string = '';
@@ -76,10 +84,11 @@ export class DetailMessage implements OnInit, OnChanges {
 
 
     constructor(
-        private route: ActivatedRoute,
         private messageService: Message,
         private socketService: SocketService,
-        private groupService: Groups
+        private groupService: Groups,
+        private toastService: ToastService,
+        private confirmationService: ConfirmationService
     ) {
         // Get current user ID from localStorage
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -101,7 +110,9 @@ export class DetailMessage implements OnInit, OnChanges {
         this.receiveSub = this.socketService
             .listen<any>('receive_message')
             .subscribe(async (data) => {
-                this.messages.push(data.message);
+                if(data.conversationId === this.id) {
+                    this.messages.push(data.message);
+                }
                 setTimeout(() => {
                     this.scrollToBottom();
                 }, 500);
@@ -110,14 +121,26 @@ export class DetailMessage implements OnInit, OnChanges {
 
     // load messages if id changes
     ngOnChanges(changes: SimpleChanges): void {
+        this.socketService.joinConversation(this.id!);
+
         if (changes['id']) {
+            this.deleteOldImage();
             this.messages = [];
             this.id = changes['id'].currentValue;
             this.loadMessages();
             this.isShowMember = null;
             this.isShowMedia = null;
             this.listMedia = [];
+            this.file = null;
             this.currentPage = 1; // reset current page when id changes
+            this.loadMore = true; // reset load more when id changes
+            this.formMedia = null;
+            this.formMedia = null;
+
+            // revoke old object URL
+            if (this.currentObjectURL) {
+                URL.revokeObjectURL(this.currentObjectURL);
+            }
         }
     }
 
@@ -141,14 +164,16 @@ export class DetailMessage implements OnInit, OnChanges {
 
     // onscroll top
     onScroll() {
-        const messagesList = this.messagesList.nativeElement;
-        if (!messagesList || this.loadOldMessage) return;
-        const scrollTop = messagesList.scrollTop;
-        const threshold = 100; // Load more messages when scrolled to the top 100px
+        if (this.loadMore) {
+            const messagesList = this.messagesList.nativeElement;
+            if (!messagesList || this.loadOldMessage) return;
+            const scrollTop = messagesList.scrollTop;
+            const threshold = 100; // Load more messages when scrolled to the top 100px
 
-        // Load more messages if scrolled to the top
-        if (scrollTop < threshold) {
-            this.loadMoreMessages();
+            // Load more messages if scrolled to the top
+            if (scrollTop < threshold) {
+                this.loadMoreMessages();
+            }
         }
     }
 
@@ -159,6 +184,9 @@ export class DetailMessage implements OnInit, OnChanges {
             next: (data) => {
                 this.messages = [...data.data, ...this.messages];
                 this.loadOldMessage = false;
+                if(data.pagination.hasMore == false) {
+                    this.loadMore = false; // no more messages to load
+                }
             },
             error: (error) => {
                 console.error('Error loading more messages:', error);
@@ -191,7 +219,7 @@ export class DetailMessage implements OnInit, OnChanges {
 
         setTimeout(() => {
             this.loadOldMessage = false;
-        }, 100);
+        }, 1000);
     }
 
     // back to conversation pages in mobile
@@ -212,7 +240,7 @@ export class DetailMessage implements OnInit, OnChanges {
     // Message
     sendMessage(): void {
         if (this.isUploading) {
-            alert('file is uploading, wait a seconds.');
+            this.toastService.showInfo('File Upload', 'File is uploading, please wait a moment.');
             return;
         }
         if (!this.newMessageText.trim()) return;
@@ -265,14 +293,14 @@ export class DetailMessage implements OnInit, OnChanges {
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Vui lòng chọn file ảnh hợp lệ (JPEG, PNG, WebP)');
+            this.toastService.showError('File Upload', 'Invalid file type. Please select a valid image file (JPEG, PNG, WebP).');
             return;
         }
         
         // Validate file size (ví dụ: max 5MB)
         const maxSize = 5 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
-            alert('File quá lớn. Vui lòng chọn file nhỏ hơn 5MB');
+            this.toastService.showError('File Upload', 'File is too large. Please select a file smaller than 5MB.');
             return;
         }
         
@@ -293,12 +321,12 @@ export class DetailMessage implements OnInit, OnChanges {
     uploadAvatarGroup() {
         this.groupService.uploadAvatarGroup(this.fileAvatarGroup!, this.id).subscribe({
             next: (res) => {
-                alert('Upload avatar group successfully');
+                this.toastService.showSuccess('Upload Avatar', 'Avatar uploaded successfully.');
                 this.loadGroupEvent.emit();
                 this.isUploadAvatarGroup = false;
             },
             error: (err) => {
-                alert(err.error.message);
+                this.toastService.showError('Upload Avatar', err.error.message);
                 console.log('err: ', err);
             },
         });
@@ -332,8 +360,11 @@ export class DetailMessage implements OnInit, OnChanges {
                 this.isUploading = false;
             },
             error: (err: any) => {
-                if (err.status == 500) alert('file is large');
-                else alert(err.error.message);
+                if (err.status == 500) {
+                    this.toastService.showError('File Upload', 'File is too large. Please select a file smaller than 5MB.');
+                } else {
+                    this.toastService.showError('File Upload', err.error.message);
+                }
                 console.log('err messages: ', err);
                 this.isUploading = false;
                 this.file = null;
@@ -347,9 +378,9 @@ export class DetailMessage implements OnInit, OnChanges {
                 next: (res) => {
                     this.formMedia = null;
                     this.file = null;
+                    console.log('Delete old image successfully');
                 },
                 error: (err) => {
-                    alert('delete old images is failed');
                     console.log('err: ', err);
                 },
             });
@@ -380,13 +411,13 @@ export class DetailMessage implements OnInit, OnChanges {
     upgradeUserToModerator(userId: string) {
         this.groupService.upgradeUserToModerator(userId, this.id).subscribe({
             next: (res) => {
-                alert('success');
+                this.toastService.showSuccess('Upgrade User', 'User has been upgraded to moderator successfully.');
                 this.loadGroupEvent.emit();
                 this.userIdShowOption = null;
                 this.conversation.moderators.push(userId);
             },
             error: (err) => {
-                alert(err.error.message);
+                this.toastService.showError('Upgrade User', err.error.message);
                 console.log('err: ', err);
             },
         });
@@ -396,7 +427,7 @@ export class DetailMessage implements OnInit, OnChanges {
     downgradeModeratorToRegularUser(userId: string) {
         this.groupService.downgradeModeratorToRegularUser(userId, this.id).subscribe({
             next: (res) => {
-                alert('success');
+                this.toastService.showSuccess('Downgrade User', 'User has been downgraded to regular user successfully.');
                 this.loadGroupEvent.emit();
                 this.userIdShowOption = null;
                 this.conversation.moderators = this.conversation.moderators.filter(
@@ -404,8 +435,35 @@ export class DetailMessage implements OnInit, OnChanges {
                 );
             },
             error: (err) => {
-                alert(err.error.message);
+                this.toastService.showError('Downgrade User', err.error.message);
                 console.log('err: ', err);
+            },
+        });
+    }
+
+    // confirm remove user with primeng
+    removeUserConfirm(event: Event, member: any) {
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            message: `Are you sure you want to remove ${member.username} from the group?`,
+            header: 'Remove User',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Cancel',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true,
+            },
+            acceptButtonProps: {
+                label: 'Delete',
+                severity: 'danger',
+            },
+
+            accept: () => {
+                this.removeUser(member._id);
+            },
+            reject: () => {
+                this.toastService.showError('Rejected', 'You have rejected');
             },
         });
     }
@@ -413,14 +471,41 @@ export class DetailMessage implements OnInit, OnChanges {
     removeUser(userId: string) {
         this.groupService.removeUser(userId, this.id).subscribe({
             next: (res) => {
-                alert('success');
+                this.toastService.showSuccess('Remove User', 'User has been removed successfully.');
                 this.loadGroupEvent.emit();
                 this.userIdShowOption = null;
                 this.conversation.participants = this.conversation.participants.filter((p: any) => p._id !== userId);
             },
             error: (err) => {
-                alert(err.error.message);
+                this.toastService.showError('Remove User', err.error.message);
                 console.log('err: ', err);
+            },
+        });
+    }
+    
+    // confirm delete group with primeng
+    deleteGroupConfirm(event: Event) {
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            message: `Do you want to delete this group?`,
+            header: 'Delete Group',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Cancel',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true,
+            },
+            acceptButtonProps: {
+                label: 'Delete',
+                severity: 'danger',
+            },
+
+            accept: () => {
+                this.deleteGroup();
+            },
+            reject: () => {
+                this.toastService.showError('Rejected', 'You have rejected');
             },
         });
     }
@@ -429,9 +514,36 @@ export class DetailMessage implements OnInit, OnChanges {
     deleteGroup() {
         this.groupService.deleteGroup(this.id).subscribe({
             next: (res) => {
-                console.log('delete group successfully');
+                this.toastService.showSuccess('Delete Group', 'Group has been deleted successfully.');
                 this.loadGroupEvent.emit();
                 this.goBack();
+            },
+        });
+    }
+
+    // confirm leave group with primeng
+    leaveGroupConfirm(event: Event) {
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            message: `Do you want to leave this group?`,
+            header: 'Leave Group',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Cancel',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true,
+            },
+            acceptButtonProps: {
+                label: 'Delete',
+                severity: 'danger',
+            },
+
+            accept: () => {
+                this.leaveGroup();
+            },
+            reject: () => {
+                this.toastService.showError('Rejected', 'You have rejected');
             },
         });
     }
@@ -439,12 +551,12 @@ export class DetailMessage implements OnInit, OnChanges {
     leaveGroup() {
         this.groupService.leaveGroup(this.id).subscribe({
             next: (res) => {
-                console.log('leave group successfully');
+                this.toastService.showSuccess('Leave Group', 'You have left the group successfully.');
                 this.loadGroupEvent.emit();
                 this.goBack();
             },
             error: (err) => {
-                alert(err.error.message);
+                this.toastService.showError('Leave Group', err.error.message);
                 console.log('err: ', err);
             },
         });

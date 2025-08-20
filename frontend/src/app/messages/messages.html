@@ -1,16 +1,16 @@
 <div class="container">
     <div #message class="messages">
         <div class="messages__header">
-            <h1 class="messages__header-title">
-                Conversations
-            </h1>
             <div class="circle" (click)="showCreateOptions()" >
                 <i class="fa-solid fa-plus"></i>
                 <ul [ngClass]="{'show': isShowCreateOptions}" class="create__options options">
                     <li><button (click)="showCreateGroupBox()">create a group chat</button></li>
-                    <li><button>create something</button></li>
+                    <li><button disabled>create something</button></li>
                 </ul>
             </div>
+            <ul class="messages__header-search">
+                <app-search-user></app-search-user>
+            </ul>
         </div>
         <ul class="messages__list">
             @for (message of messages; track message._id) {
@@ -33,6 +33,10 @@
                         <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
                     </button>
                 </li>
+            } @empty {
+                <li class="messages__empty">
+                    <h3>No conversations yet</h3>
+                </li>
             }
         </ul>
     </div>
@@ -48,7 +52,7 @@
         <div class="create-group"  (click)="$event.stopPropagation()">
             <div class="create-group__header">
                 <h1>Create group</h1>
-                <div class="close-btn">
+                <div (click)="isShowCreateGroupBox=false" class="close-btn">
                     <i class="fa-solid fa-xmark"></i>
                 </div>
             </div>
@@ -79,7 +83,7 @@
                 </ul>
             </div>
             <div class="create-group__footer">
-                <button class="cancel btn">Cancel</button>
+                <button class="cancel btn" (click)="isShowCreateGroupBox=false">Cancel</button>
                 <button class="create btn" (click)="createGroup()">{{isCreatingGroup ? 'Creating...' : 'Create'}}</button>
             </div>
         </div>

@@ -6,9 +6,12 @@ import { DetailMessage } from '../detail-message/detail-message';
 import { ClickOutside } from '../directives/clickOutSide/click-outside';
 import { FriendService } from '../services/friends/friends';
 import { Groups } from '../services/groups/groups';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { User } from '../services/user/user';
+import { ToastService } from '../services/toast/toast';
+import { SocketService } from '../services/socket/socket-service';
+import { SearchUser } from "../components/search-user/search-user";
 
 interface group {
   name: string;
@@ -25,7 +28,9 @@ interface group {
     RouterModule,
     DetailMessage,
     ClickOutside,
-  ],
+    ReactiveFormsModule,
+    SearchUser
+],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',
 })
@@ -48,6 +53,11 @@ export class Messages implements OnInit, OnDestroy {
   };
   file!: File;
   isCreatingGroup: boolean = false;
+  // search user
+  isSearching: boolean = false;
+  searchForm: FormGroup = new FormGroup({
+    email: new FormControl(''),
+  });
 
   private beforeUnloadListener?: () => void;
 
@@ -55,7 +65,9 @@ export class Messages implements OnInit, OnDestroy {
     private messageService: Message,
     private friendServices: FriendService,
     private groupServices: Groups,
-    private userServices: User
+    private userServices: User,
+    private toastService: ToastService,
+    private socketService: SocketService
   ) { }
 
   ngOnInit(): void {
@@ -96,6 +108,10 @@ export class Messages implements OnInit, OnDestroy {
   }
 
   selectMessage(message: any) {
+    if(this.selectedMessageId !== message._id && this.selectedMessageId !== '') {
+      this.socketService.leaveConversation(this.selectedMessageId);
+    }
+
     // Navigate to the detail message component with the selected message ID
     this.selectedMessageId = message._id;
     this.detailConversation = message;
@@ -181,9 +197,10 @@ export class Messages implements OnInit, OnDestroy {
         this.isCreatingGroup = false;
         this.isShowCreateGroupBox = false;
         this.fetchMessages();
+        this.toastService.showSuccess('Create Group', 'Group has been created successfully.');
       },
       error: (err: HttpErrorResponse) => {
-        alert(err.error.message);
+        this.toastService.showError('Create Group', err.error.message);
         this.isCreatingGroup = false;
       },
     });
@@ -197,7 +214,7 @@ export class Messages implements OnInit, OnDestroy {
     return new Promise((resolve, reject) => {
       this.groupServices.uploadGroupAvatar(groupId, this.file).subscribe({
         next: (res) => {
-          alert('upload avatar group successfully');
+          this.toastService.showSuccess('Upload Avatar Group', 'Avatar group has been uploaded successfully.');
           resolve();
         },
         error: (err) => {

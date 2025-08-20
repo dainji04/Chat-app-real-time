@@ -118,7 +118,7 @@
                 <input type="password" formControlName="oldPassword" id="currentPassword" name="currentPassword"
                     required>
                 <!-- show errors -->
-                <app-show-error-validate [inputField]="formData.get('oldPassword')"
+                <app-show-error-validate [inputField]="formChangePassword.get('oldPassword')"
                     [fieldName]="'Old password'" [minLength]="6">
                 </app-show-error-validate>
             </div>
@@ -126,10 +126,10 @@
             <div class="change-info__form-group">
                 <label for="newPassword">New Password:</label>
                 <input type="password" formControlName="newPassword" id="newPassword" name="newPassword" required
-                    minlength="8">
+                    minlength="6">
 
                 <!-- show errors -->
-                <app-show-error-validate [inputField]="formData.get('newPassword')"
+                <app-show-error-validate [inputField]="formChangePassword.get('newPassword')"
                     [fieldName]="'New password'" [minLength]="6">
                 </app-show-error-validate>
             </div>
@@ -140,8 +140,8 @@
                     required>
 
                 <!-- show errors -->
-                <app-show-error-validate [inputField]="formData.get('confirmPassword')"
-                    [fieldName]="'Old password'" [minLength]="6">
+                <app-show-error-validate [inputField]="formChangePassword.get('confirmPassword')"
+                    [fieldName]="'Confirm password'" [minLength]="6">
                 </app-show-error-validate>
                 @if (errorConfirmPassword) {
                     <p class="alert alert-warning">

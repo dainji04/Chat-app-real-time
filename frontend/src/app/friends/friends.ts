@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Message } from '../services/messages/message';
 import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../directives/clickOutSide/click-outside';
+import { ToastService } from '../services/toast/toast';
 
 @Component({
   selector: 'app-friends',
@@ -26,7 +27,8 @@ export class Friends implements OnInit {
   constructor(
     private friendService: FriendService,
     private messageService: Message,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -42,11 +44,9 @@ export class Friends implements OnInit {
 
   showOptions(userId: string) {
     this.isUserShowOptions = this.isUserShowOptions === userId ? null : userId;
-    console.log(`isUserShowOptions: ${this.isUserShowOptions}`);
   }
 
   closeOptions() {
-    console.log('called');
     this.isUserShowOptions = null;
   }
 
@@ -101,7 +101,7 @@ export class Friends implements OnInit {
         this.router.navigate(['/messages', response.data.conversation._id]);
       },
       error: (error: any) => {
-        alert('chat failed');
+        this.toastService.showError('Get Conversation', 'Failed to get or create conversation. Contact admin for support.');
         console.error('Error getting or creating conversation:', error);
       },
     });
@@ -110,11 +110,11 @@ export class Friends implements OnInit {
   acceptRequest(friendId: string): void {
     this.friendService.acceptFriendRequest(friendId).subscribe({
       next: (response: any) => {
-        alert('Friend request accepted');
+        this.toastService.showSuccess('Accept Friend Request', 'Friend request accepted successfully.');
         this.getFriendRequests(); // Refresh the list after accepting the request
       },
       error: (error: any) => {
-        alert('Failed to accept friend request');
+        this.toastService.showError('Accept Friend Request', 'Failed to accept friend request.');
         console.error('Error accepting friend request:', error);
       },
     });
@@ -123,11 +123,11 @@ export class Friends implements OnInit {
   unFriend(friendId: string): void {
     this.friendService.unFriend(friendId).subscribe({
       next: (response: any) => {
-        alert('Unfriended successfully');
+        this.toastService.showSuccess('Unfriend', 'Unfriended successfully.');
         this.getAll(); // Refresh the list after unfriending
       },
       error: (error: any) => {
-        alert('Failed to unfriend');
+        this.toastService.showError('Unfriend', 'Failed to unfriend.');
         console.error('Error unfriending:', error);
       },
     });

@@ -439,9 +439,6 @@
 
   &__container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
     
     .forward {
       display: none;
@@ -479,13 +476,13 @@
   }
 
   &__bubble {
-    padding: 0.75rem 1rem;
+    padding: 12px;
     border-radius: 18px;
     background: #ffffff;
     border: 1px solid #e0e0e0;
     word-wrap: break-word;
 
-    &--text {
+    &--text p {
       max-width: 200px;
     }
 
@@ -508,6 +505,22 @@
       }
     }
 
+    .message__reply {
+      background-color: #f0f0f0;
+      padding: 0.5rem;
+      border-radius: 6px;
+      color: #333;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+
+      &--text {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
     &--file {
       .file-info {
         display: flex;
@@ -520,7 +533,15 @@
         }
       }
     }
+
+    &--other {
+      .message__reply {
+        background-color: darken(#007bff, 10%);
+        color: #fff;
+      }
+    } 
   }
+  
 
   &__text {
     margin: 0;
@@ -721,19 +742,8 @@
     align-items: center;
   }
 
-  .message {
-    &__bubble {
-      padding: 1rem 1.5rem;
-      border-radius: 20px;
-    }
-  }
-
   .back-btn {
     display: none;
-  }
-
-  .message__bubble--text {
-    max-width: 400px;
   }
 }
 
@@ -761,6 +771,10 @@
         justify-content: start !important;
       }
     }
+  }
+
+  .message__bubble--text p {
+    max-width: 400px;
   }
 }
 

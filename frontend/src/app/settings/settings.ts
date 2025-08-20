@@ -9,6 +9,7 @@ import { User } from '../services/user/user';
 import { Auth } from '../services/auth/auth';
 import { debounceTime } from 'rxjs';
 import {ShowErrorValidate} from '../components/show-error-validate/show-error-validate';
+import { ToastService } from '../services/toast/toast';
 
 @Component({
   selector: 'app-settings',
@@ -33,7 +34,8 @@ export class Settings implements OnInit {
   constructor(
     private userService: User,
     private authService: Auth,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -78,14 +80,14 @@ export class Settings implements OnInit {
     });
 
     this.formChangePassword = this.fb.group({
-      oldPassword: ['', [Validators.required, Validators.minLength(8)]],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      oldPassword: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
     });
 
     this.formChangePassword
       .get('confirmPassword')!
-      .valueChanges.pipe(debounceTime(1000)) // chờ 1s sau khi ngừng gõ
+      .valueChanges.pipe(debounceTime(500)) // chờ 500ms sau khi ngừng gõ
       .subscribe(() => {
         this.checkPasswordMatch();
       });
@@ -107,7 +109,7 @@ export class Settings implements OnInit {
     this.uploading = true;
     this.userService.uploadAvatar(this.file).subscribe({
       next: (res) => {
-        alert('Profile updated successfully');
+        this.toastService.showSuccess('Upload Avatar', 'Profile updated successfully');
         this.user.avatar = res.avatarUrl;
         localStorage.setItem('user', JSON.stringify(this.user));
         this.selectedFile = false;
@@ -125,7 +127,7 @@ export class Settings implements OnInit {
 
   onSubmit(): void {
     if (this.formData.invalid) {
-      alert('Please fill in all required fields correctly');
+      this.toastService.showWarning('warning', 'Please fill in all required fields correctly');
       return;
     }
 
@@ -152,19 +154,19 @@ export class Settings implements OnInit {
     }
     console.log('Update User Data:', updateUser);
     if (Object.keys(updateUser).length === 0) {
-      alert('No changes made');
+      this.toastService.showWarning('warning', 'No changes made');
       return;
     }
 
     // call api update
     this.userService.updateProfile(updateUser).subscribe({
       next: (res) => {
-        alert('Profile updated successfully');
+        this.toastService.showSuccess('Update Profile', 'Profile updated successfully');
         this.user = { ...this.user, ...updateUser };
         localStorage.setItem('user', JSON.stringify(this.user));
       },
       error: (err) => {
-        console.error('An error occurred while updating profile', err);
+        this.toastService.showError('Update Profile', 'Failed to update profile');
         this.errorInfo =
           err.error.message || 'An error occurred while updating profile';
       },
@@ -173,14 +175,15 @@ export class Settings implements OnInit {
 
   onChangePassword(): void {
     if (this.formChangePassword.invalid) {
-      alert('Please fill in all required fields correctly');
+      console.log(this.formChangePassword);
+      this.toastService.showWarning('warning', 'Please fill in all required fields correctly');
       return;
     }
 
     const formValues = this.formChangePassword.value;
 
     if (formValues.newPassword !== formValues.confirmPassword) {
-      alert('New password and confirm password do not match');
+      this.toastService.showWarning('warning', 'New password and confirm password do not match');
       return;
     }
 
@@ -188,13 +191,10 @@ export class Settings implements OnInit {
       .changePassword(formValues.oldPassword, formValues.newPassword)
       .subscribe({
         next: (res) => {
-          alert('Password changed successfully');
+          this.toastService.showSuccess('Change Password', 'Password changed successfully');
         },
         error: (err) => {
-          console.error('An error occurred while changing password', err);
-          alert(
-            err.error.message || 'An error occurred while changing password'
-          );
+          this.toastService.showError('Change Password', 'An error occurred while changing password');
         },
       });
   }
@@ -208,25 +208,18 @@ export class Settings implements OnInit {
   forgotPassword(): void {
     const email = this.user.email;
     if (!email) {
-      alert('Email is required to reset password');
+      this.toastService.showWarning('warning', 'Email is required to reset password, pls enter your email');
       return;
     }
 
     this.isSendingEmail = true;
     this.authService.forgotPassword(email).subscribe({
       next: (res) => {
-        alert('Reset password link sent to your email');
+        this.toastService.showSuccess('Forgot Password', 'Reset password link sent to your email');
         this.isSendingEmail = false;
       },
       error: (err) => {
-        console.error(
-          'An error occurred while sending reset password link',
-          err
-        );
-        alert(
-          err.error.message ||
-            'An error occurred while sending reset password link'
-        );
+        this.toastService.showError('Forgot Password', 'An error occurred while sending reset password link');
         this.isSendingEmail = false;
       },
     });

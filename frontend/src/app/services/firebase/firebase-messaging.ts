@@ -3,14 +3,15 @@ import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { environment } from '../../../environments/environment';
 import { User } from '../user/user';
+import { ToastService } from '../toast/toast';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseMessagingService {
   private messaging: any;
-  
-  constructor(private userServices: User) {
+  constructor(private userServices: User, private toastService: ToastService) {
+
     // Initialize Firebase
     const app = initializeApp(environment.firebase);
     this.messaging = getMessaging(app);
@@ -54,14 +55,8 @@ export class FirebaseMessagingService {
   // Listen for foreground messages
   listenForMessages() {
     onMessage(this.messaging, (payload: any) => {
-      console.log('Message received in foreground:', payload);
-
       if (payload.data) {
-        alert(`Notification: ${payload.data.title}\n${payload.data.body}`);
-        // new Notification(payload.data.title || 'New Message', {
-        //   body: payload.data.body,
-        //   icon: '/favicon.ico'
-        // });
+        this.toastService.showInfo(`${payload.data.title || 'New Message'}: ${payload.data.body}`);
       }
     });
   }

@@ -13,6 +13,9 @@
                 </div>
             </div>
             <div class="chat-header__right">
+                <!-- Demo Notification Buttons -->
+                   
+
                 <button class="menu-btn" (click)="isShowSideBar = !isShowSideBar">
                     <i class="fa-solid fa-ellipsis"></i>
                 </button>
@@ -48,14 +51,14 @@
                                 <!-- Text Message -->
                                 @if (message.content.type === 'text') {
                                 <div class="message__bubble message__bubble--text"
-                                    [ngClass]="{'message__bubble--media': message.replyTo}"
+                                    [ngClass]="{'message__bubble--media': message.replyTo, 'message__bubble--other': !isOwnMessage(message)}"
                                 >
                                     @if (message.replyTo) {
-                                        <div class="message__reply" style="background-color: #fff; color: #000;">
-                                            <pre class="message__text">{{ message.replyTo.content.text }}</pre>
+                                        <div class="message__reply" >
+                                            <p class="message__reply--text">{{ message.replyTo.content.text }}</p>
                                         </div>
                                     }
-                                    <pre class="message__text">{{ message.content.text }}</pre>
+                                    <p class="message__text">{{ message.content.text }}</p>
                                 </div>
                                 }
                                 <!-- Image Message -->
@@ -284,7 +287,7 @@
                                                 }
                                                 @if (conversation.moderators.includes(currentUserId) || conversation.admin === currentUserId) {
                                                     <li class="remove ">
-                                                        <button class="delete" (click)="removeUser(member._id)">Remove</button>
+                                                        <button class="delete" (click)="removeUserConfirm($event, member)">Remove</button>
                                                     </li>
                                                 }
                                             </ul>
@@ -329,12 +332,12 @@
                 <div class="body__option">
                     @if (conversation.type === 'group') {
                         @if (conversation.admin === currentUserId) {
-                        <button (click)="deleteGroup()" class="alert alert-error">
+                        <button (click)="deleteGroupConfirm($event)" class="alert alert-error">
                             delete group
                         </button>
                         }
-                        <button (click)="leaveGroup()" class="alert alert-error">
-                            leave of group
+                        <button (click)="leaveGroupConfirm($event)" class="alert alert-error">
+                            leave group
                         </button>
                     }
                 </div>
@@ -355,3 +358,4 @@
     <app-home></app-home>
 </div>
 }
+<p-confirmdialog />

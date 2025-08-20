@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { debounceTime } from 'rxjs';
+import { ToastService } from '../services/toast/toast';
 
 @Component({
   selector: 'app-reset-password',
@@ -27,7 +28,8 @@ export class ResetPassword implements OnInit {
     private authService: Auth,
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -61,10 +63,8 @@ export class ResetPassword implements OnInit {
     if (token) {
       this.authService.resetPassword(token, formValues.newPassword).subscribe({
         next: (response) => {
-          alert('Password reset successful');
-          this.router.navigate(['/auth/login'], {
-            queryParams: { success: 'Password reset successful' },
-          });
+          this.toastService.showSuccess('Success', 'Password reset successful');
+          this.router.navigate(['/auth/login']);
         },
         error: (error) => {
           console.error('Error verifying token:', error);

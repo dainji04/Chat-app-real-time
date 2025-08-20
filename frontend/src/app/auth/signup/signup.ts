@@ -11,6 +11,7 @@ import { PrimaryButton } from '../../components/primary-button/primary-button';
 import { Auth } from '../../services/auth/auth';
 import { SocketService } from '../../services/socket/socket-service';
 import {ShowErrorValidate} from '../../components/show-error-validate/show-error-validate';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
   selector: 'app-signup',
@@ -38,7 +39,8 @@ export class Signup {
     // public themeService: ThemeService,
     private authService: Auth,
     private socketService: SocketService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -79,11 +81,14 @@ export class Signup {
       this.authService.signup(this.formData.value).subscribe({
         next: (response: any) => {
           this.socketService.connect();
-          console.log('Signup successful', response);
+          this.toastService.showSuccess('Success', 'Signup successful');
           this.router.navigate(['/']);
         },
         error: (error: any) => {
-          console.error('Signup failed', error.error.message);
+          this.toastService.showError(
+            'Error',
+            error.error.message || 'Signup failed. Please try again.'
+          );
           this.errorMessage =
             error.error.message || 'Signup failed. Please try again.';
           this.loading = false;

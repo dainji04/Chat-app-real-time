@@ -98,7 +98,7 @@ class GroupController {
 
             // check if the user is the admin of the group
             if (
-                group.admin.toString() !== user._id.toString() ||
+                group.admin.toString() !== user._id.toString() &&
                 !group.moderators.includes(user._id)
             ) {
                 return res.status(403).json({

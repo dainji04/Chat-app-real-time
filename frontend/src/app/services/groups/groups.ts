@@ -54,4 +54,8 @@ export class Groups {
   removeUser(userId: string, groupId: string): Observable<any> {
     return this.apiService.put(`groups/remove-members`, { groupId, removeMemberId: userId });
   }
+
+  addMembersToGroup(participantIds: string[], groupId: string): Observable<any> {
+    return this.apiService.put(`groups/add-members`, { participantIds, groupId });
+  }
 }

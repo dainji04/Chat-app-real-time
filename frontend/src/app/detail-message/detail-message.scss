@@ -13,6 +13,35 @@
   gap: 10px;
 }
 
+.list-member-add {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  display: grid;
+  gap: 10px;
+
+  .member {
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      h3 {
+        font-size: 18px;
+      }
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
 // end primeng
 
 .container {

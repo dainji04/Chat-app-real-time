@@ -28,6 +28,7 @@ import { Dialog } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ScrollTop } from 'primeng/scrolltop';
+import { User } from '../services/user/user';
 
 interface formMedia {
   url: string;
@@ -52,6 +53,7 @@ export class DetailMessage implements OnInit, OnChanges {
     @ViewChild('inputText') inputText!: ElementRef;
     @ViewChild('avatar') avatar!: ElementRef;
     @ViewChild('messagesList') messagesList!: ElementRef;
+    @ViewChild('addUserInput') addUserInput!: ElementRef;
 
     isShowScrollBottom: boolean = false;
 
@@ -96,6 +98,7 @@ export class DetailMessage implements OnInit, OnChanges {
         private socketService: SocketService,
         private groupService: Groups,
         private toastService: ToastService,
+        private userService: User,
         private confirmationService: ConfirmationService
     ) {
         // Get current user ID from localStorage
@@ -416,8 +419,63 @@ export class DetailMessage implements OnInit, OnChanges {
     }
 
     // search by id and add it into list member add to group
-    searchAndAddMemberById(userId: string) {
-        
+    searchAndAddMemberById(event: KeyboardEvent) {
+        if(event.key === 'Enter') {
+            console.log('key press');
+            const email = this.addUserInput.nativeElement.value;
+            this.searchUserById(email);
+        }
+    }
+    
+    searchUserById(email: string) {
+        this.userService.searchByEmail(email).subscribe({
+            next: (res) => {
+                console.log(res.user);
+                if (res.user) {
+                    // Check if user already exists in the list
+                    const exists = this.listMemberAddToGroup.some(member => member._id === res.user._id);
+                    const existingInGroup = this.conversation.participants.some((p: any) => p._id === res.user._id);
+                    if (!exists && !existingInGroup) {
+                        this.listMemberAddToGroup.push(res.user);
+                        this.addUserInput.nativeElement.value = ''; // Clear input after adding
+                    } else {
+                        this.toastService.showInfo('User Already Added', 'This user is already in the list or group.');
+                    }
+                } else {
+                    this.toastService.showError('User Not Found', 'No user found with this email.');
+                }
+            },
+            error: (err) => {
+                this.toastService.showError('User Not Found', 'No user found with this email.');
+            }
+        })
+    }
+    
+    // remove member from list
+    removeMemberFromListAddToGroup(index: number) {
+        this.listMemberAddToGroup.splice(index, 1);
+    }
+
+    // save member to group
+    saveMemberToGroup() {
+        if (this.listMemberAddToGroup.length > 0) {
+            const participantIds = this.listMemberAddToGroup.map((member) => member._id);
+            this.groupService.addMembersToGroup(participantIds, this.id).subscribe({
+                next: (res) => {
+                    this.toastService.showSuccess('Add Members', 'Members have been added to the group successfully.');
+                    this.conversation.participants.push(...this.listMemberAddToGroup);
+                    this.listMemberAddToGroup = [];
+                },
+                error: (err) => {
+                    this.toastService.showError('Add Members', err.error.message);
+                    console.log('err: ', err);
+                    this.listMemberAddToGroup = []; // clear list if error
+                },
+            });
+            this.isShowAddMember = false; // close dialog after saving
+        } else {
+            this.toastService.showInfo('Add Members', 'No members to add.');
+        }
     }
 
     // member in group: options

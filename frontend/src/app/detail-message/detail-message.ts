@@ -7,9 +7,9 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  viewChild,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../services/messages/message';
@@ -24,6 +24,10 @@ import { ConfirmationService } from 'primeng/api';
 
 // primeng
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Dialog } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { ScrollTop } from 'primeng/scrolltop';
 
 interface formMedia {
   url: string;
@@ -34,7 +38,7 @@ interface formMedia {
 
 @Component({
     selector: 'app-detail-message',
-    imports: [CommonModule, FormsModule, ClickOutside, Home, ConfirmDialog],
+    imports: [CommonModule, FormsModule, ClickOutside, Home, ConfirmDialog,Dialog, ButtonModule, InputTextModule, ScrollTop],
     templateUrl: './detail-message.html',
     styleUrl: './detail-message.scss',
     providers: [ConfirmationService]
@@ -48,6 +52,8 @@ export class DetailMessage implements OnInit, OnChanges {
     @ViewChild('inputText') inputText!: ElementRef;
     @ViewChild('avatar') avatar!: ElementRef;
     @ViewChild('messagesList') messagesList!: ElementRef;
+
+    isShowScrollBottom: boolean = false;
 
     messages: any[] = [];
     currentPage: number = 1;
@@ -82,6 +88,8 @@ export class DetailMessage implements OnInit, OnChanges {
     fileAvatarGroup: File | null = null;
     currentObjectURL: string | null = null; // preview avatar group
 
+    isShowAddMember: boolean = false;
+    listMemberAddToGroup: any[] = []; // list member add to group
 
     constructor(
         private messageService: Message,
@@ -162,7 +170,7 @@ export class DetailMessage implements OnInit, OnChanges {
         }
     }
 
-    // onscroll top
+    // listen scroll top to load more messages
     onScroll() {
         if (this.loadMore) {
             const messagesList = this.messagesList.nativeElement;
@@ -175,6 +183,8 @@ export class DetailMessage implements OnInit, OnChanges {
                 this.loadMoreMessages();
             }
         }
+        // Show button scroll bottom when scroll
+        this.showButtonScrollBottom();
     }
 
     loadMoreMessages() {
@@ -211,6 +221,15 @@ export class DetailMessage implements OnInit, OnChanges {
             this.isShowMedia = false;
             this.listMedia = [];
         }
+    }
+
+    showButtonScrollBottom() {
+        let messagesList = this.messagesList.nativeElement;
+        if (!messagesList) return;
+        const scrollHeight = messagesList.scrollHeight;
+        const clientHeight = messagesList.clientHeight;
+        const scrollTop = messagesList.scrollTop;
+        this.isShowScrollBottom = scrollHeight - clientHeight > scrollTop;
     }
 
     scrollToBottom() {
@@ -337,6 +356,7 @@ export class DetailMessage implements OnInit, OnChanges {
         this.file = $event.target.files[0];
         if (this.file) {
             this.upload();
+            this.isShowOptionMedia = false;
         }
     }
 
@@ -385,6 +405,19 @@ export class DetailMessage implements OnInit, OnChanges {
                 },
             });
         }
+    }
+
+    // show Dialog add member to group
+    showDialogAddMember() {
+        this.isShowAddMember = !this.isShowAddMember;
+        if (this.isShowAddMember) {
+            this.inputText.nativeElement.focus();
+        }
+    }
+
+    // search by id and add it into list member add to group
+    searchAndAddMemberById(userId: string) {
+        
     }
 
     // member in group: options

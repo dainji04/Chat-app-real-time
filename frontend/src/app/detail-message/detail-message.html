@@ -8,8 +8,13 @@
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <div class="chat-info">
-                    <h3 class="chat-title">{{conversation.name}}</h3>
-                    <p class="chat-subtitle">{{ messages.length }} messages</p>
+                    <div class="left">
+                        <img [src]="conversation.avatar" class="avatar" alt="avatar-chat">
+                    </div>
+                    <div class="right">
+                        <h3 class="chat-title">{{conversation.name}}</h3>
+                        <p class="chat-subtitle">{{ messages.length }} messages</p>
+                    </div>
                 </div>
             </div>
             <div class="chat-header__right">
@@ -22,7 +27,8 @@
             </div>
         </div>
         <!-- Messages Container -->
-        <div #messagesList (scroll)="onScroll()" class="messages-container">
+        <div #messagesList (scroll)="onScroll()" class="messages-container" 
+            [style]="{ 'margin-bottom': file ? '110px' : '80px' }">
             <div class="messages-list">
                 @if (loadOldMessage && messages.length !== 0) {
                     <div style="display: flex; justify-content: center; align-items: center; background-color: #007bff; color: white; padding: 10px; border-radius: 5px;">
@@ -151,6 +157,9 @@
                 }
                 <div id="bottom"></div>
             </div>
+            <button *ngIf="isShowScrollBottom" class="scroll-to-bottom" (click)="scrollToBottom()">
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
         </div>
     
         <!-- Message Input -->
@@ -244,11 +253,39 @@
                 <div class="options">
                     @if (conversation.type === 'group') {
                         <div class="options__group add-member">
-                            <button>
+                            <button (click)="showDialogAddMember()">
                                 <i class="fa-solid fa-user-plus"></i>
                             </button>
                             <p>Add</p>
                         </div>
+
+                        <p-dialog class="add-member-dialog" draggable="false" resizable="false" header="Add Member" [modal]="true" [(visible)]="isShowAddMember" [style]="{ width: '25rem' }">
+                            <span class="p-text-secondary block mb-8">Update your information.</span>
+                            <div class="add-member-input-box flex items-center gap-4 mb-2">
+                                <label for="email" class="font-semibold w-24">Email</label>
+                                <input #addUserInput pInputText id="email" class="flex-auto" autocomplete="off" />
+                                <p-button label="Add" [text]="true" severity="secondary"/>
+                            </div>
+                            <div class="list-member-add">
+                                <!-- <ul class="member">
+                                    @for (friend of listFriends; track friend._id; let idx = $index) {
+                                        <li>
+                                            <input type="checkbox" name="addMember" [id]="'addMember' + idx" 
+                                                [checked]="formGroupChat.participantIds.includes(friend._id)"
+                                                (change)="toggleMember(friend._id, $event)">
+                                            <label [for]="'addMember' + idx" class="user">
+                                                <img [src]="friend?.avatar" alt="avatar user" class="user-avatar">
+                                                <h3 class="user-name">{{friend?.firstName}} {{friend?.lastName}}</h3>
+                                            </label>
+                                        </li>
+                                    }
+                                </ul> -->
+                            </div>
+                            <ng-template #footer>
+                                <p-button label="Cancel" [text]="true" severity="secondary" (click)="isShowAddMember = false" />
+                                <p-button label="Save" [outlined]="true" severity="secondary" (click)="isShowAddMember = false" />
+                            </ng-template>
+                        </p-dialog>
                     }
                 </div>
             </div>

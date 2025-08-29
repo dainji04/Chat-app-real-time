@@ -76,11 +76,12 @@ class AuthController {
 
     async login(req, res) {
         try {
-            const { username, password } = req.body;
-            if (!username || !password) {
+            const { email, password } = req.body;
+            console.log(email, password);
+            if (!email || !password) {
                 return res
                     .status(400)
-                    .json({ message: 'Username and password are required' });
+                    .json({ message: 'email and password are required' });
             }
 
             if (password.length < 6) {
@@ -89,18 +90,16 @@ class AuthController {
                 });
             }
 
-            const user = await User.findOne({
-                $or: [{ username }, { email: username }],
-            });
+            const user = await User.findOne({ email });
             if (!user) {
                 return res
                     .status(400)
-                    .json({ message: 'Username or password is incorrect' });
+                    .json({ message: 'Email or password is incorrect' });
             }
 
-            const isMatch = await bcrypt.compare(password, user.password);
+            const isMatch = bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.status(400).json({ message: 'Username or password is incorrect' });
+                return res.status(400).json({ message: 'Email or password is incorrect' });
             }
 
             // provide token

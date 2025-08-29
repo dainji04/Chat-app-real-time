@@ -3,9 +3,9 @@
 		<app-auth-intro [title]="title" [description]="description"></app-auth-intro>
 
 		@if (errorMessage) {
-			<div class="alert alert-error">
-				<p>{{ errorMessage }}</p>
-			</div>
+		<div class="alert alert-error">
+			<p>{{ errorMessage }}</p>
+		</div>
 		}
 
 		<form class="form" [formGroup]="formData" (ngSubmit)="onSubmit()">
@@ -16,9 +16,9 @@
 					maxlength="20" autocomplete="off" />
 
 				<!-- show error in validates -->
-				<app-show-error-validate [inputField]="formData.get('firstName')"
-                    [fieldName]="'First name'" [minLength]="2" [maxLength]="10">
-                </app-show-error-validate>
+				<app-show-error-validate [inputField]="formData.get('firstName')" [fieldName]="'First name'" [minLength]="2"
+					[maxLength]="10">
+				</app-show-error-validate>
 			</div>
 
 			<!-- lastName -->
@@ -28,10 +28,10 @@
 					maxlength="20" autocomplete="off" />
 
 				<!-- show error in validates -->
-                <app-show-error-validate [inputField]="formData.get('lastName')"
-                    [fieldName]="'Last name'" [minLength]="2" [maxLength]="10">
-                </app-show-error-validate>
-            </div>
+				<app-show-error-validate [inputField]="formData.get('lastName')" [fieldName]="'Last name'" [minLength]="2"
+					[maxLength]="10">
+				</app-show-error-validate>
+			</div>
 
 			<!-- username -->
 			<div class="form__group">
@@ -39,36 +39,34 @@
 				<input type="text" id="username" class="form__input" formControlName="username" required minlength="5"
 					maxlength="10" autocomplete="off" />
 
-                <!-- show error in validates -->
-                <app-show-error-validate [inputField]="formData.get('username')"
-                    [fieldName]="'Username'" [minLength]="5" [maxLength]="10">
-                </app-show-error-validate>
-            </div>
+				<!-- show error in validates -->
+				<app-show-error-validate [inputField]="formData.get('username')" [fieldName]="'Username'" [minLength]="5"
+					[maxLength]="10">
+				</app-show-error-validate>
+			</div>
 
 			<!-- email -->
 			<div class="form__group">
 				<label for="email" class="form__label">Email</label>
-				<input type="email" id="email" class="form__input" formControlName="email" required email
-					autocomplete="off" />
+				<input type="email" id="email" class="form__input" formControlName="email" required email autocomplete="off" />
 
 				<!-- show Error in validate -->
-                <app-show-error-validate [inputField]="formData.get('email')" [fieldName]="'Email'"></app-show-error-validate>
-            </div>
+				<app-show-error-validate [inputField]="formData.get('email')" [fieldName]="'Email'"></app-show-error-validate>
+			</div>
 
 			<!-- password -->
 			<div class="form__group">
 				<label for="password" class="form__label">Password</label>
-				<input type="password" id="password" class="form__input" formControlName="password" required
-					minlength="6" autocomplete="off" />
+				<input type="password" id="password" class="form__input" formControlName="password" required minlength="6"
+					autocomplete="off" />
 
 				<!-- Show error in validate -->
-                <app-show-error-validate [inputField]="formData.get('password')"
-                    [fieldName]="'Password'" [minLength]="6">
-                </app-show-error-validate>
-            </div>
+				<app-show-error-validate [inputField]="formData.get('password')" [fieldName]="'Password'" [minLength]="6">
+				</app-show-error-validate>
+			</div>
 			<div class="form__submit">
-				<app-primary-button [disabled]="loading" [text]="loading ? 'Signing Up...' : 'Sign Up'"
-					class="form__submit" type="submit"></app-primary-button>
+				<app-primary-button [disabled]="loading" [text]="loading ? 'Signing Up...' : 'Sign Up'" class="form__submit"
+					type="submit"></app-primary-button>
 			</div>
 		</form>
 

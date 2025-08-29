@@ -43,14 +43,7 @@ export class Login {
 
   ngOnInit(): void {
     this.formData = this.fb.group({
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(10),
-        ],
-      ],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
@@ -59,8 +52,8 @@ export class Login {
     this.loading = true;
     this.errorMessage = '';
     if (this.formData.valid) {
-      const { username, password } = this.formData.value;
-      this.authService.login(username, password).subscribe({
+      const { email, password } = this.formData.value;
+      this.authService.login(email, password).subscribe({
         next: (response: any) => {
           // Reconnect socket với token mới
           this.socketService.reconnectWithNewToken();

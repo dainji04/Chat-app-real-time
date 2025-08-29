@@ -36,6 +36,7 @@ const authenSocket = async (socket, next) => {
 };
 
 const onlineUsers = new Map();
+const users = {}; // saving user in video call { socketId: { userId, roomId } }
 
 const socketHandler = (io) => {
     io.use(authenSocket);
@@ -102,21 +103,21 @@ const socketHandler = (io) => {
                 } = data;
 
                 if (!conversationId) {
-                    socket.emit('error', {
+                    console.log('error', {
                         message: 'Conversation ID is required',
                     });
                     return;
                 }
 
-                if (!content || content.trim().length === 0) {
-                    socket.emit('error', {
+                if ((!content || content.trim().length === 0) && !media) {
+                    console.log('error', {
                         message: 'Message content cannot be empty',
                     });
                     return;
                 }
 
                 if (content.length > 2000) {
-                    socket.emit('error', {
+                    console.log('error', {
                         message:
                             'Message content exceeds maximum length of 2000 characters',
                     });
@@ -131,7 +132,7 @@ const socketHandler = (io) => {
                 });
 
                 if (!conversation) {
-                    socket.emit('error', { message: 'Conversation not found' });
+                    console.log('error', { message: 'Conversation not found' });
                     return;
                 }
 
@@ -144,7 +145,6 @@ const socketHandler = (io) => {
                         type,
                     },
                 };
-
 
                 if (media && type !== 'text') {
                     messageData.content.media = media;
@@ -207,22 +207,58 @@ const socketHandler = (io) => {
                 // Gửi thông báo đẩy cho người dùng không trực tuyến
                 for (const participant of populateConversation.participants) {
                     if (participant._id.toString() !== socket.userId && !participant.isInConversation && participant.FCMtoken) {
+                        console.log('working')
                         await firebase.sendPushNotification({
                             userId: participant._id.toString(),
-                            title: 'Tin nhắn mới',
+                            title: `New message from ${socket.user.firstName} ${socket.user.lastName}`,
                             body: message.content.text,
                             conversationId,
                             token: participant.FCMtoken,
+                            isOnline: onlineUsers.has(participant._id.toString())
                         });
                     }
                 }
             } catch (error) {
                 console.error('Send message error:', error);
-                socket.emit('error', { message: 'Failed to send message' });
             }
         });
 
+        socket.on('signal', ({ room, data }) => {
+            socket.to(room).emit('signal', data);
+        });
+
+        // User joins a room
+        socket.on('join-room', (roomId, userId) => {
+            socket.join(roomId);
+            users[socket.id] = { userId, roomId };
+            // Notify other users in the room
+            socket.to(roomId).emit('user-connected', userId);
+
+            console.log(`User ${userId} joined room ${roomId}`);
+        });
+
+        // Handle WebRTC signaling
+        socket.on('offer', (offer, roomId) => {
+            console.log('offer called from server')
+            socket.to(roomId).emit('offer', offer, socket.id);
+        });
+
+        socket.on('answer', (answer, roomId) => {
+            socket.to(roomId).emit('answer', answer, socket.id);
+        });
+
+        socket.on('ice-candidate', (candidate, roomId) => {
+            socket.to(roomId).emit('ice-candidate', candidate, socket.id);
+        });
+
         socket.on('disconnect', async () => {
+            const user = users[socket.id];
+            if (user) {
+                socket.to(user.roomId).emit('user-disconnected', user.userId);
+                delete users[socket.id];
+                console.log(`User ${user.userId} disconnected from room ${user.roomId}`);
+            }
+
             console.log(
                 `❌ Client ${socket.user?.username || 'Unknown'} disconnected:`,
                 socket.id

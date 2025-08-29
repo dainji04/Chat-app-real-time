@@ -73,6 +73,11 @@ const appRoutes: Routes = [
         ),
   },
   {
+    path: 'video-call/:roomId',
+    loadComponent: () =>
+        import('./video-call/video-call').then((c) => c.VideoCall),
+  },
+  {
     path: '**',
     redirectTo: 'messages',
     pathMatch: 'full',

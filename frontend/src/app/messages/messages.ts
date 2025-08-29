@@ -80,6 +80,11 @@ export class Messages implements OnInit, OnDestroy {
     window.addEventListener('beforeunload', this.beforeUnloadListener);
   }
 
+  setChat(id: string) {
+    console.log('Chat selected:', id);
+    this.selectedMessageId = id;
+  }
+
   private cleanup() {
     // Gộp tất cả cleanup logic vào 1 hàm
     document.body.classList.remove('detail-message-open');

@@ -55,8 +55,9 @@ export class FirebaseMessagingService {
   // Listen for foreground messages
   listenForMessages() {
     onMessage(this.messaging, (payload: any) => {
-      if (payload.data) {
-        this.toastService.showInfo(`${payload.data.title || 'New Message'}: ${payload.data.body}`);
+      console.log('Message received. ', payload);
+      if (payload.data && payload.data.isOnline) {
+        this.toastService.showInfo(`${payload.data.title || 'New Message'}`, payload.data.body);
       }
     });
   }

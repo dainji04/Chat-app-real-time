@@ -5,11 +5,10 @@
                 <i class="fa-solid fa-plus"></i>
                 <ul [ngClass]="{'show': isShowCreateOptions}" class="create__options options">
                     <li><button (click)="showCreateGroupBox()">create a group chat</button></li>
-                    <li><button disabled>create something</button></li>
                 </ul>
             </div>
             <ul class="messages__header-search">
-                <app-search-user></app-search-user>
+                <app-search-user (chatSelected)="setChat($event)"></app-search-user>
             </ul>
         </div>
         <ul class="messages__list">

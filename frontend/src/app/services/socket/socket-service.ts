@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Socket, io } from 'socket.io-client';
 import { Token } from '../token/token';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
@@ -18,7 +18,7 @@ export class SocketService {
       this.socket.disconnect();
     }
 
-    this.socket = io('http://localhost:3000', {
+    this.socket = io(environment.socketUrl, {
       auth: {
         token: this.token.getAccessToken(),
       },
@@ -108,5 +108,67 @@ export class SocketService {
     if (this.socket) {
       this.socket.emit('send_message', data);
     }
+  }
+
+  // video call
+  // Join room
+  joinRoom(roomId: string, userId: string): void {
+    this.socket?.emit('join-room', roomId, userId);
+  }
+
+  // Listen for user connected
+  onUserConnected(): Observable<string> {
+    return new Observable(observer => {
+      this.socket?.on('user-connected', (userId: string) => {
+        observer.next(userId);
+      });
+    });
+  }
+
+  // Listen for user disconnected
+  onUserDisconnected(): Observable<string> {
+    return new Observable(observer => {
+      this.socket?.on('user-disconnected', (userId: string) => {
+        observer.next(userId);
+      });
+    });
+  }
+
+  // WebRTC signaling events
+  sendOffer(offer: RTCSessionDescriptionInit, roomId: string): void {
+    this.socket?.emit('offer', offer, roomId);
+  }
+
+  onOffer(): Observable<{offer: RTCSessionDescriptionInit, socketId: string}> {
+    console.log('called')
+    return new Observable(observer => {
+      this.socket?.on('offer', (offer: RTCSessionDescriptionInit, socketId: string) => {
+        observer.next({offer, socketId});
+      });
+    });
+  }
+
+  sendAnswer(answer: RTCSessionDescriptionInit, roomId: string): void {
+    this.socket?.emit('answer', answer, roomId);
+  }
+
+  onAnswer(): Observable<{answer: RTCSessionDescriptionInit, socketId: string}> {
+    return new Observable(observer => {
+      this.socket?.on('answer', (answer: RTCSessionDescriptionInit, socketId: string) => {
+        observer.next({answer, socketId});
+      });
+    });
+  }
+
+  sendIceCandidate(candidate: RTCIceCandidateInit, roomId: string): void {
+    this.socket?.emit('ice-candidate', candidate, roomId);
+  }
+
+  onIceCandidate(): Observable<{candidate: RTCIceCandidateInit, socketId: string}> {
+    return new Observable(observer => {
+      this.socket?.on('ice-candidate', (candidate: RTCIceCandidateInit, socketId: string) => {
+        observer.next({candidate, socketId});
+      });
+    });
   }
 }

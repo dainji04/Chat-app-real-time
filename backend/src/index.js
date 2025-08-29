@@ -12,11 +12,15 @@ const handleSocket = require('./socket/socket.js');
 
 env.config();
 
+const url_client = process.env.NODE_ENV === 'development' 
+    ? process.env.CLIENT_URL_development : process.env.CLIENT_URL_production;
+
 const app = express();
 const server = http.createServer(app);
 const io = socket(server, {
     cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:4200',
+        origin: url_client,
+        // origin: '*',
         methods: ['GET', 'POST'],
         credentials: true,
     },
@@ -27,10 +31,16 @@ connectDB();
 app.use(cookieParser());
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: [
+            url_client
+        ],
         credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
+// app.options("*", cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

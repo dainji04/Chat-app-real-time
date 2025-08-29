@@ -27,6 +27,10 @@ body:not(.dark-theme):not(.light-theme) {
   @extend .light-theme;
 }
 
+.cursor {
+  cursor: pointer;
+}
+
 .primary-btn {
   font-style: 16px;
   padding: 10px 25px;

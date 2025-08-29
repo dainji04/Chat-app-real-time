@@ -5,7 +5,8 @@ const sendPushNotification = async ({
     title,
     body,
     conversationId, // using click to this conversation
-    token 
+    token,
+    isOnline
   }) => {
   if (!token || typeof token !== 'string' || token.trim() === '') {
     console.error(`Invalid FCM token for user ${userId}:`, token);

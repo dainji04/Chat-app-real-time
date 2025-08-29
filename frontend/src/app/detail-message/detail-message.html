@@ -18,6 +18,9 @@
                 </div>
             </div>
             <div class="chat-header__right">
+                <button [routerLink]="['/video-call', id]" target="_blank" class="call-btn menu-btn" style="margin-right: 16px;">
+                    <i class="fa-solid fa-phone"></i>
+                </button>
                 <button class="menu-btn" (click)="isShowSideBar = !isShowSideBar">
                     <i class="fa-solid fa-ellipsis"></i>
                 </button>
@@ -193,7 +196,12 @@
                 <div class="message-input-box">
                     @if (file) {
                     <div class="file-preview">
-                        <p class="file-name">{{file.name}}</p>
+                        <p class="file-name">
+                            {{file.name}}
+                        </p>
+                        @if (isUploading) {
+                            <p-badge class="p-fileupload-file-badge p-badge p-badge-warn p-component" value="Pending"></p-badge>
+                        }
                         <button (click)="deleteOldImage()" class="remove-file-btn">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
@@ -256,38 +264,70 @@
                             <p>Add</p>
                         </div>
 
-                        <p-dialog class="add-member-dialog" draggable="false" resizable="false" header="Add Member" [modal]="true" [(visible)]="isShowAddMember" [style]="{ width: '25rem' }">
+                        <p-dialog 
+                            class="add-member-dialog" 
+                            draggable="false" 
+                            resizable="false" 
+                            header="Add Member" 
+                            [modal]="true" 
+                            [(visible)]="isShowAddMember" 
+                            [style]="{ width: '25rem' }"
+                            [appendTo]="'body'"
+                            [maskStyleClass]="'add-member-mask'"
+                            >
                             <span class="p-text-secondary block mb-8">Update your information.</span>
                             <div class="add-member-input-box flex items-center gap-4 mb-2">
                                 <label for="email" class="font-semibold w-24">Email</label>
-                                <input #addUserInput (keydown)="searchAndAddMemberById($event)" pInputText id="email" class="flex-auto" autocomplete="off" />
-                                <p-button (onClick)="searchUserById(addUserInput.value)" label="Add" [text]="true" severity="secondary"/>
+                                <input 
+                                #addUserInput 
+                                (keydown)="searchAndAddMemberById($event)" 
+                                pInputText 
+                                id="email" 
+                                class="flex-auto" 
+                                autocomplete="off" 
+                                />
+                                <p-button 
+                                (onClick)="searchUserById(addUserInput.value)" 
+                                label="Add" 
+                                [text]="true" 
+                                severity="secondary"
+                                />
                             </div>
                             <ul class="list-member-add">
                                 @for (member of listMemberAddToGroup; track member._id; let idx = $index) {
-                                    <li class="member">
-                                        <div class="user">
-                                            <img [src]="member?.avatar" alt="avatar user" class="avatar">
-                                            <h3 class="user-name">{{member?.firstName}} {{member?.lastName}}</h3>
-                                        </div>
-                                        <button>
-                                            <i class="fa-solid fa-xmark" (click)="removeMemberFromListAddToGroup(idx)"></i>
-                                        </button>
-                                    </li>
+                                <li class="member">
+                                    <div class="user">
+                                    <img [src]="member?.avatar" alt="avatar user" class="avatar">
+                                    <h3 class="user-name">{{member?.firstName}} {{member?.lastName}}</h3>
+                                    </div>
+                                    <button>
+                                    <i class="fa-solid fa-xmark" (click)="removeMemberFromListAddToGroup(idx)"></i>
+                                    </button>
+                                </li>
                                 }
                             </ul>
-                            <ng-template #footer>
-                                <p-button label="Cancel" [text]="true" severity="secondary" (click)="isShowAddMember = false" />
-                                <p-button label="Save" [outlined]="true" severity="secondary" (click)="saveMemberToGroup()" />
+                            <ng-template pTemplate="footer">
+                                <p-button 
+                                label="Cancel" 
+                                [text]="true" 
+                                severity="secondary" 
+                                (click)="isShowAddMember = false" 
+                                />
+                                <p-button 
+                                label="Save" 
+                                [outlined]="true" 
+                                severity="secondary" 
+                                (click)="saveMemberToGroup()" 
+                                />
                             </ng-template>
-                        </p-dialog>
+                            </p-dialog>
                     }
                 </div>
             </div>
             <div class="body">
                 @if (conversation.type === 'group') {
                     <div class="body__option member">
-                        <div class="title" (click)="isShowMember = !isShowMember">
+                        <div class="title cursor" (click)="isShowMember = !isShowMember">
                             <p>Members in group </p>
                             <i class="fa-solid fa-chevron-right" [ngClass]="{'isShow': isShowMember}"></i>
                         </div>
@@ -303,23 +343,26 @@
                                         }
                                         <p>{{member.username}}</p>
                                     </div>
-                                    @if (checkPermissionToShowOption()) {
-                                         <div class="right" (click)="setUserIdShowOption(member._id)">
+                                    @if (checkPermissionToShowOption() && conversation.admin !== member._id) {
+                                         <div class="right cursor" (click)="setUserIdShowOption(member._id)">
                                             <i class="fa-solid fa-ellipsis"></i>
                                         </div>
                                         @if (userIdShowOption === member._id) {
                                             <ul class="options">
-                                                @if (conversation.admin === currentUserId) {
-                                                    <li>
-                                                        <button (click)="upgradeUserToModerator(member._id)">Make Moderator</button>
-                                                    </li>
-                                                    <li>
-                                                        <button (click)="downgradeModeratorToRegularUser(member._id)">Make Regular User</button>
-                                                    </li>
-                                                }
-                                                @if (conversation.moderators.includes(currentUserId) || conversation.admin === currentUserId) {
+                                                <li>
+                                                    <button (click)="upgradeUserToModerator(member._id)">Make Moderator</button>
+                                                </li>
+                                                <li>
+                                                    <button (click)="downgradeModeratorToRegularUser(member._id)">Make Regular User</button>
+                                                </li>
+                                                @if (conversation.moderators.includes(currentUserId) || conversation.admin !== member._id) {
                                                     <li class="remove ">
                                                         <button class="delete" (click)="removeUserConfirm($event, member)">Remove</button>
+                                                    </li>
+                                                }
+                                                @else {
+                                                    <li class="transfer-admin">
+                                                        <button class="delete" disabled>No Options For Yourself</button>
                                                     </li>
                                                 }
                                             </ul>
@@ -391,3 +434,5 @@
 </div>
 }
 <p-confirmdialog />
+
+<app-modal-image [show]="isShowDialogImage" [url]="currentImageUrl" (close)="isShowDialogImage = false"></app-modal-image>

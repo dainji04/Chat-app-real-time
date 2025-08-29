@@ -21,15 +21,17 @@ import { Groups } from '../services/groups/groups';
 
 import { ToastService } from '../services/toast/toast';
 import { ConfirmationService } from 'primeng/api';
+import { User } from '../services/user/user';
+import { RouterLink } from '@angular/router';
 
 // primeng
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Dialog } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { ScrollTop } from 'primeng/scrolltop';
-import { User } from '../services/user/user';
 
+import {Badge} from 'primeng/badge'
+import { ModalImage } from "../components/modal-image/modal-image";
 interface formMedia {
   url: string;
   publicId: string;
@@ -39,7 +41,9 @@ interface formMedia {
 
 @Component({
     selector: 'app-detail-message',
-    imports: [CommonModule, FormsModule, ClickOutside, Home, ConfirmDialog,Dialog, ButtonModule, InputTextModule, ScrollTop],
+    imports: [CommonModule, FormsModule, ClickOutside, Home, 
+        ConfirmDialog, Dialog, ButtonModule, InputTextModule,
+        RouterLink, Badge, ModalImage],
     templateUrl: './detail-message.html',
     styleUrl: './detail-message.scss',
     providers: [ConfirmationService]
@@ -93,13 +97,16 @@ export class DetailMessage implements OnInit, OnChanges {
     isShowAddMember: boolean = false;
     listMemberAddToGroup: any[] = []; // list member add to group
 
+    isShowDialogImage:boolean = false;
+    currentImageUrl: string = ''; // show current image in dialog
+
     constructor(
         private messageService: Message,
         private socketService: SocketService,
         private groupService: Groups,
         private toastService: ToastService,
         private userService: User,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
     ) {
         // Get current user ID from localStorage
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -121,12 +128,12 @@ export class DetailMessage implements OnInit, OnChanges {
         this.receiveSub = this.socketService
             .listen<any>('receive_message')
             .subscribe(async (data) => {
-                if(data.conversationId === this.id) {
+                if(data.conversationId === this.id && !this.messages.includes(data.message)) {
                     this.messages.push(data.message);
                 }
                 setTimeout(() => {
                     this.scrollToBottom();
-                }, 500);
+                }, 300);
             });
     }
 
@@ -198,12 +205,13 @@ export class DetailMessage implements OnInit, OnChanges {
                 this.messages = [...data.data, ...this.messages];
                 this.loadOldMessage = false;
                 if(data.pagination.hasMore == false) {
-                    this.loadMore = false; // no more messages to load
+                    this.loadMore = false; // stop loading more if error
                 }
             },
             error: (error) => {
                 console.error('Error loading more messages:', error);
                 this.loadOldMessage = false;
+                this.loadMore = false; // stop loading more if error
             },
         });
     }
@@ -229,10 +237,10 @@ export class DetailMessage implements OnInit, OnChanges {
     showButtonScrollBottom() {
         let messagesList = this.messagesList.nativeElement;
         if (!messagesList) return;
-        const scrollHeight = messagesList.scrollHeight;
-        const clientHeight = messagesList.clientHeight;
-        const scrollTop = messagesList.scrollTop;
-        this.isShowScrollBottom = scrollHeight - clientHeight > scrollTop;
+        const scrollHeight = messagesList.scrollHeight; // Chiều dài toàn bộ
+        const clientHeight = messagesList.clientHeight; // Chiều dài hiển thị
+        const scrollTop = messagesList.scrollTop; // Vị trí cuộn
+        this.isShowScrollBottom = scrollHeight - clientHeight > scrollTop + 100; // hiển thị nút cuộn 100
     }
 
     scrollToBottom() {
@@ -256,7 +264,8 @@ export class DetailMessage implements OnInit, OnChanges {
 
     // open media modal
     openImageModal(imageUrl: string): void {
-        window.open(imageUrl, '_blank');
+        this.currentImageUrl = imageUrl;
+        this.isShowDialogImage = true;
     }
 
     // Message
@@ -265,11 +274,11 @@ export class DetailMessage implements OnInit, OnChanges {
             this.toastService.showInfo('File Upload', 'File is uploading, please wait a moment.');
             return;
         }
-        if (!this.newMessageText.trim()) return;
+        if (!this.newMessageText.trim() && !this.formMedia) return;
 
         const messageData: any = {
             conversationId: this.id,
-            content: this.newMessageText,
+            content: this.newMessageText || '',
         };
 
         if (this.formMedia) {
@@ -281,7 +290,10 @@ export class DetailMessage implements OnInit, OnChanges {
             messageData.replyTo = this.replyToMessageId;
         }
 
+        console.log('Sending message:', messageData);
+
         this.socketService.sendMessage(messageData);
+
         this.newMessageText = '';
         this.formMedia = null;
         this.file = null;
@@ -372,6 +384,7 @@ export class DetailMessage implements OnInit, OnChanges {
 
         const formData = new FormData();
         formData.append('file', this.file);
+        formData.append('conversationId', this.id);
 
         if (this.formMedia) {
             this.deleteOldImage(); // delete old image and file = null
@@ -384,11 +397,10 @@ export class DetailMessage implements OnInit, OnChanges {
             },
             error: (err: any) => {
                 if (err.status == 500) {
-                    this.toastService.showError('File Upload', 'File is too large. Please select a file smaller than 5MB.');
+                    this.toastService.showError('File Upload', 'File is too large. Please select a file smaller than 50MB.');
                 } else {
                     this.toastService.showError('File Upload', err.error.message);
                 }
-                console.log('err messages: ', err);
                 this.isUploading = false;
                 this.file = null;
             },
@@ -399,14 +411,14 @@ export class DetailMessage implements OnInit, OnChanges {
         if (this.formMedia) {
             this.messageService.deleteMedia(this.formMedia.publicId).subscribe({
                 next: (res) => {
-                    this.formMedia = null;
-                    this.file = null;
                     console.log('Delete old image successfully');
                 },
                 error: (err) => {
                     console.log('err: ', err);
                 },
             });
+            this.file = null;
+            this.formMedia = null;
         }
     }
 
@@ -553,9 +565,6 @@ export class DetailMessage implements OnInit, OnChanges {
             accept: () => {
                 this.removeUser(member._id);
             },
-            reject: () => {
-                this.toastService.showError('Rejected', 'You have rejected');
-            },
         });
     }
 
@@ -595,9 +604,6 @@ export class DetailMessage implements OnInit, OnChanges {
             accept: () => {
                 this.deleteGroup();
             },
-            reject: () => {
-                this.toastService.showError('Rejected', 'You have rejected');
-            },
         });
     }
 
@@ -632,9 +638,6 @@ export class DetailMessage implements OnInit, OnChanges {
 
             accept: () => {
                 this.leaveGroup();
-            },
-            reject: () => {
-                this.toastService.showError('Rejected', 'You have rejected');
             },
         });
     }

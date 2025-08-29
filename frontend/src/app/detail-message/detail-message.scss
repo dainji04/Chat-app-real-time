@@ -2,6 +2,138 @@
 @use "../../styles/mixin" as *;
 
 // primeng configure scss
+/* Đảm bảo dialog mask phủ toàn màn hình */
+::ng-deep .add-member-mask {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 1000 !important;
+}
+
+/* Style cho dialog container */
+::ng-deep .add-member-dialog {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Header styling */
+::ng-deep .add-member-dialog .p-dialog-header {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+::ng-deep .add-member-dialog .p-dialog-title {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #333 !important;
+}
+
+/* Content styling */
+::ng-deep .add-member-dialog .p-dialog-content {
+  padding: 20px !important;
+}
+
+/* Footer styling */
+::ng-deep .add-member-dialog .p-dialog-footer {
+  padding: 16px 20px !important;
+  border-top: 1px solid #e0e0e0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+/* Input box styling */
+.add-member-input-box {
+  margin-bottom: 16px;
+}
+
+.add-member-input-box label {
+  min-width: 60px;
+  color: #333;
+}
+
+/* Member list styling */
+.list-member-add {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.list-member-add .member {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #f9f9f9;
+}
+
+.list-member-add .user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-member-add .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.list-member-add .user-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.list-member-add button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.list-member-add button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* Button styling */
+::ng-deep .add-member-dialog .p-button {
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  ::ng-deep .add-member-dialog {
+    width: 90vw !important;
+    max-width: 90vw !important;
+  }
+  
+  .add-member-input-box {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  
+  .add-member-input-box label {
+    min-width: auto;
+  }
+}
+
 .p-text-secondary {
   display: block;
   margin-bottom: 10px;
@@ -216,7 +348,6 @@
     &__option {
       width: 100%;
       display: grid;
-      cursor: pointer;
       padding: 10px;
       border-radius: 8px;
 
@@ -428,6 +559,7 @@
 
     i {
       font-size: 20px;
+      color: #fff;
     }
 
     &:hover {

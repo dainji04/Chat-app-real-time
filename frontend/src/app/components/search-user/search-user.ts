@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import {
   FormsModule,
   FormControl,
@@ -27,7 +27,9 @@ import { ToastService } from '../../services/toast/toast';
   styleUrl: './search-user.scss'
 })
 export class SearchUser {
-    searchForm: FormGroup = new FormGroup({
+  @Output() chatSelected = new EventEmitter<string>();
+
+  searchForm: FormGroup = new FormGroup({
     email: new FormControl(''),
   });
 
@@ -137,7 +139,8 @@ export class SearchUser {
   getOrCreateConversation() {
     this.messageService.getOrCreateConversation(this.resultUser._id).subscribe({
       next: (response: any) => {
-        this.router.navigate(['/messages', response.data.conversation._id]);
+        this.chatSelected.emit(response.data.conversation._id);
+        this.isSearching = false;
       },
       error: (error: any) => {
         this.toastService.showError('Error getting or creating conversation', error);

@@ -327,7 +327,7 @@ class GroupController {
                 group.avatar.includes('cloudinary')
             ) {
                 const publicId =
-                    'chat-app/group_avatars' +
+                    'chat-app/group_avatars/' +
                     group.avatar.split('/').pop().split('.')[0];
                 await deleteFromCloudinary(publicId);
             }

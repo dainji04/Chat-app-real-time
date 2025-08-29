@@ -13,7 +13,7 @@ const uploadToCloudinary = async (file, folder = 'chat-app') => {
                     quality: 'auto',
                     fetch_format: 'auto',
                     eager: [
-                        { width: 720, height: 480, crop: 'pad', format: 'mp4' }, // hoặc tùy bạn cần
+                        { width: 720, height: 480, crop: 'pad', format: 'mp4' },
                     ],
                     eager_async: true,
                 },

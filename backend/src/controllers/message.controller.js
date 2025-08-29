@@ -205,6 +205,7 @@ class MessageController {
 
     async uploadMedia(req, res) {
         try {
+            const { conversationId = 'undefined' } = req.body;
             if (!req.file) {
                 return res.status(400).json({ message: 'No file uploaded' });
             }
@@ -217,10 +218,9 @@ class MessageController {
             } else if (req.file.mimetype.startsWith('audio/')) {
                 fileType = 'audio';
             }
-
             const upload = await uploadToCloudinary(
                 req.file,
-                `chat-app/${fileType}s`
+                `chat-app/message-medias/${conversationId}/${fileType}s`
             );
 
             if (!upload) {
@@ -289,7 +289,7 @@ class MessageController {
         try {
             const {
                 conversationId,
-                content,
+                content = '',
                 type = 'text',
                 replyTo,
                 media,

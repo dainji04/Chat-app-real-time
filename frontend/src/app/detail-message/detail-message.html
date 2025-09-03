@@ -32,7 +32,7 @@
             <div class="messages-list">
                 @if (loadOldMessage && messages.length !== 0) {
                     <div style="display: flex; justify-content: center; align-items: center; background-color: #007bff; color: white; padding: 10px; border-radius: 5px;">
-                        <p>Loading messages...</p>
+                        <p><i class="pi pi-spin pi-spinner"></i>Loading messages...</p>
                     </div>
                 }
                 @for (message of messages; track message._id) {
@@ -374,44 +374,56 @@
                     </div>
                 }
                 <div class="body__option media">
-                    <div class="title" (click)="getMediaInConversation()">
+                    <div class="title cursor" (click)="getMediaInConversation()">
                         <p>Media in group</p>
                         <i class="fa-solid fa-chevron-right"></i>
                     </div>
-                    <div class="media__list list" [ngClass]="{'show': isShowMedia, 'close': isShowMedia == false, 'empty': listMedia.length === 0}">
-                        @for(item of listMedia; track item._id) {
-                            <div class="media__item item">
-                                @if (item.content.type === 'image') {
-                                    <img class="media__item--image" [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)">
-                                } @else if (item.content.type === 'video') {
-                                    <video [poster]="item.content.media.thumbnail"
-                                        [src]="item.content.media.url" class="media__item--video"
-                                        (click)="openImageModal(item.content.media.url)"
-                                        >
-                                    </video>
-                                }
-                            </div>
-                        } @empty {
-                            <div class="no-media">
-                                <p>No media found</p>
-                            </div>
-                        }
-                    </div>
+                    @if (!loadingInOption) {
+                        <div class="media__list list" [ngClass]="{'show': isShowMedia, 'close': isShowMedia == false, 'empty': listMedia.length === 0}">
+                            @for(item of listMedia; track item._id) {
+                                <div class="media__item item cursor">
+                                    @if (item.content.type === 'image') {
+                                        <img class="media__item--image" [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)">
+                                    } @else if (item.content.type === 'video') {
+                                        <video [poster]="item.content.media.thumbnail"
+                                            [src]="item.content.media.url" class="media__item--video"
+                                            (click)="openImageModal(item.content.media.url)"
+                                            >
+                                        </video>
+                                    }
+                                </div>
+                            } @empty {
+                                <div class="no-media">
+                                    <p>
+                                        <i class="pi pi-inbox"></i>
+                                        No media found
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <div class="loading">
+                            <p style="display: flex; justify-content: center; align-items: center;">
+                                <i class="pi pi-spin pi-spinner"></i>
+                                Loading...
+                            </p>
+                        </div>
+                    }
                 </div>
-                <div class="body__option support">
+                <!-- <div class="body__option support">
                     <div class="title">
                         <p>Support</p>
                         <i class="fa-solid fa-chevron-right"></i>
                     </div>
-                </div>
+                </div> -->
                 <div class="body__option">
                     @if (conversation.type === 'group') {
                         @if (conversation.admin === currentUserId) {
-                        <button (click)="deleteGroupConfirm($event)" class="alert alert-error">
+                        <button (click)="deleteGroupConfirm($event)" class="alert alert-error cursor">
                             delete group
                         </button>
                         }
-                        <button (click)="leaveGroupConfirm($event)" class="alert alert-error">
+                        <button (click)="leaveGroupConfirm($event)" class="alert alert-error cursor">
                             leave group
                         </button>
                     }
@@ -424,7 +436,7 @@
 
 @else if (id != '' && messages.length === 0) {
 <div class="no-message">
-    <h2>Loading</h2>
+    <h2><i class="pi pi-spin pi-spinner"></i>Loading</h2>
 </div>
 }
 

@@ -77,7 +77,7 @@
         }
         <!-- show loading in the first time -->
         @if(!listFriends) {
-            <p>Loading friends...</p>
+            <p><i class="pi pi-spin pi-spinner"></i>Loading friends...</p>
         }
         <!-- show no friends when list empty and not searching -->
         @else if ((listFriends == undefined || listFriends.length === 0 && !isSearching)) {

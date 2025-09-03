@@ -29,6 +29,7 @@
     "@angular/router": "^20.1.0",
     "@primeuix/themes": "^1.2.3",
     "firebase": "^12.1.0",
+    "primeicons": "^7.0.0",
     "primeng": "^20.0.1",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.8.1",

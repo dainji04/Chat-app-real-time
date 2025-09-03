@@ -78,6 +78,10 @@
                                 <h3 class="user-name">{{friend?.firstName}} {{friend?.lastName}}</h3>
                             </label>
                         </li>
+                    } @empty {
+                        <div>
+                            <p><i class="pi pi-spin pi-spinner-dotted"></i>Loading friends</p>
+                        </div>
                     }
                 </ul>
             </div>

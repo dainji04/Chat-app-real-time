@@ -7,7 +7,6 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  viewChild,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -87,6 +86,7 @@ export class DetailMessage implements OnInit, OnChanges {
     isShowMember: boolean | null= null;
     isShowMedia: boolean | null = null;
     listMedia: any[] = [];
+    loadingInOption: boolean = false; // loading when user click show member or media
 
     userIdShowOption: string | null = null; // id to show option: remove, moderator, regular user
 
@@ -218,19 +218,21 @@ export class DetailMessage implements OnInit, OnChanges {
 
     getMediaInConversation() {
         if(!this.isShowMedia) {
+            this.isShowMedia = true;
+            this.loadingInOption = true;
             this.messageService.getMediaInConversation(this.id).subscribe({
                 next: (data) => {
                     this.listMedia = data.data;
-                    this.isShowMedia = true;
+                    this.loadingInOption = false;
                 },
                 error: (error) => {
                     console.error('Error fetching media:', error);
-                    this.isShowMedia = true;
+                    this.loadingInOption = false;
                 },
             });
         } else {
+            this.loadingInOption = false;
             this.isShowMedia = false;
-            this.listMedia = [];
         }
     }
 

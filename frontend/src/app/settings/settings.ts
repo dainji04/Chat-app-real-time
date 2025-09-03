@@ -69,7 +69,7 @@ export class Settings implements OnInit {
       bio: [this.user.bio || '', [Validators.maxLength(200)]],
       phone: [
         this.user.phone || '',
-        [Validators.required, Validators.pattern(/^\d{9,11}$/)],
+        [Validators.pattern(/^\d{9,11}$/)],
       ],
       dateOfBirth: [
         this.user.dateOfBirth

@@ -40,6 +40,7 @@ export class Auth {
 
   logout(): Observable<any> {
     this.tokenService.clearTokens();
+    localStorage.removeItem('user'); // remove user to check auth guard
     return this.apiService.post('auth/logout', {});
   }
 
@@ -81,20 +82,25 @@ export class Auth {
 
   async isAuthenticated(): Promise<boolean> {
     // Check if user has a valid access token
+    const user = localStorage.getItem('user');
     if (this.tokenService.hasToken() && !this.tokenService.isTokenExpired()) {
       return true;
     }
 
-    try {
-      const response = await firstValueFrom(this.refreshToken());
-      if (response.accessToken) {
-        this.tokenService.setAccessToken(response.accessToken);
-        console.log('Token refreshed successfully', response);
-        return true;
+    if(user) {
+      try {
+        const response = await firstValueFrom(this.refreshToken());
+        if (response.accessToken) {
+          this.tokenService.setAccessToken(response.accessToken);
+          console.log('Token refreshed successfully', response);
+          return true;
+        }
+        return false;
+      } catch (error) {
+        this.logout();
+        return false;
       }
-      return false;
-    } catch (error) {
-      this.logout();
+    } else {
       return false;
     }
   }

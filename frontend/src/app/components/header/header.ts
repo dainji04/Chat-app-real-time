@@ -54,7 +54,6 @@ export class Header implements OnInit {
     this.authService.logout().subscribe({
       next: () => {
         this.toastService.showSuccess('Logout successful', 'You have been logged out.');
-        localStorage.removeItem('user');
         this.router.navigate(['/auth/login']);
       },
       error: (error) => {

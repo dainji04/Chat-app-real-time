@@ -267,7 +267,7 @@ const socketHandler = (io) => {
             if (socket.userId) {
                 await User.findByIdAndUpdate(
                     socket.userId,
-                    { $set: { isOnline: false } },
+                    { $set: { isOnline: false, isInConversation: false } },
                     { new: true }
                 );
 

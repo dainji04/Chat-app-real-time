@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-    <button [disabled]="disabled" class="primary-button">
+    <button [disabled]="disabled" class="primary-btn">
       {{text}}
     </button>
   `,

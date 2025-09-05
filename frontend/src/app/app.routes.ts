@@ -47,13 +47,13 @@ const appRoutes: Routes = [
         {
             path: 'login',
             loadComponent: () =>
-                import('./auth/login/login').then((c) => c.Login),
+                import('./pages/auth/login/login').then((c) => c.Login),
             canActivate: [guestGuard],
         },
         {
             path: 'sign-up',
             loadComponent: () =>
-                import('./auth/signup/signup').then((c) => c.Signup),
+                import('./pages/auth/signup/signup').then((c) => c.Signup),
             canActivate: [guestGuard],
         },
     ],

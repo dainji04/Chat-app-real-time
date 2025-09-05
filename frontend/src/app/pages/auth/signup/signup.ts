@@ -6,12 +6,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthIntroComponent } from '../../components/auth-intro/auth-intro';
-import { PrimaryButton } from '../../components/primary-button/primary-button';
-import { Auth } from '../../services/auth/auth';
-import { SocketService } from '../../services/socket/socket-service';
-import {ShowErrorValidate} from '../../components/show-error-validate/show-error-validate';
-import { ToastService } from '../../services/toast/toast';
+import { AuthIntroComponent } from '../../../components/auth-intro/auth-intro';
+import { PrimaryButton } from '../../../components/primary-button/primary-button';
+import { Auth } from '../../../services/auth/auth';
+import { SocketService } from '../../../services/socket/socket-service';
+import {ShowErrorValidate} from '../../../components/show-error-validate/show-error-validate';
+import { ToastService } from '../../../services/toast/toast';
 
 @Component({
   selector: 'app-signup',

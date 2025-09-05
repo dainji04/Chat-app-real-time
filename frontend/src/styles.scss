@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
-@use "./styles/variables";
-@use "./styles/reset";
-@use "./styles/global";
-@use "./styles/theme";
-@use "./styles/utilities";
+@use "variables";
+@use "reset";
+@use "global";
+@use "theme";
+@use "utilities";
 
 // primeng
 @import "primeicons/primeicons.css";

@@ -1,13 +1,16 @@
 <div class="container">
     <div #message class="messages">
         <div class="messages__header">
-            <div class="circle" (click)="showCreateOptions()" >
-                <i class="fa-solid fa-plus"></i>
+            <div class="circle" (click)="showCreateOptions()" (appClickOutside)="isShowCreateOptions = false">
+                <i class="fa-solid fa-plus cursor"></i>
                 <ul [ngClass]="{'show': isShowCreateOptions}" class="create__options options">
-                    <li><button (click)="showCreateGroupBox()">create a group chat</button></li>
+                    <li class="cursor" (click)="showCreateGroupBox()">
+                        <p>create a group chat</p>
+                    </li>
                 </ul>
             </div>
             <ul class="messages__header-search">
+                <!-- search component -->
                 <app-search-user (chatSelected)="setChat($event)"></app-search-user>
             </ul>
         </div>
@@ -17,7 +20,7 @@
                     <button [ngClass]="{'selected': selectedMessageId === message._id}" 
                         class="messages__item" (click)="selectMessage(message)">
                         <div style="position: relative; z-index: 1">
-                            <img [src]="message.avatar" alt="avatar" class="messages__item-avatar">
+                            <img loading="lazy" [src]="message.avatar" alt="avatar" class="messages__item-avatar">
                             @if(message.type !== 'group') {
                                 <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
                                      class="dot fa-solid fa-circle"></i>
@@ -74,7 +77,7 @@
                                 [checked]="formGroupChat.participantIds.includes(friend._id)"
                                 (change)="toggleMember(friend._id, $event)">
                             <label [for]="'addMember' + idx" class="user">
-                                <img [src]="friend?.avatar" alt="avatar user" class="user-avatar">
+                                <img loading="lazy" [src]="friend?.avatar" alt="avatar user" class="user-avatar">
                                 <h3 class="user-name">{{friend?.firstName}} {{friend?.lastName}}</h3>
                             </label>
                         </li>

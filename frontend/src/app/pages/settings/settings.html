@@ -22,7 +22,7 @@
         }
 
         <div class="avatar-box">
-            <img [src]="user?.avatar || 'assets/default-avatar.png'" alt="User Avatar" class="avatar__image">
+            <img loading="lazy" [src]="user?.avatar || 'assets/default-avatar.png'" alt="User Avatar" class="avatar__image">
             <input type="file" (change)="onFileSelected($event)" accept="image/*" class="avatar__input">
         </div>
         <div class="upload-btn">

@@ -1,17 +1,18 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { Message } from '../services/messages/message';
+import { Message } from '../../services/messages/message';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DetailMessage } from '../detail-message/detail-message';
-import { ClickOutside } from '../directives/clickOutSide/click-outside';
-import { FriendService } from '../services/friends/friends';
-import { Groups } from '../services/groups/groups';
+import { ClickOutside } from '../../directives/clickOutSide/click-outside';
+import { FriendService } from '../../services/friends/friends';
+import { Groups } from '../../services/groups/groups';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { User } from '../services/user/user';
-import { ToastService } from '../services/toast/toast';
-import { SocketService } from '../services/socket/socket-service';
-import { SearchUser } from "../components/search-user/search-user";
+import { User } from '../../services/user/user';
+import { ToastService } from '../../services/toast/toast';
+import { SocketService } from '../../services/socket/socket-service';
+import { SearchUser } from "../../components/search-user/search-user";
+import { Subscription } from 'rxjs';
 
 interface group {
   name: string;
@@ -37,6 +38,8 @@ interface group {
 export class Messages implements OnInit, OnDestroy {
   @ViewChild('detail') detailElement: any;
   @ViewChild('message') messageElement: any;
+  private receiveSub!: Subscription; // listen receive new messages
+  
   messages: any[] = [];
   selectedMessageId: string = '';
   isDetailOpen: boolean = false;
@@ -78,6 +81,18 @@ export class Messages implements OnInit, OnDestroy {
     };
 
     window.addEventListener('beforeunload', this.beforeUnloadListener);
+
+    this.receiveSub = this.socketService
+            .listen<any>('receive_message')
+            .subscribe(async (data) => {
+              this.updateConversationsWhenReceiveMessage(data);
+            });
+  }
+
+  updateConversationsWhenReceiveMessage(data: any) {
+    console.log('Received message data:', data);
+    const convUpdate = this.messages.find((conv) => conv._id === data.conversationId);
+    console.info(convUpdate);
   }
 
   setChat(id: string) {

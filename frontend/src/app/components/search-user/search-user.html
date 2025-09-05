@@ -1,22 +1,29 @@
-<li (appClickOutside)="isSearching = false">
+<li (appClickOutside)="isShowSearchResult = false">
 	<form [formGroup]="searchForm" class="header__search-form" (ngSubmit)="onSearchInput()">
 		<div class="header__search">
 			<i (click)="toggleSearch()" class="fa-solid fa-magnifying-glass"></i>
-			<div class="header__search-box" [class]="{'isSearching': isSearching}">
-				<input class="header__search-input" formControlName="email" (click)="isSearching=true" type="text"
+			<div class="header__search-box" [class]="{'isSearching': isShowSearchResult}">
+				<input class="header__search-input" formControlName="email" (click)="isShowSearchResult=true" type="text"
 					placeholder="type email">
 			</div>
 		</div>
-		@if (isSearching) {
+		@if (isShowSearchResult) {
 			<div class="result__search">
-				@if (isSearching && resultUser != null) {
+				@if (isLoadingSearch) {
+					<div>
+						<span>
+							<i class="pi pi-spin pi-spinner"></i>
+							Loading...
+						</span>
+					</div>
+				} @else if (isShowSearchResult && resultUser != null) {
 					<a class="result__search-link">
-						<img [src]="resultUser?.avatar" alt="{{ resultUser?.username }} avatar" class="avatar">
+						<img loading="lazy" [src]="resultUser?.avatar" alt="{{ resultUser?.username }} avatar" class="avatar">
 						<span>{{ resultUser?.firstName + ' ' + resultUser?.lastName }}</span>
 					</a>
 					<div class="button__state">
 						@if (isOwnProfile()) {
-							<button class="primary-btn" (click)="isSearching=false" routerLinkActive="active" routerLink="/profile">
+							<button class="primary-btn" (click)="isShowSearchResult=false" routerLinkActive="active" routerLink="/profile">
 								view
 							</button>
 						}
@@ -30,7 +37,7 @@
 							</button>
 						}
 					</div>
-				} @else if (isSearching && resultUser == null) {
+				} @else if (isShowSearchResult && resultUser == null) {
 					<div>
 						<span>
 							<i class="pi pi-inbox"></i>

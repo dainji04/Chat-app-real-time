@@ -8,7 +8,7 @@ import {
 import { Auth } from '../../services/auth/auth';
 import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../../directives/clickOutSide/click-outside';
-import { debounceTime } from 'rxjs';
+import { debounceTime, finalize } from 'rxjs';
 import { User } from '../../services/user/user';
 import { SocketService } from '../../services/socket/socket-service';
 import { FriendService } from '../../services/friends/friends';
@@ -33,7 +33,8 @@ export class SearchUser {
     email: new FormControl(''),
   });
 
-  isSearching: boolean = false;
+  isShowSearchResult: boolean = false;
+  isLoadingSearch: boolean = false;
 
   isProfile: boolean = false;
   isProfileDesktop: boolean = false;
@@ -46,7 +47,7 @@ export class SearchUser {
   isChat: boolean = false;
 
   toggleSearch() {
-    this.isSearching = !this.isSearching;
+    this.isShowSearchResult = !this.isShowSearchResult;
   }
 
   toggleProfile() {
@@ -75,16 +76,18 @@ export class SearchUser {
 
   onSearchInput() {
     this.resultUser = null;
-    this.userService.searchByEmail(this.searchForm.value.email).subscribe({
+    this.isLoadingSearch = true;
+    console.log(this.isLoadingSearch);
+    this.userService.searchByEmail(this.searchForm.value.email)
+    .pipe(
+      finalize(() => {
+        this.isLoadingSearch = false;
+        console.log(this.isLoadingSearch);
+      })
+    )
+    .subscribe({
       next: (response) => {
         this.resultUser = response.user;
-        console.log(this.resultUser);
-      },
-      error: (error) => {
-        console.error('Search failed:', error);
-        if (error.status === 404) {
-          console.log('User not found');
-        }
       },
     });
   }
@@ -116,7 +119,6 @@ export class SearchUser {
     this.socketService.forceDisconnect();
     this.authService.logout().subscribe({
       next: () => {
-        localStorage.removeItem('user');
         this.router.navigate(['/auth/login']);
       },
       error: (error) => {
@@ -140,7 +142,7 @@ export class SearchUser {
     this.messageService.getOrCreateConversation(this.resultUser._id).subscribe({
       next: (response: any) => {
         this.chatSelected.emit(response.data.conversation._id);
-        this.isSearching = false;
+        this.isShowSearchResult = false;
       },
       error: (error: any) => {
         this.toastService.showError('Error getting or creating conversation', error);

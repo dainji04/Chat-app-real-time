@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FriendService } from '../services/friends/friends';
+import { FriendService } from '../../services/friends/friends';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { Message } from '../services/messages/message';
+import { Message } from '../../services/messages/message';
 import { Router, RouterModule } from '@angular/router';
-import { ClickOutside } from '../directives/clickOutSide/click-outside';
-import { ToastService } from '../services/toast/toast';
+import { ClickOutside } from '../../directives/clickOutSide/click-outside';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
   selector: 'app-friends',

@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VideoCallService } from '../services/call-video/video-call';
+import { VideoCallService } from '../../services/call-video/video-call';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SocketService } from '../services/socket/socket-service';
+import { SocketService } from '../../services/socket/socket-service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -43,6 +43,8 @@ export class VideoCall implements OnInit, OnDestroy {
 
     this.setupSocketListeners();
     this.setupRemoteStreamListener();
+
+    this.startCall();
   }
 
   ngOnDestroy() {

@@ -1,5 +1,5 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixin' as *;
+@use "variables" as *;
+@use "mixin" as *;
 
 body.detail-message-open {
     overflow: hidden;
@@ -23,7 +23,8 @@ body.detail-message-open {
     .messages {
         margin: 10px 20px 100px 20px;
         height: 100vh;
-        overflow-y: hidden;
+        padding-bottom: 100px !important;
+        // overflow-y: hidden;
 
         &.hide {
             display: none;
@@ -189,7 +190,6 @@ body.detail-message-open {
             border-radius: 16px;
             width: 600px;
 
-
             &__header {
                 width: 100%;
                 display: flex;
@@ -197,7 +197,7 @@ body.detail-message-open {
                 align-items: center;
                 padding-bottom: 10px;
                 border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-                
+
                 h1 {
                     font-size: 20px;
                     font-weight: 600;
@@ -333,8 +333,6 @@ body.detail-message-open {
         }
     }
 
-    
-
     .container {
         display: grid;
         grid-template-columns: 1.5fr 2fr;
@@ -369,8 +367,7 @@ body.detail-message-open {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    cursor: pointer;
-                    transition: .3s all;
+                    transition: 0.3s all;
                     position: relative;
 
                     &:hover {
@@ -401,27 +398,26 @@ body.detail-message-open {
                         }
 
                         li {
-                        padding: 10px;
-                            cursor: pointer;
+                            padding: 10px;
                             width: 100%;
 
-                        &:hover {
-                            background-color: #f0f0f0;
-                        }
+                            &:hover {
+                                background-color: #f0f0f0;
+                            }
 
-                        button {
-                            text-decoration: none;
-                            color: $primary-color;
-                            display: flex;
-                            justify-content: start;
-                            outline: none;
-                            border: none;
-                            background-color: transparent;
-                            font-size: 16px;
-                            color: #000;
+                            button {
+                                text-decoration: none;
+                                color: $primary-color;
+                                display: flex;
+                                justify-content: start;
+                                outline: none;
+                                border: none;
+                                background-color: transparent;
+                                font-size: 16px;
+                                color: #000;
 
-                            &.delete {
-                                color: $danger-color;
+                                &.delete {
+                                    color: $danger-color;
                                 }
                             }
                         }
@@ -447,7 +443,6 @@ body.detail-message-open {
                     color: #fff;
                 }
             }
-            
         }
     }
 }

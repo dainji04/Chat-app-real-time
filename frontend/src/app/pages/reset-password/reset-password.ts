@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Auth } from '../services/auth/auth';
+import { Auth } from '../../services/auth/auth';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   FormBuilder,
@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { debounceTime } from 'rxjs';
-import { ToastService } from '../services/toast/toast';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
   selector: 'app-reset-password',

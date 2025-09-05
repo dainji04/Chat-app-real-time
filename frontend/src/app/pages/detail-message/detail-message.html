@@ -9,7 +9,7 @@
                 </button>
                 <div class="chat-info">
                     <div class="left">
-                        <img [src]="conversation.avatar" class="avatar" alt="avatar-chat">
+                        <img loading="lazy" [src]="conversation.avatar" class="avatar" alt="avatar group">
                     </div>
                     <div class="right">
                         <h3 class="chat-title">{{conversation.name}}</h3>
@@ -42,7 +42,7 @@
                         <!-- Avatar (only for other users) -->
                         @if (!isOwnMessage(message)) {
                         <div class="message__avatar">
-                            <img [src]="message.sender.avatar" [alt]="'User avatar'" />
+                            <img loading="lazy" [src]="message.sender.avatar" [alt]="'User avatar'" />
                         </div>
                         }
     
@@ -70,7 +70,7 @@
                                 <!-- Image Message -->
                                 @else if (message.content.type === 'image') {
                                 <div class="message__bubble message__bubble--media">
-                                    <img [src]="message.content.media.url" alt="Shared image" class="message__image"
+                                    <img loading="lazy" [src]="message.content.media.url" alt="Shared image" class="message__image"
                                         (click)="openImageModal(message.content.media.url)" />
                                     @if(message.content.text) {
                                     <p class="message__text">{{ message.content.text }}</p>
@@ -240,7 +240,7 @@
                             <div class="overlay" (click)="toggleUploadAvatarGroup($event)">
                                 <div class="modal__change-avatar">
                                     <label class="avatar-label" for="file_avatar">
-                                        <img #avatar class="avatar" [src]="conversation.avatar" alt="avatar group">
+                                        <img loading="lazy" #avatar class="avatar" [src]="conversation.avatar" alt="avatar group">
                                         <i class="fa-solid fa-camera"></i>
                                     </label>
                                     <input type="file" hidden id="file_avatar" (change)="onFileGroupSelected($event)" accept="image/*">
@@ -248,7 +248,7 @@
                                 </div>
                             </div>
                         }
-                        <img class="avatar" [src]="conversation.avatar" alt="avatar group" (click)="isUploadAvatarGroup = true">
+                        <img loading="lazy" class="avatar" [src]="conversation.avatar" alt="avatar group" (click)="isUploadAvatarGroup = true">
                     </div>
                     <div>
                         <h1>{{conversation.name}}</h1>
@@ -275,7 +275,9 @@
                             [appendTo]="'body'"
                             [maskStyleClass]="'add-member-mask'"
                             >
-                            <span class="p-text-secondary block mb-8">Update your information.</span>
+                            <span style="font-weight: bold" class="p-text-secondary block mb-8">
+                                Type email and press enter or click "Add" button to add member to group
+                            </span>
                             <div class="add-member-input-box flex items-center gap-4 mb-2">
                                 <label for="email" class="font-semibold w-24">Email</label>
                                 <input 
@@ -297,7 +299,7 @@
                                 @for (member of listMemberAddToGroup; track member._id; let idx = $index) {
                                 <li class="member">
                                     <div class="user">
-                                    <img [src]="member?.avatar" alt="avatar user" class="avatar">
+                                    <img loading="lazy" [src]="member?.avatar" alt="avatar user" class="avatar">
                                     <h3 class="user-name">{{member?.firstName}} {{member?.lastName}}</h3>
                                     </div>
                                     <button>
@@ -335,7 +337,7 @@
                             @for(member of conversation.participants; track member._id) {
                                 <div class="member__item item">
                                     <div class="left">
-                                        <img class="avatar" [src]="member.avatar" alt="avatar" >
+                                        <img loading="lazy" class="avatar" [src]="member.avatar" alt="avatar" >
                                         @if (member._id === conversation.admin) {
                                             <i style="color: rgb(150, 150, 38);" class="fas fa-crown"></i>
                                         } @else if (conversation.moderators.includes(member._id)) {
@@ -383,7 +385,7 @@
                             @for(item of listMedia; track item._id) {
                                 <div class="media__item item cursor">
                                     @if (item.content.type === 'image') {
-                                        <img class="media__item--image" [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)">
+                                        <img loading="lazy" class="media__item--image" [src]="item.content.media.url" alt="media" (click)="openImageModal(item.content.media.url)">
                                     } @else if (item.content.type === 'video') {
                                         <video [poster]="item.content.media.thumbnail"
                                             [src]="item.content.media.url" class="media__item--video"

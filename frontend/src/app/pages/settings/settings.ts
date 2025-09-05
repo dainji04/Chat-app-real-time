@@ -5,11 +5,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { User } from '../services/user/user';
-import { Auth } from '../services/auth/auth';
+import { User } from '../../services/user/user';
+import { Auth } from '../../services/auth/auth';
 import { debounceTime } from 'rxjs';
-import {ShowErrorValidate} from '../components/show-error-validate/show-error-validate';
-import { ToastService } from '../services/toast/toast';
+import {ShowErrorValidate} from '../../components/show-error-validate/show-error-validate';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
   selector: 'app-settings',

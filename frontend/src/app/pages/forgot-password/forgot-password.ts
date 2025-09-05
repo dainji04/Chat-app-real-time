@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { Auth } from '../services/auth/auth';
+import { Auth } from '../../services/auth/auth';
 import { FormsModule } from '@angular/forms';
-import { ToastService } from '../services/toast/toast';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
   selector: 'app-forgot-password',

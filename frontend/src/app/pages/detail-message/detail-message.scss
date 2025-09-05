@@ -1,7 +1,7 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixin" as *;
+@use "variables" as *;
+@use "mixin" as *;
 
-// primeng configure scss
+/* -----------------------START CONFIGURE PRIMENG THEME----------------------- */
 /* Đảm bảo dialog mask phủ toàn màn hình */
 ::ng-deep .add-member-mask {
   position: fixed !important;
@@ -10,7 +10,7 @@
   width: 100vw !important;
   height: 100vh !important;
   background-color: rgba(0, 0, 0, 0.5) !important;
-  z-index: 1000 !important;
+  z-index: 200 !important;
 }
 
 /* Style cho dialog container */
@@ -116,24 +116,6 @@
   font-weight: 500 !important;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  ::ng-deep .add-member-dialog {
-    width: 90vw !important;
-    max-width: 90vw !important;
-  }
-  
-  .add-member-input-box {
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 8px !important;
-  }
-  
-  .add-member-input-box label {
-    min-width: auto;
-  }
-}
-
 .p-text-secondary {
   display: block;
   margin-bottom: 10px;
@@ -173,11 +155,10 @@
     }
   }
 }
-
-// end primeng
+/* -----------------------END CONFIGURE PRIMENG THEME----------------------- */
 
 .container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   background-color: transparent;
 }

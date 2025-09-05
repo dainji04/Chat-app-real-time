@@ -11,16 +11,16 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Message } from '../services/messages/message';
-import { SocketService } from '../services/socket/socket-service';
+import { Message } from '../../services/messages/message';
+import { SocketService } from '../../services/socket/socket-service';
 import { Subscription } from 'rxjs';
-import { ClickOutside } from '../directives/clickOutSide/click-outside';
+import { ClickOutside } from '../../directives/clickOutSide/click-outside';
 import { Home } from '../home/home';
-import { Groups } from '../services/groups/groups';
+import { Groups } from '../../services/groups/groups';
 
-import { ToastService } from '../services/toast/toast';
+import { ToastService } from '../../services/toast/toast';
 import { ConfirmationService } from 'primeng/api';
-import { User } from '../services/user/user';
+import { User } from '../../services/user/user';
 import { RouterLink } from '@angular/router';
 
 // primeng
@@ -30,7 +30,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 
 import {Badge} from 'primeng/badge'
-import { ModalImage } from "../components/modal-image/modal-image";
+import { ModalImage } from "../../components/modal-image/modal-image";
 interface formMedia {
   url: string;
   publicId: string;

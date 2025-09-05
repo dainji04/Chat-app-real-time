@@ -11,12 +11,12 @@
             </li>
             <app-search-user></app-search-user>
             <li class="header__nav-item profile" (appClickOutside)="isProfile = false">
-                <img (click)="toggleProfile()" [src]="user.avatar" [alt]="user.username + ' avatar'" class="avatar">
+                <img loading="lazy" (click)="toggleProfile()" [src]="user.avatar" [alt]="user.username + ' avatar'" class="avatar">
                 <!-- Profile Menu -->
                 @if (isProfile) {
                     <div class="profile__menu">
                         <div class="profile__user-info">
-                            <img [src]="user.avatar" class="avatar" alt="avatar_user">
+                            <img loading="lazy" [src]="user.avatar" class="avatar" alt="avatar_user">
                             <div>
                                 <h3 class="profile__user-fullname">{{ user.firstName + ' ' + user.lastName }}</h3>
                                 <p class="profile__username">&#64;{{ user.username }}</p>
@@ -78,7 +78,7 @@
                 @if (isProfileDesktop) {
                     <div class="setting__options">
                         <div class="user-info">
-                            <img [src]="user.avatar" class="avatar" alt="avatar_user">
+                            <img loading="lazy" [src]="user.avatar" class="avatar" alt="avatar_user">
                             <div>
                                 <h3 class="user-fullname">{{ user.firstName + ' ' + user.lastName }}</h3>
                                 <p class="profile__username">&#64;{{ user.username }}</p>

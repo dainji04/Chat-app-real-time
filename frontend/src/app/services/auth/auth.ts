@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Api } from '../api/api';
 import { Token } from '../token/token';
-import { signUp } from '../../types/auth';
+import { signUp } from '../../model/auth';
 import { firstValueFrom, Observable, tap } from 'rxjs';
 
 @Injectable({
@@ -40,7 +40,8 @@ export class Auth {
 
   logout(): Observable<any> {
     this.tokenService.clearTokens();
-    localStorage.removeItem('user'); // remove user to check auth guard
+    console.info('User logged out');
+    // localStorage.removeItem('user'); // remove user to check auth guard
     return this.apiService.post('auth/logout', {});
   }
 
@@ -87,20 +88,16 @@ export class Auth {
       return true;
     }
 
-    if(user) {
-      try {
-        const response = await firstValueFrom(this.refreshToken());
-        if (response.accessToken) {
-          this.tokenService.setAccessToken(response.accessToken);
-          console.log('Token refreshed successfully', response);
-          return true;
-        }
-        return false;
-      } catch (error) {
-        this.logout();
-        return false;
+    try {
+      const response = await firstValueFrom(this.refreshToken());
+      if (response.accessToken) {
+        this.tokenService.setAccessToken(response.accessToken);
+        console.log('Token refreshed successfully', response);
+        return true;
       }
-    } else {
+      return false;
+    } catch (error) {
+      this.logout();
       return false;
     }
   }

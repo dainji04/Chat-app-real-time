@@ -17,25 +17,25 @@ const appRoutes: Routes = [
       {
         path: 'messages',
         loadComponent: () =>
-            import('./messages/messages').then((c) => c.Messages),
+            import('./pages/messages/messages').then((c) => c.Messages),
         canActivate: [authGuard],
       },
       {
         path: 'profile',
         loadComponent: () =>
-            import('./profile/profile').then((c) => c.Profile),
+            import('./pages/profile/profile').then((c) => c.Profile),
         canActivate: [authGuard],
       },
       {
         path: 'settings',
         loadComponent: () =>
-            import('./settings/settings').then((c) => c.Settings),
+            import('./pages/settings/settings').then((c) => c.Settings),
         canActivate: [authGuard],
       },
       {
         path: 'friends',
         loadComponent: () =>
-            import('./friends/friends').then((c) => c.Friends),
+            import('./pages/friends/friends').then((c) => c.Friends),
         canActivate: [authGuard],
       },
     ],
@@ -61,21 +61,21 @@ const appRoutes: Routes = [
   {
     path: 'reset-password',
     loadComponent: () =>
-        import('./reset-password/reset-password').then(
+        import('./pages/reset-password/reset-password').then(
             (c) => c.ResetPassword
         ),
   },
   {
     path: 'forgot-password',
     loadComponent: () =>
-        import('./forgot-password/forgot-password').then(
+        import('./pages/forgot-password/forgot-password').then(
             (c) => c.ForgotPassword
         ),
   },
   {
     path: 'video-call/:roomId',
     loadComponent: () =>
-        import('./video-call/video-call').then((c) => c.VideoCall),
+        import('./pages/video-call/video-call').then((c) => c.VideoCall),
   },
   {
     path: '**',

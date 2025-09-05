@@ -32,7 +32,7 @@
                     <div class="friends__list-item">
                         <div class="user">
                             <div class="status">
-                                <img [src]="friend?.avatar" alt="{{ friend?.username }} avatar" class="avatar">
+                                <img loading="lazy" [src]="friend?.avatar" alt="{{ friend?.username }} avatar" class="avatar">
                                 <i [ngClass]="{'online': friend?.isOnline, 'offline': !friend?.isOnline}"
                                     class="dot fa-solid fa-circle"></i>
                             </div>

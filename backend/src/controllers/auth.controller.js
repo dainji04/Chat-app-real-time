@@ -59,8 +59,8 @@ class AuthController {
             res.cookie('refresh-token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'none',
-                maxAge: 30 * 1000, // 30 seconds
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
             });
 
             return res.status(201).json({
@@ -113,7 +113,8 @@ class AuthController {
             res.cookie('refresh-token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'none',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
             });
 
             return res.status(200).json({
@@ -140,7 +141,8 @@ class AuthController {
             res.clearCookie('refresh-token', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'none',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                maxAge: 0,
             });
 
             return res.status(200).json({ message: 'Logout successful' });

@@ -6,13 +6,13 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compa
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyCs8pqo77KTaRzotBtXBYGuPpxagrv7dG8',
-  authDomain: 'chat-real-time-403ab.firebaseapp.com',
-  projectId: 'chat-real-time-403ab',
-  storageBucket: 'chat-real-time-403ab.firebasestorage.app',
-  messagingSenderId: '460589228398',
-  appId: '1:460589228398:web:c8c1cc8279c7f4612ce17f',
-  measurementId: 'G-7FMM7HWV9Q',
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 
 // Initialize Firebase

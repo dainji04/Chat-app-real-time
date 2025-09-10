@@ -3,6 +3,7 @@ import { Socket, io } from 'socket.io-client';
 import { Token } from '../token/token';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root',
 })

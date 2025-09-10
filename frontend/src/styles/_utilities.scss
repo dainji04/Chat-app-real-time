@@ -2,6 +2,40 @@
 @use "variables" as *;
 @use "theme" as *;
 
+// Theme-specific CSS custom properties
+.light-theme {
+  --primary-color: #{$light-primary-color};
+  --text-primary: #{$light-text-primary};
+  --text-secondary: #{$light-text-secondary};
+  --text-muted: #{$light-text-muted};
+  --bg-primary: #{$light-bg-primary};
+  --bg-secondary: #{$light-bg-secondary};
+  --bg-tertiary: #{$light-bg-tertiary};
+  --border-color: #{$light-border};
+  --accent-color: #{$light-accent};
+  --success-color: #{$light-success};
+  --warning-color: #{$light-warning};
+  --error-color: #{$light-error};
+  --box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  --overlay: #{$light-overlay};
+}
+
+.dark-theme {
+  --primary-color: #{$dark-primary-color};
+  --text-primary: #{$dark-text-primary};
+  --text-secondary: #{$dark-text-secondary};
+  --text-muted: #{$dark-text-muted};
+  --bg-primary: #{$dark-bg-primary};
+  --bg-secondary: #{$dark-bg-secondary};
+  --bg-tertiary: #{$dark-bg-tertiary};
+  --border-color: #{$dark-border};
+  --accent-color: #{$dark-accent};
+  --success-color: #{$dark-success};
+  --warning-color: #{$dark-warning};
+  --error-color: #{$dark-error};
+  --box-shadow: 0px 0px 16px rgba(0, 0, 0, .3);
+  --overlay: #{$dark-overlay};
+}
 
 .cursor {
   cursor: pointer;
@@ -94,41 +128,6 @@
 // Border colors
 .border-color {
   border-color: var(--border-color);
-}
-
-// Theme-specific CSS custom properties
-.light-theme {
-  --primary-color: #{$light-primary-color};
-  --text-primary: #{$light-text-primary};
-  --text-secondary: #{$light-text-secondary};
-  --text-muted: #{$light-text-muted};
-  --bg-primary: #{$light-bg-primary};
-  --bg-secondary: #{$light-bg-secondary};
-  --bg-tertiary: #{$light-bg-tertiary};
-  --border-color: #{$light-border};
-  --accent-color: #{$light-accent};
-  --success-color: #{$light-success};
-  --warning-color: #{$light-warning};
-  --error-color: #{$light-error};
-  --box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-  --overlay: #{$light-overlay};
-}
-
-.dark-theme {
-  --primary-color: #{$dark-primary-color};
-  --text-primary: #{$dark-text-primary};
-  --text-secondary: #{$dark-text-secondary};
-  --text-muted: #{$dark-text-muted};
-  --bg-primary: #{$dark-bg-primary};
-  --bg-secondary: #{$dark-bg-secondary};
-  --bg-tertiary: #{$dark-bg-tertiary};
-  --border-color: #{$dark-border};
-  --accent-color: #{$dark-accent};
-  --success-color: #{$dark-success};
-  --warning-color: #{$dark-warning};
-  --error-color: #{$dark-error};
-  --box-shadow: 0px 0px 16px rgba(0, 0, 0, .3);
-  --overlay: #{$dark-overlay};
 }
 
 // overlay for modals

@@ -8,11 +8,7 @@ import {
 import { Auth } from '../../services/auth/auth';
 import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../../directives/clickOutSide/click-outside';
-import { debounceTime } from 'rxjs';
-import { User } from '../../services/user/user';
 import { SocketService } from '../../services/socket/socket-service';
-import { FriendService } from '../../services/friends/friends';
-import { Message } from '../../services/messages/message';
 import { ToastService } from '../../services/toast/toast';
 import { SearchUser } from "../search-user/search-user";
 import { Theme } from '../../services/theme/theme';
@@ -52,17 +48,11 @@ export class Header implements OnInit {
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || 'null');
-    this.themeService.loadTheme();
-    this.getTheme();
+    this.theme = this.themeService.getTheme();
   }
 
   toggleTheme() {
     this.themeService.toggleTheme();
-    this.getTheme();
-  }
-
-  getTheme() {
-    this.theme = this.themeService.getTheme();
   }
 
   logout() {

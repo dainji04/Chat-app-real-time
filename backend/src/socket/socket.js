@@ -170,7 +170,6 @@ const socketHandler = (io) => {
 
                 // Populate message data với lean() để tăng performance
                 const populateMessage = await Message.findById(message._id)
-                    .populate('sender', 'username firstName lastName avatar')
                     .populate('replyTo', 'content sender')
                     .populate('reactions.user', 'username firstName lastName')
                     .lean();

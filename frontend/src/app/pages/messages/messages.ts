@@ -13,12 +13,19 @@ import { ToastService } from '../../services/toast/toast';
 import { SocketService } from '../../services/socket/socket-service';
 import { SearchUser } from "../../components/search-user/search-user";
 import { Subscription } from 'rxjs';
+import { conversation } from '../../model/conversation';
+import { lastMessage } from '../../model/lastMessage';
 
 interface group {
   name: string;
   description: string;
   participantIds: string[];
   avatar?: string;
+}
+
+interface receiveMessageData {
+  conversationId: string;
+  message: lastMessage;
 }
 
 @Component({
@@ -40,7 +47,7 @@ export class Messages implements OnInit, OnDestroy {
   @ViewChild('message') messageElement: any;
   private receiveSub!: Subscription; // listen receive new messages
   
-  messages: any[] = [];
+  messages: conversation[] = [];
   selectedMessageId: string = '';
   isDetailOpen: boolean = false;
   detailConversation: any = {};
@@ -89,14 +96,23 @@ export class Messages implements OnInit, OnDestroy {
             });
   }
 
-  updateConversationsWhenReceiveMessage(data: any) {
-    console.log('Received message data:', data);
+  updateConversationsWhenReceiveMessage(data: receiveMessageData) {
     const convUpdate = this.messages.find((conv) => conv._id === data.conversationId);
-    console.info(convUpdate);
+    convUpdate!.lastMessage = {
+      content: data.message.content,
+      createdAt: data.message.createdAt,
+      sender: data.message.sender,
+      _id: data.message._id
+    };
+
+    // Đưa convUpdate lên đầu mảng
+    this.messages = [
+      convUpdate!,
+      ...this.messages.filter((conv) => conv._id !== data.conversationId),
+    ];
   }
 
   setChat(id: string) {
-    console.log('Chat selected:', id);
     this.selectedMessageId = id;
   }
 

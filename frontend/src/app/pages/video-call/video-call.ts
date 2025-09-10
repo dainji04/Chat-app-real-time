@@ -36,7 +36,6 @@ export class VideoCall implements OnInit, OnDestroy {
     this.currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
 
     if (!this.currentUser) {
-      console.error('No user found');
       this.router.navigate(['/auth/login']);
       return;
     }

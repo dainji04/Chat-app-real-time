@@ -170,6 +170,7 @@ const socketHandler = (io) => {
 
                 // Populate message data với lean() để tăng performance
                 const populateMessage = await Message.findById(message._id)
+                    .populate('sender', 'username firstName lastName avatar')
                     .populate('replyTo', 'content sender')
                     .populate('reactions.user', 'username firstName lastName')
                     .lean();
@@ -227,11 +228,18 @@ const socketHandler = (io) => {
         });
 
         // User joins a room
-        socket.on('join-room', (roomId, userId) => {
+        socket.on('join-room', async (roomId, userId) => {
             socket.join(roomId);
             users[socket.id] = { userId, roomId };
             // Notify other users in the room
             socket.to(roomId).emit('user-connected', userId);
+
+            const user = await User.findById(userId).select('username firstName lastName avatar');
+
+            socket.to(roomId).emit('receive-call', {
+                user: user,
+                roomId: roomId,
+            });
 
             console.log(`User ${userId} joined room ${roomId}`);
         });

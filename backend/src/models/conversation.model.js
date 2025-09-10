@@ -29,6 +29,11 @@ const conversationSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        background: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Background',
+            default: null,
+        },
         admin: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

@@ -18,6 +18,7 @@ class MessageController {
             })
                 .populate('participants', 'username avatar isOnline lastSeen')
                 .populate('lastMessage', 'content sender createdAt')
+                .populate('background', 'url color')
                 .sort({ lastActivity: -1 })
                 .skip(skip)
                 .limit(limit)

@@ -2,7 +2,7 @@
 <div class="container">
     <div class="detail-message-container">
         <!-- Header -->
-        <div class="chat-header">
+        <div class="chat-header" [style]="{ 'background-color': conversation?.background?.color || '#fff' }">
             <div class="chat-header__left">
                 <button class="back-btn" (click)="goBack()">
                     <i class="fa-solid fa-arrow-left"></i>
@@ -28,7 +28,9 @@
         </div>
         <!-- Messages Container -->
         <div #messagesList (scroll)="onScroll()" class="messages-container" 
-            [style]="{ 'margin-bottom': file ? '110px' : '80px' }">
+            [style]="{ 'margin-bottom': file ? '110px' : '60px',
+                        'background-image': conversation?.background ? 'url(' + conversation?.background?.url + ')' : 'none',
+             }">
             <div class="messages-list">
                 @if (loadOldMessage && messages.length !== 0) {
                     <div style="display: flex; justify-content: center; align-items: center; background-color: #007bff; color: white; padding: 10px; border-radius: 5px;">
@@ -163,7 +165,7 @@
         </div>
     
         <!-- Message Input -->
-        <div class="message-input-container">
+        <div class="message-input-container" [style]="{ 'background-color': conversation?.background?.color || '#fff' }">
             <div class="message-input">
                 <button class="attach-btn" clickOutSide (appClickOutside)="isShowOptionMedia = false">
                     <i class="fa-solid fa-paperclip" (click)="isShowOptionMedia=!isShowOptionMedia"></i>
@@ -412,12 +414,7 @@
                         </div>
                     }
                 </div>
-                <!-- <div class="body__option support">
-                    <div class="title">
-                        <p>Support</p>
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </div>
-                </div> -->
+                <app-background-conversation (changeBackgroundEvent)="changeBackground($event)"></app-background-conversation>
                 <div class="body__option">
                     @if (conversation.type === 'group') {
                         @if (conversation.admin === currentUserId) {

@@ -31,6 +31,9 @@ import { InputTextModule } from 'primeng/inputtext';
 
 import {Badge} from 'primeng/badge'
 import { ModalImage } from "../../components/modal-image/modal-image";
+import { BackgroundConversation } from "../../components/background-conversation/background-conversation";
+import { background } from '../../model/background';
+import { BgConversation } from '../../services/bg-conversation/bg-conversation';
 interface formMedia {
   url: string;
   publicId: string;
@@ -40,9 +43,9 @@ interface formMedia {
 
 @Component({
     selector: 'app-detail-message',
-    imports: [CommonModule, FormsModule, ClickOutside, Home, 
-        ConfirmDialog, Dialog, ButtonModule, InputTextModule,
-        RouterLink, Badge, ModalImage],
+    imports: [CommonModule, FormsModule, ClickOutside, Home,
+    ConfirmDialog, Dialog, ButtonModule, InputTextModule,
+    RouterLink, Badge, ModalImage, BackgroundConversation],
     templateUrl: './detail-message.html',
     styleUrl: './detail-message.scss',
     providers: [ConfirmationService]
@@ -107,6 +110,7 @@ export class DetailMessage implements OnInit, OnChanges {
         private toastService: ToastService,
         private userService: User,
         private confirmationService: ConfirmationService,
+        private backgroundService: BgConversation
     ) {
         // Get current user ID from localStorage
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -655,6 +659,19 @@ export class DetailMessage implements OnInit, OnChanges {
                 this.toastService.showError('Leave Group', err.error.message);
                 console.log('err: ', err);
             },
+        });
+    }
+
+    changeBackground(background: background) {
+        this.backgroundService.changeBackground(this.id, background._id).subscribe({
+            next: (res) => {
+                this.toastService.showSuccess('Change Background', 'Background has been changed successfully.'); 
+                this.conversation.background = background;
+            },
+            error: (err) => {
+                this.toastService.showError('Change Background', err.error.message);
+                console.log('err: ', err);
+            }
         });
     }
 

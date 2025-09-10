@@ -8,7 +8,7 @@
   transform: translateX(-50%);
   max-height: 300px;
   overflow-y: auto;
-  background-color: #fff;
+  background-color: var(--bg-primary);
   box-shadow: 0 -4px 32px #0003;
   border-radius: 8px;
   z-index: 100;

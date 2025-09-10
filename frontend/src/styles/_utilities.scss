@@ -10,7 +10,7 @@
 .primary-btn {
   font-size: 16px;
   padding: 10px 25px;
-  background-color: $primary-color;
+  background-color: var(--primary-color);
   border-radius: 12px;
   color: #fff;
   border: none;
@@ -98,6 +98,7 @@
 
 // Theme-specific CSS custom properties
 .light-theme {
+  --primary-color: #{$light-primary-color};
   --text-primary: #{$light-text-primary};
   --text-secondary: #{$light-text-secondary};
   --text-muted: #{$light-text-muted};
@@ -109,9 +110,12 @@
   --success-color: #{$light-success};
   --warning-color: #{$light-warning};
   --error-color: #{$light-error};
+  --box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  --overlay: #{$light-overlay};
 }
 
 .dark-theme {
+  --primary-color: #{$dark-primary-color};
   --text-primary: #{$dark-text-primary};
   --text-secondary: #{$dark-text-secondary};
   --text-muted: #{$dark-text-muted};
@@ -123,6 +127,22 @@
   --success-color: #{$dark-success};
   --warning-color: #{$dark-warning};
   --error-color: #{$dark-error};
+  --box-shadow: 0px 0px 16px rgba(0, 0, 0, .3);
+  --overlay: #{$dark-overlay};
+}
+
+// overlay for modals
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 }
 
 // Alert/Message components
@@ -152,78 +172,6 @@
     background-color: rgba(0, 122, 204, 0.1);
     border-color: var(--accent-color);
     color: var(--accent-color);
-  }
-}
-
-// Form controls
-.form-control {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-  transition: all 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
-  }
-
-  &::placeholder {
-    color: var(--text-muted);
-  }
-}
-
-// Card component
-.card {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 16px;
-  color: var(--text-primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  .card-header {
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: var(--text-primary);
-  }
-
-  .card-body {
-    color: var(--text-secondary);
-  }
-}
-
-// Modal/Dialog
-.modal-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-// Dropdown
-.dropdown-menu {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-  .dropdown-item {
-    color: var(--text-primary);
-
-    &:hover {
-      background-color: var(--bg-tertiary);
-    }
   }
 }
 

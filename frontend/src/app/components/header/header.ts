@@ -15,6 +15,8 @@ import { FriendService } from '../../services/friends/friends';
 import { Message } from '../../services/messages/message';
 import { ToastService } from '../../services/toast/toast';
 import { SearchUser } from "../search-user/search-user";
+import { Theme } from '../../services/theme/theme';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-header',
@@ -23,7 +25,8 @@ import { SearchUser } from "../search-user/search-user";
     FormsModule,
     RouterModule,
     ClickOutside,
-    SearchUser
+    SearchUser,
+    Button
 ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -33,6 +36,7 @@ export class Header implements OnInit {
   isProfileDesktop: boolean = false; // var save status profile desktop
 
   user: any = null;
+  theme: string = 'light';
 
   toggleProfile() {
     this.isProfile = !this.isProfile;
@@ -42,10 +46,23 @@ export class Header implements OnInit {
     private authService: Auth,
     private socketService: SocketService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private themeService: Theme
   ) {}
+
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem('user') || 'null');
+    this.themeService.loadTheme();
+    this.getTheme();
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+    this.getTheme();
+  }
+
+  getTheme() {
+    this.theme = this.themeService.getTheme();
   }
 
   logout() {

@@ -12,6 +12,11 @@ export class IncomingCall {
   @Input() data!: IncomingCallData;
 
   @Output() rejectCall = new EventEmitter<void>();
+  @Output() acceptCall = new EventEmitter<void>();
+
+  accept() {
+    this.acceptCall.emit();
+  }
 
   reject() {
     this.rejectCall.emit();

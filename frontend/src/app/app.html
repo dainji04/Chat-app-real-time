@@ -2,5 +2,9 @@
 <app-toast></app-toast>
 
 @if(isHaveAnIncomingCall) {
-  <app-incoming-call [data]="dataIncomingCall" (rejectCall)="isHaveAnIncomingCall = false"></app-incoming-call>
+  <app-incoming-call [data]="dataIncomingCall" 
+    (rejectCall)="isHaveAnIncomingCall = false"
+    (acceptCall)="isHaveAnIncomingCall = false"    
+  >
+  </app-incoming-call>
 }

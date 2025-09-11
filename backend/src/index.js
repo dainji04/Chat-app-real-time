@@ -31,9 +31,7 @@ connectDB();
 app.use(cookieParser());
 app.use(
     cors({
-        origin: [
-            url_client
-        ],
+        origin: url_client,
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],

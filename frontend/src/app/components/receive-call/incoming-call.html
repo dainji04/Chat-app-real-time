@@ -38,7 +38,10 @@
         </button>
 
         <!-- Accept button -->
-        <button [routerLink]="['/video-call', data.roomId]" class="action-btn accept-btn" title="Accept call">
+        <button (click)="accept()" 
+            [routerLink]="['/video-call', data.roomId]" 
+            class="action-btn accept-btn" 
+            title="Accept call">
           <i class="fas fa-video"></i>
           <div class="ripple-effect"></div>
         </button>

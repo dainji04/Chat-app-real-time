@@ -8,7 +8,6 @@ export class Theme {
 
   constructor() {
     this.theme = localStorage.getItem("theme") || 'light';
-    console.error('theme loading');
   }
 
   loadTheme() {

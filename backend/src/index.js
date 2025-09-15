@@ -13,7 +13,7 @@ const handleSocket = require('./socket/socket.js');
 env.config();
 
 const url_client = process.env.NODE_ENV === 'development' 
-    ? process.env.CLIENT_URL_development : process.env.CLIENT_URL_production;
+    ? process.env.CLIENT_URL_DEVELOPMENT : process.env.CLIENT_URL_PRODUCTION;
 
 const app = express();
 const server = http.createServer(app);

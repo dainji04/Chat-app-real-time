@@ -39,7 +39,8 @@ export function baseUrlInterceptor(
 
   return next(apiReq).pipe(
     catchError(error => {
-      if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403) && req.url.includes('auth/refresh-token')) {
+      if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)
+          && req.url.includes('auth/refresh-token')) {
         // Nếu lỗi 401 hoặc 403 và đang gọi refresh token, không làm gì cả
         authService.logout().subscribe({
           next: () => {

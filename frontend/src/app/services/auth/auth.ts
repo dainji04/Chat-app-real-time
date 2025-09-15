@@ -10,6 +10,16 @@ import { firstValueFrom, Observable, tap } from 'rxjs';
 export class Auth {
   constructor(private apiService: Api, private tokenService: Token) {}
 
+  getMe(): Observable<any> {
+    return this.apiService.get('auth/me').pipe(
+      tap((response: any) => {
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
+      })
+    );
+  }
+
   signup(data: signUp): Observable<any> {
     return this.apiService.post('auth/signup', data).pipe(
       tap((response: any) => {

@@ -5,6 +5,7 @@ import { ToastComponent } from "./components/toast/toast";
 import { SocketService } from './services/socket/socket-service';
 import { IncomingCall } from "./components/receive-call/incoming-call";
 import { Theme } from './services/theme/theme';
+import { Auth } from './services/auth/auth';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,8 @@ export class App implements OnInit {
   
   constructor(private firebaseMessaging: FirebaseMessagingService,
               private socketService: SocketService,
-              private themeService: Theme
+              private themeService: Theme,
+              private authService: Auth
   ) {
     window.addEventListener('beforeunload', () => {
           this.receiveCallSub?.unsubscribe();
@@ -39,6 +41,9 @@ export class App implements OnInit {
                 this.dataIncomingCall = data;
                 this.isHaveAnIncomingCall = true;
             });
+
+    this.authService.getMe().subscribe();
+
   }
 
   async initializeFirebaseMessaging() {

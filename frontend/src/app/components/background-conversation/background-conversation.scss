@@ -28,114 +28,6 @@
                 }
             }
         }
-
-        .list {
-            display: grid;
-            gap: 10px;
-            height: 0px;
-            grid-auto-rows: max-content;
-            // transition: 1s height;
-            overflow: auto;
-
-            &.show {
-                animation: show 0.5s forwards;
-            }
-
-            &.close {
-                animation: close 0.5s forwards;
-                margin-top: 0;
-            }
-        }
-
-        .background {
-            &__list {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
-                grid-template-rows: 33% 33% 33%;
-                gap: 10px;
-
-                &.empty {
-                    grid-template-columns: 1fr;
-                    justify-items: center;
-                }
-            }
-
-            &__item {
-                border: 1px solid #eee;
-                border-radius: 8px;
-                background: var(--bg-primary);
-                overflow: hidden;
-
-                &--image,
-                &--video {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-            }
-        }
-
-        .item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            color: #000;
-            position: relative;
-
-            .left {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .right {
-                padding: 5px;
-                border-radius: 6px;
-                &:hover {
-                    background-color: #ddd;
-                }
-            }
-            .options {
-                position: absolute;
-                top: 100%;
-                right: 0;
-                background-color: var(--bg-primary);
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-                border-radius: 6px;
-                list-style: none;
-                padding: 10px;
-                margin: 0;
-                width: 220px;
-                z-index: 10;
-
-                li {
-                    padding: 10px;
-                    cursor: pointer;
-                    width: 100%;
-                    display: flex;
-                    justify-content: end;
-
-                    &:hover {
-                        background-color: #f0f0f0;
-                    }
-
-                    button {
-                        text-decoration: none;
-                        color: $primary-color;
-                        display: flex;
-                        justify-content: start;
-                        outline: none;
-                        border: none;
-                        background-color: transparent;
-
-                        &.delete {
-                            color: $danger-color;
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -263,7 +155,7 @@
             margin: 0;
             font-size: 14px;
             font-weight: 500;
-            color: #495057;
+            color: var(--text-primary);
             text-align: center;
             line-height: 1.4;
             max-width: 100%;

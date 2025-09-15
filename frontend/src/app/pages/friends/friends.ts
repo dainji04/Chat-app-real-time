@@ -7,10 +7,11 @@ import { Message } from '../../services/messages/message';
 import { Router, RouterModule } from '@angular/router';
 import { ClickOutside } from '../../directives/clickOutSide/click-outside';
 import { ToastService } from '../../services/toast/toast';
+import { Badge } from 'primeng/badge';
 
 @Component({
   selector: 'app-friends',
-  imports: [CommonModule, ReactiveFormsModule, ClickOutside, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, ClickOutside, RouterModule, Badge],
   templateUrl: './friends.html',
   styleUrl: './friends.scss',
 })
@@ -24,6 +25,8 @@ export class Friends implements OnInit {
   isUserShowOptions: string | null = null;
   isSearching: boolean = false;
 
+  friendRequests: number = 0;
+
   constructor(
     private friendService: FriendService,
     private messageService: Message,
@@ -32,6 +35,9 @@ export class Friends implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.friendRequests = user.friendRequests.received.length || 0;
+
     this.getAll();
 
     this.formFilterAndSearch
@@ -89,9 +95,9 @@ export class Friends implements OnInit {
     });
   }
 
-  getFriendRecommendations(): void {
+  getSentRequests(): void {
     this.resetListFriend();
-    this.typeOfList = 'recommendations';
+    this.typeOfList = 'sent';
     this.listFriends = []
   }
 

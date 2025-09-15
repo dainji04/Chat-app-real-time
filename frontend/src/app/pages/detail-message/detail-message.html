@@ -28,7 +28,7 @@
         </div>
         <!-- Messages Container -->
         <div #messagesList (scroll)="onScroll()" class="messages-container" 
-            [style]="{ 'margin-bottom': file ? '110px' : '60px',
+            [style]="{ 'margin-bottom': file ? '110px' : '65px',
                         'background-image': conversation?.background ? 'url(' + conversation?.background?.url + ')' : 'none',
              }">
             <div class="messages-list">
@@ -269,18 +269,15 @@
 
                         <p-dialog 
                             class="add-member-dialog" 
-                            draggable="false" 
-                            resizable="false" 
                             header="Add Member" 
+                            resizable="false"
                             [modal]="true" 
                             [(visible)]="isShowAddMember" 
                             [style]="{ width: '25rem' }"
                             [appendTo]="'body'"
                             [maskStyleClass]="'add-member-mask'"
                             >
-                            <span style="font-weight: bold" class="p-text-secondary block mb-8">
-                                Type email and press enter or click "Add" button to add member to group
-                            </span>
+                            <span class="p-text-secondary block mb-8">Type email and press enter or click "Add"</span>
                             <div class="add-member-input-box flex items-center gap-4 mb-2">
                                 <label for="email" class="font-semibold w-24">Email</label>
                                 <input 
@@ -300,13 +297,13 @@
                             </div>
                             <ul class="list-member-add">
                                 @for (member of listMemberAddToGroup; track member._id; let idx = $index) {
-                                <li class="member">
+                                <li class="member" style="margin-top: 20px;">
                                     <div class="user">
-                                    <img loading="lazy" [src]="member?.avatar" alt="avatar user" class="avatar">
-                                    <h3 class="user-name">{{member?.firstName}} {{member?.lastName}}</h3>
+                                        <img loading="lazy" [src]="member?.avatar" alt="avatar user" class="avatar">
+                                        <h3 class="user-name">{{member?.firstName}} {{member?.lastName}}</h3>
                                     </div>
                                     <button>
-                                    <i class="fa-solid fa-xmark" (click)="removeMemberFromListAddToGroup(idx)"></i>
+                                        <i class="fa-solid fa-xmark" (click)="removeMemberFromListAddToGroup(idx)"></i>
                                     </button>
                                 </li>
                                 }
@@ -314,18 +311,15 @@
                             <ng-template pTemplate="footer">
                                 <p-button 
                                 label="Cancel" 
-                                [text]="true" 
                                 severity="secondary" 
                                 (click)="isShowAddMember = false" 
                                 />
                                 <p-button 
                                 label="Save" 
-                                [outlined]="true" 
-                                severity="secondary" 
                                 (click)="saveMemberToGroup()" 
                                 />
                             </ng-template>
-                            </p-dialog>
+                        </p-dialog>
                     }
                 </div>
             </div>

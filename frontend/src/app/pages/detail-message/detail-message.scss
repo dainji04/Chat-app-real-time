@@ -1,5 +1,5 @@
 @use "variables" as *;
-@use "mixin" as *;
+@use "mixins" as *;
 
 /* -----------------------START CONFIGURE PRIMENG THEME----------------------- */
 /* dialog mask phủ toàn màn hình */
@@ -28,7 +28,7 @@
 ::ng-deep .add-member-dialog .p-dialog-title {
   font-size: 16px !important;
   font-weight: 500 !important;
-  color: #333 !important;
+  color: var(--text-primary) !important;
 }
 
 /* Content styling */
@@ -52,7 +52,7 @@
 
 .add-member-input-box label {
   min-width: 60px;
-  color: #333;
+  color: inherit;
 }
 
 /* Member list styling */
@@ -72,7 +72,7 @@
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin-bottom: 8px;
-  background: #f9f9f9;
+  background: var(--bg-secondary);
 }
 
 .list-member-add .user {
@@ -92,21 +92,19 @@
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .list-member-add button {
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   padding: 4px;
   border-radius: 4px;
-}
-
-.list-member-add button:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  &:hover {
+    color: var(--text-primary);
+  }
 }
 
 /* Button styling */
@@ -362,7 +360,6 @@
         &__list {
           display: grid;
           grid-template-columns: 1fr 1fr 1fr;
-          grid-template-rows: 33% 33% 33%;
           gap: 10px;
 
           &.empty {
@@ -398,20 +395,23 @@
           display: flex;
           align-items: center;
           gap: 10px;
+          color: var(--text-primary);
         }
 
         .right {
           padding: 5px;
           border-radius: 6px;
+          color: var(--text-primary);
           &:hover {
             background-color: #ddd;
+            color: var(--bg-primary);
           }
         }
         .options {
           position: absolute;
           top: 100%;
           right: 0;
-          background-color: var(--bg-primary);
+          background-color: var(--bg-secondary);
           box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
           border-radius: 6px;
           list-style: none;
@@ -486,7 +486,7 @@
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
-    color: #333;
+    color: var(--text-primary);
     padding: 0.5rem;
     border-radius: 50%;
     transition: background-color 0.2s;
@@ -506,7 +506,7 @@
       margin-bottom: 10px;
       font-size: 1.1rem;
       font-weight: 600;
-      color: #333;
+      color: var(--text-primary);
     }
 
     .chat-subtitle {
@@ -543,8 +543,7 @@
   width: 100%;
   flex: 1;
   overflow-y: auto;
-  padding: 0 1rem;
-  margin-bottom: 60px;
+  padding: 10px 1rem;
   position: relative;
   background-size: cover;
   background-repeat: no-repeat;
@@ -681,7 +680,7 @@
       background-color: #f0f0f0;
       padding: 0.5rem;
       border-radius: 6px;
-      color: #333;
+      color: var(--text-primary);
       font-size: 0.9rem;
       margin-top: 0.5rem;
 
@@ -853,7 +852,7 @@
 
     .file-name {
       font-size: 18px;
-      color: #333;
+      color: var(--text-primary);
       max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -877,7 +876,7 @@
     outline: none;
     font-size: 1rem;
     padding: 0.5rem 1rem;
-    color: #333;
+    color: var(--text-primary);
     width: 100%;
     background: transparent;
     box-sizing: border-box;

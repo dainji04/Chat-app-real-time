@@ -53,6 +53,7 @@ export class Header implements OnInit {
 
   toggleTheme() {
     this.themeService.toggleTheme();
+    this.theme = this.themeService.getTheme();
   }
 
   logout() {

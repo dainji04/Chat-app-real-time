@@ -17,9 +17,14 @@
     <div class="friends__main">
         <div class="group-btn">
             <button class="group-btn__all-friends btn" (click)="getAll()">All Friends</button>
-            <button class="group-btn__friend-requests btn" (click)="getFriendRequests()">Friend Requests</button>
-            <button class="group-btn__friend-rcm btn" (click)="getFriendRecommendations()">
-                Friend Recommendations
+            <button class="group-btn__friend-requests btn" (click)="getFriendRequests()">
+                Friend Requests
+                @if (friendRequests > 0) {
+                    <p-badge class="badge-friend-requests" [value]="friendRequests" severity="danger" />
+                }
+            </button>
+            <button class="group-btn__friend-rcm btn" (click)="getSentRequests()">
+                Sent Requests
             </button>
         </div>
 
@@ -88,8 +93,8 @@
                 @case ('requests') {
                     <p>No friend requests.</p>
                 }
-                @case ('recommendations') {
-                    <p>No friend recommendations.</p>
+                @case ('sent') {
+                    <p>No sent friend requests.</p>
                 }
             }
         }

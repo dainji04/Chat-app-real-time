@@ -46,7 +46,7 @@ $dark-overlay: rgba(0, 0, 0, 0.7);
 
 // Dark mode mixins
 @mixin dark-mode {
-  background-color: $dark-bg-primary;
+  background-color: $dark-bg-secondary;
   color: $dark-text-primary;
 }
 
@@ -67,6 +67,15 @@ $dark-overlay: rgba(0, 0, 0, 0.7);
   input,
   textarea {
     @include light-input;
+  }
+}
+
+.dark-theme {
+  @include dark-mode;
+
+  input,
+  textarea {
+    @include dark-input;
   }
 }
 

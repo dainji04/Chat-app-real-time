@@ -16,6 +16,8 @@ import { Subscription } from 'rxjs';
 import { conversation } from '../../model/conversation';
 import { lastMessage } from '../../model/lastMessage';
 
+// primeng
+import { Skeleton } from 'primeng/skeleton';
 interface group {
   name: string;
   description: string;
@@ -37,7 +39,8 @@ interface receiveMessageData {
     DetailMessage,
     ClickOutside,
     ReactiveFormsModule,
-    SearchUser
+    SearchUser,
+    Skeleton
 ],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',
@@ -46,6 +49,8 @@ export class Messages implements OnInit, OnDestroy {
   @ViewChild('detail') detailElement: any;
   @ViewChild('message') messageElement: any;
   private receiveSub!: Subscription; // listen receive new messages
+
+  isLoadingConversations: boolean = false;
   
   messages: conversation[] = [];
   selectedMessageId: string = '';
@@ -123,8 +128,10 @@ export class Messages implements OnInit, OnDestroy {
   }
 
   fetchMessages() {
+    this.isLoadingConversations = true;
     this.messageService.getAllConversations().subscribe((data: any) => {
       this.messages = data.data;
+      this.isLoadingConversations = false;
     });
   }
 

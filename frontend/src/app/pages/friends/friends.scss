@@ -2,14 +2,14 @@
 
 @mixin box {
   background-color: var(--bg-primary);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--box-shadow);
   border-radius: 6px;
   padding: 20px;
 }
 
 @mixin btn {
   background-color: var(--bg-primary);
-  color: #000;
+  color: var(--text-primary);
   border: 1px solid #ccc;
   padding: 8px 14px;
   border-radius: 999px;
@@ -115,16 +115,23 @@
       &__friend-rcm {
         margin-right: 10px;
         margin-bottom: 10px;
+        position: relative;
         &:last-child {
           margin-right: 0;
         }
+      }
+
+      .badge-friend-requests {
+        position: absolute;
+        top: -10px;
+        right: -10px;
       }
     }
   }
 
   &__length h1 {
     font-size: 20px;
-    color: #000;
+    color: var(--text-primary);
     margin-bottom: 10px;
     font-weight: bold;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -164,7 +171,7 @@
 
       span {
         font-size: 18px;
-        color: #000;
+        color: var(--text-primary);
       }
     }
 
@@ -175,8 +182,8 @@
         position: absolute;
         top: 100%;
         right: 0;
-        background-color: var(--bg-primary);
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: var(--bg-secondary);
+        box-shadow: var(--box-shadow);
         border-radius: 6px;
         list-style: none;
         padding: 10px;

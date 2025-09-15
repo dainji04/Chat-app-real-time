@@ -1,5 +1,9 @@
 @use "variables" as *;
-@use "mixin" as *;
+@use "mixins" as *;
+
+.dark-theme {
+    --p-skeleton-background: rgba(255,255,255,0.06);
+}
 
 body.detail-message-open {
     overflow: hidden;

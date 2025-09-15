@@ -15,30 +15,37 @@
             </ul>
         </div>
         <ul class="messages__list">
-            @for (message of messages; track message._id) {
-                <li>
-                    <button [ngClass]="{'selected': selectedMessageId === message._id}" 
-                        class="messages__item" (click)="selectMessage(message)">
-                        <div style="position: relative; z-index: 1">
-                            <img loading="lazy" [src]="message.avatar" alt="avatar" class="messages__item-avatar">
-                            @if(message.type !== 'group') {
-                                <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
-                                     class="dot fa-solid fa-circle"></i>
-                            }
-                        </div>
-                        <div class="messages__item-content">
-                            <h3 class="messages__item-sender">{{ message.name }}</h3>
-                            <p class="messages__item-text">
-                                {{ message.lastMessage ? message.lastMessage.content.text : 'No message' }}
-                            </p>
-                        </div>
-                        <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
-                    </button>
-                </li>
-            } @empty {
-                <li class="messages__empty">
-                    <h3>No conversations yet</h3>
-                </li>
+            @if (!isLoadingConversations) {
+                @for (message of messages; track message._id) {
+                    <li>
+                        <button [ngClass]="{'selected': selectedMessageId === message._id}" 
+                            class="messages__item" (click)="selectMessage(message)">
+                            <div style="position: relative; z-index: 1">
+                                <img loading="lazy" [src]="message.avatar" alt="avatar" class="messages__item-avatar">
+                                @if(message.type !== 'group') {
+                                    <i [ngClass]="{'online': message?.isOnline, 'offline': !message?.isOnline}"
+                                        class="dot fa-solid fa-circle"></i>
+                                }
+                            </div>
+                            <div class="messages__item-content">
+                                <h3 class="messages__item-sender">{{ message.name }}</h3>
+                                <p class="messages__item-text">
+                                    {{ message.lastMessage ? message.lastMessage.content.text : 'No message' }}
+                                </p>
+                            </div>
+                            <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
+                        </button>
+                    </li>
+                } @empty {
+                    <li class="messages__empty">
+                        <h3>No conversations yet</h3>
+                    </li>
+                }
+            } @else {
+                <p-skeleton height="4rem" />
+                <p-skeleton height="4rem" />
+                <p-skeleton height="4rem" />
+                <p-skeleton height="4rem" />
             }
         </ul>
     </div>

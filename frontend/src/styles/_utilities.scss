@@ -16,8 +16,20 @@
   --success-color: #{$light-success};
   --warning-color: #{$light-warning};
   --error-color: #{$light-error};
-  --box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
   --overlay: #{$light-overlay};
+
+  // primeng
+  --p-skeleton-background: #e2e8f0;
+
+  // dialog primeNG
+  --p-dialog-background: #{$light-bg-primary};
+  --p-dialog-color: #{$light-text-primary};
+  
+  --p-button-text-secondary-color: #{$light-text-primary};
+  --p-button-background-primary: #{$light-primary-color};
+  --p-button-background-primary: #27272a;
+  --p-button-color-primary: #ffffff;
 }
 
 .dark-theme {
@@ -35,6 +47,18 @@
   --error-color: #{$dark-error};
   --box-shadow: 0px 0px 16px rgba(0, 0, 0, .3);
   --overlay: #{$dark-overlay};
+
+  // primeng
+  --p-skeleton-background: rgba(255,255,255,0.06);
+
+  // dialog primeNG
+  --p-dialog-background: #{$dark-bg-primary};
+  --p-dialog-color: #{$dark-text-primary};
+
+  --p-button-text-secondary-color: #{$dark-text-primary};
+  --p-button-background-primary: #27272a;
+  --p-button-primary-background: #020617;
+  --p-button-color-primary: #ffffff;
 }
 
 .cursor {

@@ -39,10 +39,14 @@ export class Auth {
   }
 
   logout(): Observable<any> {
-    this.tokenService.clearTokens();
-    console.info('User logged out');
     // localStorage.removeItem('user'); // remove user to check auth guard
-    return this.apiService.post('auth/logout', {});
+    return this.apiService.post('auth/logout', {}).pipe(
+      tap(() => {
+        this.tokenService.clearTokens();
+        localStorage.removeItem('user');
+        console.info('User logged out');
+      })
+    );
   }
 
   // change password

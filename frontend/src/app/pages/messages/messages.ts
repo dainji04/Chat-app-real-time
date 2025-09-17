@@ -40,7 +40,7 @@ interface receiveMessageData {
     ClickOutside,
     ReactiveFormsModule,
     SearchUser,
-    Skeleton
+    Skeleton,
 ],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',

@@ -7,10 +7,8 @@
   [contentStyle]="{ 'padding': '0', 'background': '#000' }"
   [style]="{ width: '80vw', maxWidth: '600px' }"
   (onHide)="onHide()"
+  header="Preview Image"
 >
-  <ng-template pTemplate="header">
-    <span>Preview Image</span>
-  </ng-template>
   <div class="img-container">
     <img loading="lazy" [src]="url" alt="image" />
   </div>

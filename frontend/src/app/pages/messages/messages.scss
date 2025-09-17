@@ -310,13 +310,13 @@ body.detail-message-open {
                 }
 
                 &.cancel {
-                    background-color: rgba(0, 0, 0, 0.6);
-                    color: var(--bg-primary);
+                    background-color: transparent;
+                    color: var(--text-primary);
                 }
 
                 &.create {
                     background-color: $primary-color;
-                    color: var(--bg-primary);
+                    color: #fff;
 
                     &:disabled {
                         opacity: 0.7;
@@ -376,7 +376,7 @@ body.detail-message-open {
                         top: 100%;
                         left: 0;
                         background-color: var(--bg-primary);
-                        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                        box-shadow: var(--box-shadow);
                         border-radius: 6px;
                         list-style: none;
                         padding: 10px;
@@ -392,9 +392,11 @@ body.detail-message-open {
                         li {
                             padding: 10px;
                             width: 100%;
+                            border-radius: 4px;
 
                             &:hover {
-                                background-color: #f0f0f0;
+                                background-color: var(--text-primary);
+                                color: var(--bg-primary);
                             }
 
                             button {

@@ -38,6 +38,11 @@ export class Header implements OnInit {
     this.isProfile = !this.isProfile;
   }
 
+  closeProfile() {
+    this.isProfile = false;
+    this.isProfileDesktop = false;
+  }
+
   constructor(
     private authService: Auth,
     private socketService: SocketService,

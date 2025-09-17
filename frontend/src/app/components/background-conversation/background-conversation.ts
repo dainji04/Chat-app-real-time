@@ -3,6 +3,7 @@ import { background } from '../../model/background';
 import { BgConversation } from '../../services/bg-conversation/bg-conversation';
 import { Dialog } from 'primeng/dialog';
 import { Button } from 'primeng/button';
+import { ToastService } from '../../services/toast/toast';
 
 @Component({
     selector: 'app-background-conversation',
@@ -54,7 +55,10 @@ export class BackgroundConversation {
     loadingInOption: boolean = false;
     selectedBackground: background | null = null;
 
-    constructor(private backgroundService: BgConversation) {}
+    constructor(
+      private backgroundService: BgConversation,
+      private toast: ToastService
+    ) {}
 
     getBackgroundConversation() {
       this.isShowBackgrounds = !this.isShowBackgrounds;
@@ -81,6 +85,8 @@ export class BackgroundConversation {
       if (this.selectedBackground) {
         this.isShowBackgrounds = false;
         this.changeBackgroundEvent.emit(this.selectedBackground);
+      } else {
+        this.toast.showWarning('Please select a background before saving.');
       }
     }
 }

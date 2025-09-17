@@ -34,6 +34,7 @@ import { ModalImage } from "../../components/modal-image/modal-image";
 import { BackgroundConversation } from "../../components/background-conversation/background-conversation";
 import { background } from '../../model/background';
 import { BgConversation } from '../../services/bg-conversation/bg-conversation';
+import { Tooltip } from 'primeng/tooltip';
 interface formMedia {
   url: string;
   publicId: string;
@@ -45,7 +46,9 @@ interface formMedia {
     selector: 'app-detail-message',
     imports: [CommonModule, FormsModule, ClickOutside, Home,
     ConfirmDialog, Dialog, ButtonModule, InputTextModule,
-    RouterLink, Badge, ModalImage, BackgroundConversation],
+    RouterLink, Badge, ModalImage, BackgroundConversation,
+    Tooltip
+    ],
     templateUrl: './detail-message.html',
     styleUrl: './detail-message.scss',
     providers: [ConfirmationService]
@@ -121,6 +124,12 @@ export class DetailMessage implements OnInit, OnChanges {
             this.receiveSub?.unsubscribe();
             console.log('Left conversation and unsubscribed from messages');
         });
+
+        window.addEventListener('keyup', (event) => {
+            if (event.key === '/') {
+                this.inputText.nativeElement.focus();
+            }
+        })
     }
 
     ngOnInit() {

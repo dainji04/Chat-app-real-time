@@ -218,8 +218,13 @@
                             </button>
                         </div>
                     }
-                    <textarea #inputText type="text" placeholder="Type a message..." class="input-field" [(ngModel)]="newMessageText"
-                        (keyup.enter)="sendMessage()"></textarea>
+                    <textarea #inputText type="text" placeholder="Type a message..." 
+                        class="input-field" [(ngModel)]="newMessageText"
+                        (keyup.enter)="sendMessage()"
+                        tooltipPosition="top"
+                        pTooltip="Enter your message (press enter to send, press / to focus)"
+                    >
+                    </textarea>
                 </div>
                 <button class="send-btn" (click)="sendMessage()" >
                     <i class="fa-solid fa-paper-plane"></i>

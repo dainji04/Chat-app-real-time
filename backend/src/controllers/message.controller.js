@@ -11,11 +11,17 @@ class MessageController {
         try {
             const { page = 1, limit = 20 } = req.query;
             const skip = (page - 1) * limit;
+            const user = req.user;
 
-            const conversations = await Conversation.find({
+            const query = {
                 participants: req.user._id,
                 isActive: true,
-            })
+                "deletedUser.user": {
+                    $ne: user._id
+                }
+            }
+
+            const conversations = await Conversation.find(query)
                 .populate('participants', 'username avatar isOnline lastSeen')
                 .populate('lastMessage', 'content sender createdAt')
                 .populate('background', 'url color')
@@ -59,6 +65,7 @@ class MessageController {
             res.status(200).json({
                 data: formatConversation,
                 pagination: {
+                    length: formatConversation.length,
                     page: parseInt(page),
                     limit: parseInt(limit),
                     hasMore: conversations.length === parseInt(limit),
@@ -104,38 +111,51 @@ class MessageController {
         }
     }
 
-    async getMediaInConversationById(req, res) {
+    async softDeleteConversation(req, res) {
         try {
-            const { conversationId } = req.params;
-            const { page = 1, limit = 20 } = req.query;
-            const skip = (page - 1) * limit;
-
-            const media = await Message.find({
-                conversation: conversationId,
-                'content.media.url': { $exists: true, $ne: null },
-            })
-                .populate('sender', 'username avatar')
-                .populate('content', 'media')
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit)
-                .lean();
-
-            if (!media || media.length === 0) {
-                return res.status(404).json({ message: 'No media found' });
+            const user = req.user;
+            const {conversationId} = req.body;
+            if(!user) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'user is not enough permission.'
+                });
             }
 
-            res.status(200).json({
-                data: media,
-                pagination: {
-                    page: parseInt(page),
-                    limit: parseInt(limit),
-                    hasMore: media.length === parseInt(limit),
+            const conversation = await Conversation.find({
+                _id: conversationId,
+                participants: user._id
+            });
+            if(!conversation || conversation.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Conversation is not found or user isn't a participant."
+                });
+            }
+
+            await Conversation.findByIdAndUpdate(
+                conversationId,
+                {
+                    $set: {
+                        deletedUser: {
+                            user: user._id,
+                            deletedAt: new Date()
+                        }
+                    }
                 },
+                { new: true } // để trả về document sau khi update
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: `delete conversation ${conversation.name} successfully`
             });
         } catch (error) {
-            console.error('Error fetching messages:', error);
-            return res.status(500).json({ message: 'Internal server error' });
+            console.log('error message: ', error);
+            return res.status(500).json({
+                success: false,
+                message: 'delete conversation is failed'
+            })
         }
     }
 
@@ -200,6 +220,41 @@ class MessageController {
             });
         } catch (error) {
             console.error('Error creating conversation:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    async getMediaInConversationById(req, res) {
+        try {
+            const { conversationId } = req.params;
+            const { page = 1, limit = 20 } = req.query;
+            const skip = (page - 1) * limit;
+
+            const media = await Message.find({
+                conversation: conversationId,
+                'content.media.url': { $exists: true, $ne: null },
+            })
+                .populate('sender', 'username avatar')
+                .populate('content', 'media')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean();
+
+            if (!media || media.length === 0) {
+                return res.status(404).json({ message: 'No media found' });
+            }
+
+            res.status(200).json({
+                data: media,
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    hasMore: media.length === parseInt(limit),
+                },
+            });
+        } catch (error) {
+            console.error('Error fetching messages:', error);
             return res.status(500).json({ message: 'Internal server error' });
         }
     }

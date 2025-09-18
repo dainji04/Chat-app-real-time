@@ -265,6 +265,12 @@ router.post(
     messageController.getOrCreateConversation
 );
 
+router.delete(
+    '/conversations',
+    verifyAccessToken,
+    messageController.softDeleteConversation
+)
+
 /**
  * @swagger
  * /api/messages/upload:

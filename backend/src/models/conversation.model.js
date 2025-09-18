@@ -76,6 +76,15 @@ const conversationSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        deletedUser: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+                },
+                deletedAt: Date,
+            }
+        ]
     },
     {
         timestamps: true,

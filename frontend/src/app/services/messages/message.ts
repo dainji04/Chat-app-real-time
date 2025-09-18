@@ -13,6 +13,11 @@ export class Message {
     return this.api.get<any[]>('messages');
   }
 
+  // soft delete conv
+  softDeleteConversation(conversationId: string): Observable<any[]> {
+    return this.api.deleteWithData('messages/conversations', {conversationId})
+  }
+
   getConversationById(conversationId: string): Observable<any> {
     return this.api.get<any>(`messages/${conversationId}`);
   }

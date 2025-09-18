@@ -17,9 +17,11 @@
         <ul class="messages__list">
             @if (!isLoadingConversations) {
                 @for (message of messages; track message._id) {
-                    <li>
+                    <li
+                        (contextmenu)="onContextMenu($event, message)"
+                    >
                         <button [ngClass]="{'selected': selectedMessageId === message._id}" 
-                            class="messages__item" (click)="selectMessage(message)">
+                            class="messages__item" (click)="selectMessage(message, $event)">
                             <div style="position: relative; z-index: 1">
                                 <img loading="lazy" [src]="message.avatar" alt="avatar" class="messages__item-avatar">
                                 @if(message.type !== 'group') {
@@ -36,6 +38,9 @@
                             <div class="messages__item-time">{{ message?.lastMessage?.createdAt | date: 'hh:mm a' }}</div>
                         </button>
                     </li>
+
+                    <!-- primeng context menu tooltip -->
+                     <p-contextmenu #cm [model]="items" />
                 } @empty {
                     <li class="messages__empty">
                         <h3>No conversations yet</h3>

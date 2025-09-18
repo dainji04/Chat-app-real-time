@@ -18,6 +18,9 @@ import { lastMessage } from '../../model/lastMessage';
 
 // primeng
 import { Skeleton } from 'primeng/skeleton';
+import { ContextMenu } from 'primeng/contextmenu'
+import { MenuItem } from 'primeng/api';
+
 interface group {
   name: string;
   description: string;
@@ -41,6 +44,7 @@ interface receiveMessageData {
     ReactiveFormsModule,
     SearchUser,
     Skeleton,
+    ContextMenu
 ],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',
@@ -74,6 +78,10 @@ export class Messages implements OnInit, OnDestroy {
     email: new FormControl(''),
   });
 
+  items: MenuItem[] | undefined;
+  @ViewChild('cm') cm!: ContextMenu;
+  selectedConversation!: conversation | null;
+
   private beforeUnloadListener?: () => void;
 
   constructor(
@@ -99,6 +107,24 @@ export class Messages implements OnInit, OnDestroy {
             .subscribe(async (data) => {
               this.updateConversationsWhenReceiveMessage(data);
             });
+
+    // context menu primeng
+    this.items = [
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => {
+          this.deleteConversationById();
+        }
+      },
+      {
+        label: 'Hide',
+        icon: 'pi pi-user-plus',
+        command: () => {
+          this.toastService.showInfo(`Hided conversation ${this.selectedConversation?.name}`);
+        }
+      }
+    ]
   }
 
   updateConversationsWhenReceiveMessage(data: receiveMessageData) {
@@ -129,9 +155,14 @@ export class Messages implements OnInit, OnDestroy {
 
   fetchMessages() {
     this.isLoadingConversations = true;
-    this.messageService.getAllConversations().subscribe((data: any) => {
-      this.messages = data.data;
-      this.isLoadingConversations = false;
+    this.messageService.getAllConversations().subscribe({
+      next: (res: any) => {
+        this.messages = res.data;
+        this.isLoadingConversations = false;
+      },
+      error: () => {
+        this.isLoadingConversations = false;
+      }
     });
   }
 
@@ -150,7 +181,12 @@ export class Messages implements OnInit, OnDestroy {
     }
   }
 
-  selectMessage(message: any) {
+  selectMessage(message: any, event: MouseEvent) {
+    console.log(event)
+    if(event.button !== 0) {
+      return;
+    }
+
     if(this.selectedMessageId !== message._id && this.selectedMessageId !== '') {
       this.socketService.leaveConversation(this.selectedMessageId);
     }
@@ -265,6 +301,33 @@ export class Messages implements OnInit, OnDestroy {
         },
       });
     });
+  }
+
+  // primeng: context menu
+  onContextMenu(event: Event, conversation: any) {
+    this.selectedConversation = conversation;
+    this.cm.show(event);
+  }
+
+  onHide() {
+    this.selectedConversation = null;
+  }
+
+  deleteConversationById() {
+    if(this.selectedConversation?._id) {
+      this.messageService.softDeleteConversation(this.selectedConversation?._id).subscribe({
+        next: (res) => {
+          this.messages = this.messages.filter(conv => {
+            return conv._id !== this.selectedConversation?._id;
+          });
+          this.selectedMessageId = '';
+          this.toastService.showSuccess('delete conversation successfully');
+        },
+        error: () => {
+          this.toastService.showError('deleted is failed');
+        }
+      })
+    }
   }
 
   ngOnDestroy() {

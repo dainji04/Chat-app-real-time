@@ -35,6 +35,7 @@ import { BackgroundConversation } from "../../components/background-conversation
 import { background } from '../../model/background';
 import { BgConversation } from '../../services/bg-conversation/bg-conversation';
 import { Tooltip } from 'primeng/tooltip';
+import { Image } from 'primeng/image';
 interface formMedia {
   url: string;
   publicId: string;
@@ -47,7 +48,7 @@ interface formMedia {
     imports: [CommonModule, FormsModule, ClickOutside, Home,
     ConfirmDialog, Dialog, ButtonModule, InputTextModule,
     RouterLink, Badge, ModalImage, BackgroundConversation,
-    Tooltip
+    Tooltip, Image
     ],
     templateUrl: './detail-message.html',
     styleUrl: './detail-message.scss',

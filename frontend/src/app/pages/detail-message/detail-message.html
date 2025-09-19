@@ -72,8 +72,7 @@
                                 <!-- Image Message -->
                                 @else if (message.content.type === 'image') {
                                 <div class="message__bubble message__bubble--media">
-                                    <img loading="lazy" [src]="message.content.media.url" alt="Shared image" class="message__image"
-                                        (click)="openImageModal(message.content.media.url)" />
+                                    <p-image loading="lazy" [src]="message.content.media.url" alt="Image" width="250" [preview]="true" />
                                     @if(message.content.text) {
                                     <p class="message__text">{{ message.content.text }}</p>
                                     }

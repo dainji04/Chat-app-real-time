@@ -16,9 +16,38 @@ class MessageController {
             const query = {
                 participants: req.user._id,
                 isActive: true,
-                "deletedUser.user": {
-                    $ne: user._id
-                }
+                $or: [
+                    // Trường hợp 1: User chưa xóa conversation
+                    {
+                        "deletedUser.user": {
+                            $ne: req.user._id // not equal to user id
+                        }
+                    },
+                    // Trường hợp 2: User đã xóa nhưng có tin nhắn mới sau thời điểm xóa
+                    {
+                        "deletedUser.user": req.user._id, // equal to user id
+                        $expr: { // expression to compare fields
+                            $let: { // define variables
+                                vars: { // define deletedEntry variable
+                                    deletedEntry: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: "$deletedUser", // array to filter
+                                                    cond: { $eq: ["$$this.user", req.user._id] } // condition to match user id
+                                                }
+                                            },
+                                            0 // get the first matched element
+                                        ]
+                                    }
+                                },
+                                in: {
+                                    $gt: ["$lastActivity", "$$deletedEntry.deletedAt"] // greater than comparison
+                                }
+                            }
+                        }
+                    }
+                ]
             }
 
             const conversations = await Conversation.find(query)
@@ -79,13 +108,39 @@ class MessageController {
 
     async getConversationById(req, res) {
         try {
+            const user = req.user;
             const { conversationId } = req.params;
             const { page = 1, limit = 20 } = req.query;
             const skip = (page - 1) * limit;
 
-            const messages = await Message.find({
+            const query = {
                 conversation: conversationId,
-            })
+            }
+
+            const conversation = await Conversation.findById(conversationId);
+
+            if(!conversation) {
+                return res.status(404).json({
+                    message: 'Conversation not found or you are not a participant'
+                });
+            }
+
+            if(!conversation.participants.includes(user._id)) {
+                return res.status(403).json({
+                    message: 'You are not a participant in this conversation'
+                });
+            }
+
+            // Check if the user has deleted the conversation
+            const deletedEntry = conversation.deletedUser?.find(
+                entry => entry.user.toString() === user._id.toString()
+            );
+
+            if (deletedEntry) {
+                query.createdAt = { $gt: deletedEntry.deletedAt }; // Fetch messages after the deletion time
+            }
+
+            const messages = await Message.find(query)
                 .populate('sender', 'username avatar')
                 .populate('replyTo', 'content')
                 .sort({ createdAt: -1 })
@@ -98,6 +153,7 @@ class MessageController {
             }
 
             res.status(200).json({
+                conversation,
                 data: messages.reverse(),
                 pagination: {
                     page: parseInt(page),
@@ -162,14 +218,15 @@ class MessageController {
     async getOrCreateConversation(req, res) {
         try {
             const { userId } = req.body;
-            if (!userId) {
-                return res.status(400).json({ message: 'User ID is required' });
-            }
-
             const user = await User.findById(userId).select('-password');
+            const otherUser = await User.findById(req.user._id).select('-password');
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
+            }
+
+            if (!otherUser) {
+                return res.status(404).json({ message: 'Other user not found' });
             }
 
             if (userId === req.user._id.toString()) {
@@ -179,7 +236,7 @@ class MessageController {
             }
 
             let conversation = await Conversation.findOne({
-                participants: { $all: [req.user._id, userId] },
+                participants: { $all: [otherUser._id, userId] },
                 type: 'private',
             })
                 .populate('participants', 'name avatar isOnline lastSeen')
@@ -190,6 +247,7 @@ class MessageController {
                     participants: [req.user._id, userId],
                     type: 'private',
                     lastMessage: null,
+                    avatar: otherUser.avatar,
                 });
 
                 conversation = await conversation.populate(

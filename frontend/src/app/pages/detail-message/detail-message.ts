@@ -1,4 +1,5 @@
 import {
+    AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -54,7 +55,7 @@ interface formMedia {
     styleUrl: './detail-message.scss',
     providers: [ConfirmationService]
 })
-export class DetailMessage implements OnInit, OnChanges {
+export class DetailMessage implements OnInit, OnChanges, AfterViewInit {
     @Input() id: string = '';
     @Input() conversation: any = {};
     @Output() closeDetail = new EventEmitter<void>();
@@ -148,7 +149,12 @@ export class DetailMessage implements OnInit, OnChanges {
                 setTimeout(() => {
                     this.scrollToBottom();
                 }, 300);
-            });
+            });       
+    }
+
+    ngAfterViewInit(): void {
+        this.inputText.nativeElement.focus();
+        console.log('focus input text');
     }
 
     // load messages if id changes
@@ -282,6 +288,10 @@ export class DetailMessage implements OnInit, OnChanges {
     openImageModal(imageUrl: string): void {
         this.currentImageUrl = imageUrl;
         this.isShowDialogImage = true;
+    }
+
+    openVideoModal(videoUrl: string): void {
+        window.open(videoUrl, '_blank');
     }
 
     // Message

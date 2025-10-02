@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class VideoCall implements OnInit, OnDestroy {
   id: string = '';
+  type: string = 'call'; // 'call' or 'receive'
   currentUser: any | null = null;
   isCallActive: boolean = false;
   isConnecting: boolean = false;
@@ -33,6 +34,7 @@ export class VideoCall implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('roomId') || '';
+    this.type = this.route.snapshot.paramMap.get('type') || 'call';
     this.currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
 
     if (!this.currentUser) {
@@ -111,7 +113,7 @@ export class VideoCall implements OnInit, OnDestroy {
       }
 
       // Join room
-      this.videoCallService.joinRoom(this.id, this.currentUser._id);
+      this.videoCallService.joinRoom(this.id, this.currentUser._id, this.type);
       
       this.isCallActive = true;
       this.isConnecting = false;

@@ -77,11 +77,11 @@ export class VideoCallService {
     }
   }
 
-  async joinRoom(roomId: string, userId: string) {
+  async joinRoom(roomId: string, userId: string, type: string) {
     try {
       this.currentRoomId = roomId;
       this.setUpPeerConnection(roomId);
-      this.socketService.joinRoom(roomId, userId);
+      this.socketService.joinRoom(roomId, userId, type);
     } catch (error) {
       console.error('Error joining room:', error);
     }

@@ -221,7 +221,7 @@
                         class="input-field" [(ngModel)]="newMessageText"
                         (keyup.enter)="sendMessage()"
                         tooltipPosition="top"
-                        pTooltip="Enter your message (press enter to send, press / to focus)"
+                        pTooltip="press / to focus"
                     >
                     </textarea>
                 </div>
@@ -390,7 +390,7 @@
                                     } @else if (item.content.type === 'video') {
                                         <video [poster]="item.content.media.thumbnail"
                                             [src]="item.content.media.url" class="media__item--video"
-                                            (click)="openImageModal(item.content.media.url)"
+                                            (click)="openVideoModal(item.content.media.url)"
                                             >
                                         </video>
                                     }

@@ -83,7 +83,6 @@ class AuthController {
     async login(req, res) {
         try {
             const { email, password } = req.body;
-            console.log(email, password);
             if (!email || !password) {
                 return res
                     .status(400)
@@ -103,7 +102,8 @@ class AuthController {
                     .json({ message: 'Email or password is incorrect' });
             }
 
-            const isMatch = bcrypt.compare(password, user.password);
+            const isMatch = await bcrypt.compare(password, user.password);
+            
             if (!isMatch) {
                 return res.status(400).json({ message: 'Email or password is incorrect' });
             }

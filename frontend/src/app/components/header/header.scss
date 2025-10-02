@@ -121,7 +121,8 @@
       @include logo;
       & a {
         color: $primary-color;
-        font-family: $secondary-font;
+        font-family: $primary-font;
+        font-size: 2rem;
         text-decoration: none;
       }
     }
@@ -162,7 +163,8 @@
         padding: 20px 0;
         & a {
           color: $primary-color;
-          font-family: $secondary-font;
+          font-family: $primary-font;
+          font-size: 2rem;
           text-decoration: none;
         }
       }

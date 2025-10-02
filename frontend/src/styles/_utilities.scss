@@ -65,6 +65,11 @@
   cursor: pointer;
 }
 
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .primary-btn {
   font-size: 16px;
   padding: 10px 25px;

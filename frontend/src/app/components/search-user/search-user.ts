@@ -77,7 +77,6 @@ export class SearchUser {
   onSearchInput() {
     this.resultUser = null;
     this.isLoadingSearch = true;
-    console.log(this.isLoadingSearch);
     this.userService.searchByEmail(this.searchForm.value.email)
     .pipe(
       finalize(() => {
@@ -105,9 +104,11 @@ export class SearchUser {
 
     let isFriend = false;
 
+    console.log(isFriend);
     for (let friend of this.user.friends) {
       if (friend._id === this.resultUser._id) {
         isFriend = true;
+        console.log(isFriend);
       }
     }
 

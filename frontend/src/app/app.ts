@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { FirebaseMessagingService } from './services/firebase/firebase-messaging';
 import { ToastComponent } from "./components/toast/toast";
 import { SocketService } from './services/socket/socket-service';
 import { IncomingCall } from "./components/receive-call/incoming-call";
 import { Theme } from './services/theme/theme';
 import { Auth } from './services/auth/auth';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -22,12 +23,9 @@ export class App implements OnInit {
   constructor(private firebaseMessaging: FirebaseMessagingService,
               private socketService: SocketService,
               private themeService: Theme,
-              private authService: Auth
-  ) {
-    window.addEventListener('beforeunload', () => {
-          this.receiveCallSub?.unsubscribe();
-        });
-  }
+              private authService: Auth,
+              private router: Router
+  ) {}
 
   ngOnInit() {
     this.themeService.loadTheme();
@@ -37,13 +35,25 @@ export class App implements OnInit {
     this.receiveCallSub = this.socketService
             .listen<any>('receive-call')
             .subscribe(async (data) => {
-                console.log('Incoming call data:', data);
                 this.dataIncomingCall = data;
                 this.isHaveAnIncomingCall = true;
             });
 
     this.authService.getMe().subscribe();
+    this.checkRefreshToken();
+  }
 
+  checkRefreshToken() {
+    this.authService.refreshToken().subscribe({
+      next: (res) => {
+        console.log('Token refreshed successfully:', res);
+      },
+      error: (err) => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('access_token');
+        this.router.navigate(['/auth/login']);
+      },
+    });
   }
 
   async initializeFirebaseMessaging() {

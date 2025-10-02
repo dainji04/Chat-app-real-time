@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
-  socketUrl: 'http://localhost:3000',
-  apiBaseUrl: 'http://localhost:3000/api',
-  // socketUrl: 'https://ghnz4vsl-3000.asse.devtunnels.ms/',
-  // apiBaseUrl: 'https://ghnz4vsl-3000.asse.devtunnels.ms/api',
+  // socketUrl: 'http://localhost:3000',
+  // apiBaseUrl: 'http://localhost:3000/api',
+  socketUrl: 'https://0vwn2kbg-3000.asse.devtunnels.ms/',
+  apiBaseUrl: 'https://0vwn2kbg-3000.asse.devtunnels.ms/api',
   firebase: {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",

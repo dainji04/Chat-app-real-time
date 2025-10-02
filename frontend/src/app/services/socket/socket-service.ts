@@ -113,8 +113,8 @@ export class SocketService {
 
   // video call
   // Join room
-  joinRoom(roomId: string, userId: string): void {
-    this.socket?.emit('join-room', roomId, userId);
+  joinRoom(roomId: string, userId: string, type: string): void {
+    this.socket?.emit('join-room', roomId, userId, type);
   }
 
   // Listen for user connected

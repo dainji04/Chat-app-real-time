@@ -16,6 +16,7 @@ import { Badge } from 'primeng/badge';
   styleUrl: './friends.scss',
 })
 export class Friends implements OnInit {
+  private user!: any;
   listFriendsBackup: any[] | null = null; // save the old list friend before searching (filter)
   listFriends: any[] | null = null;
   formFilterAndSearch = new FormGroup({
@@ -35,8 +36,8 @@ export class Friends implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.friendRequests = user.friendRequests.received.length || 0;
+    this.user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.friendRequests = this.user.friendRequests.received.length || 0;
 
     this.getAll();
 
@@ -46,6 +47,17 @@ export class Friends implements OnInit {
       .subscribe(() => {
         this.search();
       });
+  }
+
+  decreaseFriendRequests() {
+    this.friendRequests = this.friendRequests > 0 ? this.friendRequests - 1 : 0;
+    localStorage.setItem('user', JSON.stringify({
+      ...this.user,
+      friendRequests: {
+        ...this.user.friendRequests,
+        received: this.user.friendRequests.received.slice(0, this.friendRequests)
+      }
+    }));
   }
 
   showOptions(userId: string) {
@@ -118,6 +130,7 @@ export class Friends implements OnInit {
       next: (response: any) => {
         this.toastService.showSuccess('Accept Friend Request', 'Friend request accepted successfully.');
         this.getFriendRequests(); // Refresh the list after accepting the request
+        this.decreaseFriendRequests();
       },
       error: (error: any) => {
         this.toastService.showError('Accept Friend Request', 'Failed to accept friend request.');

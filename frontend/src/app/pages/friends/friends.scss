@@ -35,6 +35,7 @@
 
   &:hover {
     background-color: var(--bg-primary);
+    color: var(--text-primary);
     filter: brightness(1.1); // Tương đương lighten 30%
   }
 }

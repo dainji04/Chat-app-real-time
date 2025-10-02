@@ -15,6 +15,8 @@ env.config();
 const url_client = process.env.NODE_ENV === 'development' 
     ? process.env.CLIENT_URL_DEVELOPMENT : process.env.CLIENT_URL_PRODUCTION;
 
+console.log('Client URL:', url_client);
+
 const app = express();
 const server = http.createServer(app);
 const io = socket(server, {

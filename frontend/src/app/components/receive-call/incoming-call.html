@@ -39,7 +39,7 @@
 
         <!-- Accept button -->
         <button (click)="accept()" 
-            [routerLink]="['/video-call', data.roomId]" 
+            [routerLink]="['/video-call', data.roomId, { type: 'receive' }]" 
             class="action-btn accept-btn" 
             title="Accept call">
           <i class="fas fa-video"></i>

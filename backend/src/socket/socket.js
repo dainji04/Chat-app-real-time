@@ -228,7 +228,7 @@ const socketHandler = (io) => {
         });
 
         // User joins a room
-        socket.on('join-room', async (roomId, userId) => {
+        socket.on('join-room', async (roomId, userId, type = 'call') => {
             socket.join(roomId);
             users[socket.id] = { userId, roomId };
             // Notify other users in the room
@@ -236,10 +236,25 @@ const socketHandler = (io) => {
 
             const user = await User.findById(userId).select('username firstName lastName avatar');
 
-            socket.to(roomId).emit('receive-call', {
-                user: user,
-                roomId: roomId,
-            });
+            const conversation = await Conversation.findById(roomId).lean();
+            const otherUser = conversation.participants.find(
+                (p) => p.toString() !== userId
+            );
+            const otherUserId = otherUser.toString();
+
+            // Only emit call if the target user is online
+            const targetUserId = userId;
+            
+            if (onlineUsers.has(otherUserId) && type === 'call') {
+                const targetSocketId = onlineUsers.get(otherUserId);
+                io.to(targetSocketId).emit('receive-call', {
+                    user: user,
+                    roomId: roomId,
+                });
+                console.log(`Call sent to online user ${targetSocketId}`);
+            } else {
+                console.log(`User ${targetUserId} is offline, call not sent`);
+            }
 
             console.log(`User ${userId} joined room ${roomId}`);
         });

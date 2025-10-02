@@ -72,7 +72,7 @@
                                 <!-- Image Message -->
                                 @else if (message.content.type === 'image') {
                                 <div class="message__bubble message__bubble--media">
-                                    <p-image loading="lazy" [src]="message.content.media.url" alt="Image" width="250" [preview]="true" />
+                                    <p-image loading="lazy" [src]="message.content.media.url" alt="Image" class="mediaImage" [preview]="true" />
                                     @if(message.content.text) {
                                     <p class="message__text">{{ message.content.text }}</p>
                                     }

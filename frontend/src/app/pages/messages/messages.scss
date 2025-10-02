@@ -61,7 +61,7 @@ body.detail-message-open {
             margin: 10px 0;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 5px;
             overflow-y: auto;
         }
 
@@ -103,28 +103,35 @@ body.detail-message-open {
                 font-size: 16px;
                 color: inherit;
                 overflow: hidden;
+                text-align: start;
             }
 
             &-sender {
                 font-weight: bold;
                 color: inherit;
                 color: var(--text-primary);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             &-text {
+                font-size: 12px;
                 margin: 5px 0;
-                height: 10px;
-                line-height: 1.1;
-                white-space: normal;
-                word-wrap: break-word; /* hoặc word-break: break-word; */
-                overflow: visible;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 color: var(--text-primary);
+                opacity: 0.8;
             }
 
             &-time {
                 grid-area: "time";
                 color: inherit;
                 color: var(--text-primary);
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
         }
 
@@ -441,6 +448,12 @@ body.detail-message-open {
                 }
             }
         }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .create-group {
+        width: calc(100% - 60px);
     }
 }
 

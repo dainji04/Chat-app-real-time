@@ -223,8 +223,20 @@ export class Messages implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
-  setChat(id: string) {
-    this.selectedMessageId = id;
+  setChat(event: { id: string, name: string, avatar: string }) {
+    this.selectedMessageId = event.id;
+    this.messageService.getConversationById(event.id).subscribe({
+      next: (response) => {
+        this.detailConversation = response.conversation;
+        this.detailConversation.name = event.name;
+        this.detailConversation.avatar = event.avatar;
+        this.isDetailOpen = true;
+        this.enterGroup();
+      },
+      error: (error) => {
+        console.error('Error fetching conversation:', error);
+      }
+    });
   }
 
   private cleanup() {

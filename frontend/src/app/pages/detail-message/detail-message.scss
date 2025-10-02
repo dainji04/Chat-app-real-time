@@ -45,6 +45,13 @@
   gap: 8px !important;
 }
 
+// p image in message
+::ng-deep p-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* Input box styling */
 .add-member-input-box {
   margin-bottom: 16px;
@@ -530,7 +537,7 @@
 
     i {
       font-size: 20px;
-      color: var(--bg-primary);
+      color: #fff;
     }
 
     &:hover {
@@ -588,6 +595,7 @@
     .message__bubble {
       background: #007bff;
       color: white;
+      max-width: 200px;
     }
 
     .message__meta {

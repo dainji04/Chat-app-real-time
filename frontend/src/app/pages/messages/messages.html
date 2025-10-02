@@ -55,7 +55,9 @@
         </ul>
     </div>
     <div #detail class="messages__detail">
-        <app-detail-message [id]="selectedMessageId" (closeDetail)="closeDetail()" [conversation]="detailConversation" (loadGroupEvent)="fetchMessages()">
+        <app-detail-message [id]="selectedMessageId" (closeDetail)="closeDetail()" 
+            [conversation]="detailConversation" (loadGroupEvent)="fetchMessages()"
+        >
         </app-detail-message>
     </div>
 </div>

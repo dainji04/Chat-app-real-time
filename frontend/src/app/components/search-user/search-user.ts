@@ -27,7 +27,7 @@ import { ToastService } from '../../services/toast/toast';
   styleUrl: './search-user.scss'
 })
 export class SearchUser {
-  @Output() chatSelected = new EventEmitter<string>();
+  @Output() chatSelected = new EventEmitter<{ id: string, name: string, avatar: string }>();
 
   searchForm: FormGroup = new FormGroup({
     email: new FormControl(''),
@@ -142,7 +142,12 @@ export class SearchUser {
   getOrCreateConversation() {
     this.messageService.getOrCreateConversation(this.resultUser._id).subscribe({
       next: (response: any) => {
-        this.chatSelected.emit(response.data.conversation._id);
+        const data = {
+          id: response.data.conversation._id,
+          name: this.resultUser.username,
+          avatar: this.resultUser.avatar
+        }
+        this.chatSelected.emit({ id: response.data.conversation._id, name: this.resultUser.username, avatar: this.resultUser.avatar });
         this.isShowSearchResult = false;
       },
       error: (error: any) => {

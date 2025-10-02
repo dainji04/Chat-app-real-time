@@ -149,7 +149,7 @@ export class DetailMessage implements OnInit, OnChanges, AfterViewInit {
                 setTimeout(() => {
                     this.scrollToBottom();
                 }, 300);
-            });       
+            });
     }
 
     ngAfterViewInit(): void {

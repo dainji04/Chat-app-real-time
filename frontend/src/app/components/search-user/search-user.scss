@@ -32,7 +32,7 @@
 
   &-link {
     flex: 1;
-    color: #000;
+    color: var(--text-primary);
     text-decoration: none;
     opacity: 0.7;
     font-weight: 500;

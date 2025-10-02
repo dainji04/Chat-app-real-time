@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef, AfterViewInit } from '@angular/core';
 import { Message } from '../../services/messages/message';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { DetailMessage } from '../detail-message/detail-message';
 import { ClickOutside } from '../../directives/clickOutSide/click-outside';
 import { FriendService } from '../../services/friends/friends';
@@ -13,6 +13,7 @@ import { ToastService } from '../../services/toast/toast';
 import { SocketService } from '../../services/socket/socket-service';
 import { SearchUser } from "../../components/search-user/search-user";
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { conversation } from '../../model/conversation';
 import { lastMessage } from '../../model/lastMessage';
 
@@ -20,6 +21,10 @@ import { lastMessage } from '../../model/lastMessage';
 import { Skeleton } from 'primeng/skeleton';
 import { ContextMenu } from 'primeng/contextmenu'
 import { MenuItem } from 'primeng/api';
+import { ProgressBar } from 'primeng/progressbar';
+import { SpeedDial } from 'primeng/speeddial';
+import { Button } from 'primeng/button';
+import { Theme } from '../../services/theme/theme';
 
 interface group {
   name: string;
@@ -44,14 +49,18 @@ interface receiveMessageData {
     ReactiveFormsModule,
     SearchUser,
     Skeleton,
-    ContextMenu
+    ContextMenu,
+    ProgressBar,
+    SpeedDial,
+    Button
 ],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',
 })
-export class Messages implements OnInit, OnDestroy {
+export class Messages implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('detail') detailElement: any;
   @ViewChild('message') messageElement: any;
+  @ViewChild('messagesList') messagesList!: ElementRef;
   private receiveSub!: Subscription; // listen receive new messages
 
   isLoadingConversations: boolean = false;
@@ -79,6 +88,7 @@ export class Messages implements OnInit, OnDestroy {
   });
 
   items: MenuItem[] | undefined;
+  groupItems!: MenuItem[] | null;
   @ViewChild('cm') cm!: ContextMenu;
   selectedConversation!: conversation | null;
 
@@ -90,11 +100,26 @@ export class Messages implements OnInit, OnDestroy {
     private groupServices: Groups,
     private userServices: User,
     private toastService: ToastService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private themeService: Theme,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+    // Scroll to top immediately when component initializes
+    this.scrollToTop();
+    
     this.fetchMessages();
+
+    // Listen for route navigation events
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      if (event.url === '/messages') {
+        // Scroll to top when navigating to messages route
+        setTimeout(() => this.scrollToTop(), 50);
+      }
+    });
 
     this.beforeUnloadListener = () => {
       this.cleanup();
@@ -124,7 +149,62 @@ export class Messages implements OnInit, OnDestroy {
           this.toastService.showInfo(`Hided conversation ${this.selectedConversation?.name}`);
         }
       }
-    ]
+    ];
+
+    this.groupItems = [
+      {
+        label: 'Create Group',
+        icon: 'pi pi-users',
+        command: () => {
+          this.showCreateGroupBox();
+        }
+      },
+      {
+        label: 'Toggle Theme',
+        icon: 'pi pi-palette',
+        command: () => {
+          this.themeService.toggleTheme();
+          this.toastService.showSuccess('Theme Changed', 'Theme has been toggled successfully.');
+        }
+      },
+    ];
+  }
+
+  ngAfterViewInit(): void {
+    // Scroll to top after view is initialized
+    this.scrollToTop();
+  }
+
+  scrollToTop(): void {
+    // Use setTimeout to ensure the DOM is fully rendered
+    setTimeout(() => {
+      // Scroll the messages list container to top
+      if (this.messagesList && this.messagesList.nativeElement) {
+        this.messagesList.nativeElement.scrollTop = 0;
+        this.messagesList.nativeElement.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      
+      // Scroll the main layout container
+      const mainLayout = document.querySelector('.main-layout');
+      if (mainLayout) {
+        mainLayout.scrollTop = 0;
+        mainLayout.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      
+      // Scroll all possible containers
+      const containers = document.querySelectorAll('.container, .messages, .messages__list');
+      containers.forEach(container => {
+        (container as HTMLElement).scrollTop = 0;
+        (container as HTMLElement).scrollTo({ top: 0, behavior: 'auto' });
+      });
+      
+      // Scroll the main window to top as fallback
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      
+      // Scroll the document body to top for additional coverage
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 150);
   }
 
   updateConversationsWhenReceiveMessage(data: receiveMessageData) {
@@ -159,6 +239,8 @@ export class Messages implements OnInit, OnDestroy {
       next: (res: any) => {
         this.messages = res.data;
         this.isLoadingConversations = false;
+        // Scroll to top after messages are loaded
+        this.scrollToTop();
       },
       error: () => {
         this.isLoadingConversations = false;

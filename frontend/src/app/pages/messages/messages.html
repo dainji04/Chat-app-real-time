@@ -14,7 +14,7 @@
                 <app-search-user (chatSelected)="setChat($event)"></app-search-user>
             </ul>
         </div>
-        <ul class="messages__list">
+        <ul #messagesList class="messages__list">
             @if (!isLoadingConversations) {
                 @for (message of messages; track message._id) {
                     <li
@@ -61,6 +61,25 @@
 </div>
 
 <!-- create group box -->
+<p-speeddial [model]="groupItems" direction="up" [transitionDelay]="80" [style]="{ position: 'fixed', right: '2rem', bottom: '6rem' }">
+    <ng-template #button let-toggleCallback="toggleCallback">
+        <p-button outlined styleClass="border" (click)="toggleCallback($event)">
+            <i class="pi pi-plus"></i>
+        </p-button>
+    </ng-template>
+    <ng-template #item let-item let-toggleCallback="toggleCallback">
+        <div
+            class="cursor"
+            style="display: flex; justify-content: center; gap: 10px; align-items: center; padding: 0.5rem 1rem; width: 100%;"
+            (click)="toggleCallback($event, item)"
+        >
+            <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {{ item.label }}
+            </span>
+            <span [class]="item.icon"></span>
+        </div>
+    </ng-template>
+</p-speeddial>
 @if(isShowCreateGroupBox) {
     <div class="overlay" (click)="isShowCreateGroupBox=false">
         <div class="create-group"  (click)="$event.stopPropagation()">
@@ -102,8 +121,17 @@
             </div>
             <div class="create-group__footer">
                 <button class="cancel btn cursor" (click)="isShowCreateGroupBox=false">Cancel</button>
-                <button class="create btn cursor" (click)="createGroup()">{{isCreatingGroup ? 'Creating...' : 'Create'}}</button>
+                @if (isCreatingGroup) {
+                    <button class="create btn cursor disabled" (click)="createGroup()">Creating...</button>
+                } @else {
+                    <button class="create btn cursor" (click)="createGroup()">Create</button>
+                }
             </div>
+             @if (isCreatingGroup) {
+                <div class="card">
+                    <p-progressbar mode="indeterminate" [style]="{'height': '6px'}" />
+                </div>
+            }
         </div>
     </div>
 }
